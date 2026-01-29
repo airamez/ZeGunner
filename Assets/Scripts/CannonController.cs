@@ -53,6 +53,7 @@ public class CannonController : MonoBehaviour
             rb = projectile.AddComponent<Rigidbody>();
         }
         
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.useGravity = true;
         rb.linearVelocity = mainCamera.transform.forward * projectileSpeed;
         
