@@ -12,8 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75d286a3f9d8057429eba063cbbf2fc7, type: 3}
   m_Name: TankSpawnerConfig
   m_EditorClassIdentifier: 
-  spawnDistance: 50
+  spawnDistance: 150
   minSpeed: 2
-  maxSpeed: 5
+  maxSpeed: 10
   spawnInterval: 1
   maxTanks: 100

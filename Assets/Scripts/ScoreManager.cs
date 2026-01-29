@@ -80,9 +80,9 @@ public class ScoreManager : MonoBehaviour
         
         float accuracy = shotsFired > 0 ? (shotsHit / (float)shotsFired) * 100f : 0f;
         
-        scoreText.text = $"Tanks Destroyed: {tanksDestroyed}\n" +
-                        $"Longest Distance: {longestDistance:F1}m\n" +
-                        $"Accuracy: {accuracy:F1}%\n" +
-                        $"Tanks Reached Base: {tanksReachedBase}";
+        scoreText.text = $"Enemies Destroyed: {tanksDestroyed}\n" +
+                         $"Longest Kill: {longestDistance:F1}\n" +
+                         $"Accuracy: {accuracy:F1}%\n" +
+                         $"Enemies Reached Base: {tanksReachedBase}";
     }
 }
