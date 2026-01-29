@@ -110,6 +110,10 @@ Assets/StreamingAssets/
 # Large terrain texture files (exceed GitHub 100MB limit)
 /[Aa]ssets/TerrainTexturesPackFree/
 
+# Large terrain assets
+*Terrain*.asset
+/New Terrain*.asset
+
 # Always ignored
 [Thumbs.db]
 *.swp
