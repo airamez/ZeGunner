@@ -104,6 +104,9 @@ Assets/AssetAddressables/
 Assets/AssetBundles/
 Assets/StreamingAssets/
 
+# TextMesh Pro
+/[Aa]ssets/TextMesh Pro/
+
 # Always ignored
 [Thumbs.db]
 *.swp

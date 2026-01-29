@@ -43,6 +43,11 @@ public class CannonController : MonoBehaviour
             return;
         }
         
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.RegisterShot();
+        }
+        
         Vector3 spawnPosition = mainCamera.transform.position + mainCamera.transform.forward * spawnOffset;
         
         GameObject projectile = Instantiate(projectilePrefab, spawnPosition, Quaternion.identity);

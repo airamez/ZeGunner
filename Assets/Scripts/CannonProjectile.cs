@@ -13,6 +13,10 @@ public class CannonProjectile : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Enemy"))
         {
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.RegisterTankDestroyed(collision.gameObject.transform.position);
+            }
             Destroy(collision.gameObject);
             Destroy(gameObject);
         }
