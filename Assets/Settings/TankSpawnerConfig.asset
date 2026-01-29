@@ -15,5 +15,5 @@ MonoBehaviour:
   spawnDistance: 50
   minSpeed: 2
   maxSpeed: 5
-  spawnInterval: 2
-  maxTanks: 50
+  spawnInterval: 1
+  maxTanks: 100
