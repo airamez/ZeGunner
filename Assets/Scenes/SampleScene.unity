@@ -166,7 +166,7 @@ MonoBehaviour:
   tankPrefab: {fileID: 6449178380796617249, guid: a6a2a4c6b0f33e146891ad08a88ea169, type: 3}
   baseTransform: {fileID: 1595826105}
   config: {fileID: 11400000, guid: b9095e0161082b542b20d72d68bd9be3, type: 2}
-  spawnHeight: 0.5
+  spawnHeight: 0.1
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   projectilePrefab: {fileID: 9097215538662818992, guid: 93c4ad59282c3624ab62a12be71e17d1, type: 3}
-  projectileSpeed: 45
+  projectileSpeed: 80
   fireRate: 0.5
   baseTransform: {fileID: 1595826105}
   spawnOffset: 1
