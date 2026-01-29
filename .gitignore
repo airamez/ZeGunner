@@ -107,6 +107,9 @@ Assets/StreamingAssets/
 # TextMesh Pro
 /[Aa]ssets/TextMesh Pro/
 
+# Large terrain texture files (exceed GitHub 100MB limit)
+/[Aa]ssets/TerrainTexturesPackFree/
+
 # Always ignored
 [Thumbs.db]
 *.swp
