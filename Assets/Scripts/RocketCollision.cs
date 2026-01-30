@@ -15,10 +15,20 @@ public class RocketCollision : MonoBehaviour
         Debug.Log("=== ROCKET COLLISION ===");
         Debug.Log("Rocket hit: " + collision.gameObject.name + " with tag: " + collision.gameObject.tag);
         Debug.Log("Collision force: " + collision.relativeVelocity.magnitude);
+        Debug.Log("Hit object has Enemy tag: " + collision.gameObject.CompareTag("Enemy"));
+        Debug.Log("Hit object layer: " + collision.gameObject.layer);
+        
+        // Check all colliders on the hit object
+        Collider[] hitColliders = collision.gameObject.GetComponents<Collider>();
+        Debug.Log("Hit object has " + hitColliders.Length + " colliders");
+        foreach (Collider col in hitColliders)
+        {
+            Debug.Log("  Collider: " + col.GetType().Name + " - IsTrigger: " + col.isTrigger);
+        }
         
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Rocket destroyed enemy!");
+            Debug.Log("Rocket destroyed enemy (direct hit)!");
             if (ScoreManager.Instance != null)
             {
                 ScoreManager.Instance.RegisterTankDestroyed(collision.gameObject.transform.position);
@@ -26,16 +36,38 @@ public class RocketCollision : MonoBehaviour
             Destroy(collision.gameObject);
             Destroy(gameObject);
         }
-        else if (collision.gameObject.CompareTag("Terrain") || 
-                 collision.gameObject.GetComponent<Terrain>() != null)
-        {
-            Debug.Log("Rocket hit terrain, destroying rocket");
-            Destroy(gameObject);
-        }
         else
         {
-            Debug.Log("Rocket hit something else, destroying rocket");
-            Destroy(gameObject);
+            // Check if hit object is part of a tank (has parent with Enemy tag)
+            Transform parent = collision.gameObject.transform;
+            while (parent != null)
+            {
+                if (parent.CompareTag("Enemy"))
+                {
+                    Debug.Log("Rocket destroyed enemy tank (hit part: " + collision.gameObject.name + ")!");
+                    if (ScoreManager.Instance != null)
+                    {
+                        ScoreManager.Instance.RegisterTankDestroyed(parent.position);
+                    }
+                    Destroy(parent.gameObject); // Destroy the whole tank
+                    Destroy(gameObject);
+                    return;
+                }
+                parent = parent.parent;
+            }
+            
+            // If not part of a tank, check for terrain
+            if (collision.gameObject.CompareTag("Terrain") || 
+                collision.gameObject.GetComponent<Terrain>() != null)
+            {
+                Debug.Log("Rocket hit terrain, destroying rocket");
+                Destroy(gameObject);
+            }
+            else
+            {
+                Debug.Log("Rocket hit something else, destroying rocket");
+                Destroy(gameObject);
+            }
         }
     }
     

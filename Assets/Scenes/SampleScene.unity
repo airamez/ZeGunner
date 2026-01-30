@@ -163,7 +163,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9ca1cad3cd93ec64686310f3557bc645, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tankPrefab: {fileID: 6449178380796617249, guid: a6a2a4c6b0f33e146891ad08a88ea169, type: 3}
+  tankPrefab: {fileID: 0, guid: 5f3d07d75c5cb02478bb3154bf64bc0d, type: 3}
   baseTransform: {fileID: 1595826105}
   config: {fileID: 11400000, guid: b9095e0161082b542b20d72d68bd9be3, type: 2}
   spawnHeight: 0.1
@@ -334,9 +334,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b322c1c310040b40aab479c98d4f083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 0, guid: 4eca73f1ed89e5c42bdce9826e821466, type: 3}
+  projectilePrefab: {fileID: 8948963032308155249, guid: f528c0f8e38f37a428930db18b7e2fe6, type: 3}
   projectileSpeed: 80
-  fireRate: 0.5
+  fireRate: 0.25
+  sphereProjectile: {fileID: 9097215538662818992, guid: 93c4ad59282c3624ab62a12be71e17d1, type: 3}
+  rocketProjectile: {fileID: 919132149155446097, guid: 4a1029142eefab644bbcbab3875e5aed, type: 3}
+  useRocketProjectile: 1
+  rocketScale: 0.1
   baseTransform: {fileID: 1595826105}
   spawnOffset: 1
 --- !u!114 &330585550
