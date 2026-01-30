@@ -18,9 +18,14 @@ public class CannonController : MonoBehaviour
     [SerializeField] private Transform baseTransform;
     [SerializeField] private float spawnOffset = 1f;
     
+    [Header("Camera Movement")]
+    [SerializeField] private float verticalSpeed = 5f;
+    [SerializeField] private float minHeightAboveBase = 2f;
+    
     private float nextFireTime = 0f;
     private Camera mainCamera;
     private Mouse mouse;
+    private Keyboard keyboard;
     
     void Start()
     {
@@ -30,10 +35,13 @@ public class CannonController : MonoBehaviour
             mainCamera = Camera.main;
         }
         mouse = Mouse.current;
+        keyboard = Keyboard.current;
     }
     
     void Update()
     {
+        HandleVerticalMovement();
+        
         if (mouse != null && mouse.leftButton.isPressed && Time.time >= nextFireTime)
         {
             Fire();
@@ -185,5 +193,43 @@ public class CannonController : MonoBehaviour
         }
         
         return null;
+    }
+    
+    void HandleVerticalMovement()
+    {
+        if (keyboard == null) return;
+        
+        float verticalInput = 0f;
+        
+        // W key moves up
+        if (keyboard.wKey.isPressed)
+        {
+            verticalInput = 1f;
+        }
+        // S key moves down
+        else if (keyboard.sKey.isPressed)
+        {
+            verticalInput = -1f;
+        }
+        
+        if (verticalInput != 0f)
+        {
+            Vector3 currentPosition = transform.position;
+            float newY = currentPosition.y + (verticalInput * verticalSpeed * Time.deltaTime);
+            
+            // Calculate minimum height (base top + minimum height above base)
+            float baseTopY = 0f; // Base is at ground level (0,0,0)
+            if (baseTransform != null)
+            {
+                baseTopY = baseTransform.position.y;
+            }
+            float minY = baseTopY + minHeightAboveBase;
+            
+            // Clamp the new position to prevent going below minimum height
+            newY = Mathf.Max(newY, minY);
+            
+            // Apply the new position
+            transform.position = new Vector3(currentPosition.x, newY, currentPosition.z);
+        }
     }
 }
