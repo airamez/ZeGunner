@@ -33,6 +33,13 @@ public class RocketCollision : MonoBehaviour
             {
                 ScoreManager.Instance.RegisterTankDestroyed(collision.gameObject.transform.position);
             }
+            
+            // Play explosion sound
+            if (SoundManager.Instance != null)
+            {
+                SoundManager.Instance.PlayExplosionSound(collision.gameObject.transform.position);
+            }
+            
             Destroy(collision.gameObject);
             Destroy(gameObject);
         }
@@ -49,6 +56,13 @@ public class RocketCollision : MonoBehaviour
                     {
                         ScoreManager.Instance.RegisterTankDestroyed(parent.position);
                     }
+                    
+                    // Play explosion sound
+                    if (SoundManager.Instance != null)
+                    {
+                        SoundManager.Instance.PlayExplosionSound(parent.position);
+                    }
+                    
                     Destroy(parent.gameObject); // Destroy the whole tank
                     Destroy(gameObject);
                     return;
