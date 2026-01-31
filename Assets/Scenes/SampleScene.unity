@@ -354,6 +354,7 @@ MonoBehaviour:
   spawnOffset: 1
   verticalSpeed: 5
   minHeightAboveBase: 2
+  maxElevation: 50
 --- !u!114 &330585550
 MonoBehaviour:
   m_ObjectHideFlags: 0
