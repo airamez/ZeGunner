@@ -50,7 +50,6 @@ public class ScoreUI : MonoBehaviour
         if (ScoreManager.Instance != null)
         {
             ScoreManager.Instance.scoreText = scoreText;
-            Debug.Log("ScoreUI connected to ScoreManager");
         }
         else
         {

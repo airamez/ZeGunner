@@ -25,14 +25,8 @@ public class GameTimer : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("GameTimer Start() called");
-        // Find or create timer text
         timerText = CreateTimerText();
-        if (timerText != null)
-        {
-            Debug.Log("Timer text created successfully");
-        }
-        else
+        if (timerText == null)
         {
             Debug.LogError("Failed to create timer text!");
         }
@@ -49,29 +43,20 @@ public class GameTimer : MonoBehaviour
     
     TextMeshProUGUI CreateTimerText()
     {
-        Debug.Log("Creating timer text...");
-        
         // Find the GameUISetup to get the canvas
         GameUISetup uiSetup = FindAnyObjectByType<GameUISetup>();
         if (uiSetup == null)
         {
-            Debug.LogWarning("GameUISetup not found!");
             return null;
         }
-        
-        Debug.Log("Found GameUISetup");
-        
         // Get the canvas from GameUISetup using reflection
         var canvasField = typeof(GameUISetup).GetField("canvas", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         Canvas canvas = canvasField?.GetValue(uiSetup) as Canvas;
         
         if (canvas == null)
         {
-            Debug.LogWarning("Canvas not found!");
             return null;
         }
-        
-        Debug.Log("Found canvas, creating timer UI...");
         
         // Create timer text object
         GameObject timerObj = new GameObject("GameTimer");
@@ -111,7 +96,6 @@ public class GameTimer : MonoBehaviour
         // Move background behind text
         timerBg.transform.SetAsFirstSibling();
         
-        Debug.Log("Timer UI created successfully");
         return text;
     }
     
@@ -136,13 +120,11 @@ public class GameTimer : MonoBehaviour
     {
         gameTime = 0f;
         isRunning = true;
-        Debug.Log("Timer started");
     }
     
     public void StopTimer()
     {
         isRunning = false;
-        Debug.Log("Timer stopped at: " + FormatTime(gameTime));
     }
     
     public void PauseTimer()

@@ -51,8 +51,6 @@ public class ExplosionManager : MonoBehaviour
             Resources.Load<GameObject>("JMO Assets/WarFX/_Effects/Explosions/WFX_Explosion StarSmoke"),
             Resources.Load<GameObject>("JMO Assets/WarFX/_Effects/Explosions/WFX_Nuke")
         };
-        
-        Debug.Log("Loaded " + explosionPrefabs.Length + " explosion prefabs");
     }
     
     void LoadExplosionSounds()
@@ -71,15 +69,12 @@ public class ExplosionManager : MonoBehaviour
             Resources.Load<AudioClip>("Grenade Sound FX/Grenade/Grenade9"),
             Resources.Load<AudioClip>("Grenade Sound FX/Grenade/Grenade10")
         };
-        
-        Debug.Log("Loaded " + explosionSounds.Length + " explosion sounds");
     }
     
     public void PlayExplosionEffect(Vector3 position)
     {
         if (explosionPrefabs == null || explosionPrefabs.Length == 0)
         {
-            Debug.LogWarning("No explosion prefabs loaded! Using fallback particle effect.");
             CreateFallbackExplosion(position);
             return;
         }
@@ -92,14 +87,11 @@ public class ExplosionManager : MonoBehaviour
         {
             // Spawn the explosion effect at the specified position
             GameObject spawnedExplosion = Instantiate(randomExplosion, position, Quaternion.identity);
-            Debug.Log("Spawning explosion effect at position: " + position + " - " + randomExplosion.name);
-            
             // Check if the prefab is working (not purple) by checking if it has active renderers
             StartCoroutine(CheckExplosionValidity(spawnedExplosion, position));
         }
         else
         {
-            Debug.LogWarning("Random explosion prefab is null at index: " + randomIndex);
             CreateFallbackExplosion(position);
         }
     }
@@ -142,7 +134,6 @@ public class ExplosionManager : MonoBehaviour
         // If no valid effects found, destroy the purple explosion and create fallback
         if (!hasValidEffects)
         {
-            Debug.LogWarning("WarFX explosion appears broken (purple). Using fallback particle effect.");
             Destroy(explosion);
             CreateFallbackExplosion(position);
         }
@@ -178,15 +169,12 @@ public class ExplosionManager : MonoBehaviour
         
         // Destroy after particles finish
         Destroy(explosion, 2f);
-        
-        Debug.Log("Created fallback particle explosion at position: " + position);
     }
     
     public void PlayExplosionSound()
     {
         if (explosionSounds == null || explosionSounds.Length == 0)
         {
-            Debug.LogWarning("No explosion sounds loaded!");
             return;
         }
         
@@ -198,7 +186,6 @@ public class ExplosionManager : MonoBehaviour
         {
             // Play the sound at the camera position (2D sound)
             audioSource.PlayOneShot(randomSound);
-            Debug.Log("Playing explosion sound: " + randomSound.name);
         }
         else
         {
@@ -210,7 +197,6 @@ public class ExplosionManager : MonoBehaviour
     {
         if (explosionSounds == null || explosionSounds.Length == 0)
         {
-            Debug.LogWarning("No explosion sounds loaded!");
             return;
         }
         
@@ -222,7 +208,6 @@ public class ExplosionManager : MonoBehaviour
         {
             // Play the sound at the specified position (3D sound)
             AudioSource.PlayClipAtPoint(randomSound, position);
-            Debug.Log("Playing explosion sound at position: " + position + " - " + randomSound.name);
         }
         else
         {
