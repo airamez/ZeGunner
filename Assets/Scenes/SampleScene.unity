@@ -175,6 +175,7 @@ MonoBehaviour:
   maxSpeed: 10
   spawnInterval: 1
   maxTanks: 500
+  explosionFolderPath: Assets/JMO Assets/WarFX/_Effects/Explosions
   spawnHeight: 0.1
 --- !u!1 &330585543
 GameObject:
@@ -845,6 +846,60 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &2074464211
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2074464213}
+  - component: {fileID: 2074464212}
+  m_Layer: 0
+  m_Name: HelicopterSpawner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2074464212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074464211}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6c2e84271d1f6641bbebc65bed062ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::HelicopterSpawner
+  helicopterPrefab: {fileID: -927199367670048503, guid: 1102787bb5eb2874385b8e60f5f342ca, type: 3}
+  baseTransform: {fileID: 1595826105}
+  spawnDistance: 250
+  minSpawnHeight: 5
+  maxSpawnHeight: 100
+  minSpeed: 10
+  maxSpeed: 15
+  spawnInterval: 5
+  maxHelicopters: 100
+  explosionFolderPath: Assets/JMO Assets/WarFX/_Effects/Explosions
+--- !u!4 &2074464213
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2074464211}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.3033, y: -0.00001, z: -4.42427}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2091168399
 GameObject:
   m_ObjectHideFlags: 0
@@ -903,3 +958,4 @@ SceneRoots:
   - {fileID: 1549903654}
   - {fileID: 1563003875}
   - {fileID: 2091168401}
+  - {fileID: 2074464213}
