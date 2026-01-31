@@ -64,7 +64,6 @@ public class Tank : MonoBehaviour
             barrelTransform = transform.Find(barrelName);
             if (barrelTransform != null)
             {
-                Debug.Log("Found barrel transform: " + barrelName + " at position: " + barrelTransform.position);
                 break;
             }
         }
@@ -79,7 +78,6 @@ public class Tank : MonoBehaviour
                     if (child.name.Contains(barrelName))
                     {
                         barrelTransform = child;
-                        Debug.Log("Found barrel transform in children: " + child.name + " at position: " + barrelTransform.position);
                         break;
                     }
                 }
@@ -89,7 +87,7 @@ public class Tank : MonoBehaviour
         
         if (barrelTransform == null)
         {
-            Debug.LogWarning("Barrel transform not found on tank! Will use forward offset spawn position.");
+            
         }
         
         // Initialize zigzag movement
@@ -124,7 +122,6 @@ public class Tank : MonoBehaviour
         {
             isFiring = true;
             nextFireTime = Time.time; // Fire immediately when entering range
-            Debug.Log("Tank in firing range at distance: " + distanceToBase);
             
             // Face the base
             Vector3 toBase = (targetPosition - transform.position).normalized;
@@ -202,7 +199,6 @@ public class Tank : MonoBehaviour
             {
                 ScoreManager.Instance.DamageBase(projectileDamage);
             }
-            Debug.Log("Tank fired at base (no projectile) - Damage: " + projectileDamage);
             return;
         }
         
@@ -224,7 +220,6 @@ public class Tank : MonoBehaviour
         }
         enemyProj.Initialize(projectileDamage, projectileSpeed, direction);
         
-        Debug.Log("Tank fired projectile at base");
     }
     
     void UpdateZigzagDirection()
@@ -255,8 +250,6 @@ public class Tank : MonoBehaviour
             direction = "LEFT";
         }
         
-        Debug.Log("Zigzag " + direction + " - Angle: " + zigzagAngle + "°");
-        
         // Change speed with each direction change
         ChangeSpeed();
         
@@ -281,12 +274,10 @@ public class Tank : MonoBehaviour
             rotation = Quaternion.Euler(0, safeAngle, 0);
             currentDirection = rotation * toBase;
             
-            Debug.LogWarning("Tank angle too wide - forced to safe angle: " + safeAngle + "°");
         }
         
         // Log final direction for debugging
         float finalDot = Vector3.Dot(currentDirection.normalized, toBase.normalized);
-        Debug.Log("Final dot product: " + finalDot + " (always positive = moving toward base)");
     }
     
     void ChangeSpeed()
@@ -295,12 +286,10 @@ public class Tank : MonoBehaviour
         float newSpeed = Random.Range(minSpeed, maxSpeed);
         moveSpeed = newSpeed;
         
-        Debug.Log("Tank speed changed to: " + moveSpeed.ToString("F2") + " (range: " + minSpeed + " - " + maxSpeed + ")");
     }
     
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Tank collision with: " + collision.gameObject.name);
         
         // Check if hit by projectile
         GameObject hitObject = collision.gameObject;
@@ -311,14 +300,12 @@ public class Tank : MonoBehaviour
             hitObject.GetComponent<CannonProjectile>() != null ||
             hitObject.GetComponent<RocketCollision>() != null)
         {
-            Debug.Log("Tank hit by projectile!");
             DestroyTank(true);
         }
     }
     
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Tank trigger with: " + other.gameObject.name);
         
         // Also check trigger collisions (some projectiles use triggers)
         GameObject hitObject = other.gameObject;
@@ -329,7 +316,6 @@ public class Tank : MonoBehaviour
             hitObject.GetComponent<CannonProjectile>() != null ||
             hitObject.GetComponent<RocketCollision>() != null)
         {
-            Debug.Log("Tank hit by projectile (trigger)!");
             DestroyTank(true);
         }
     }
@@ -355,7 +341,6 @@ public class Tank : MonoBehaviour
             AudioSource.PlayClipAtPoint(explosionSound, transform.position);
         }
         
-        Debug.Log("Tank destroyed by " + (byPlayer ? "player" : "reaching base"));
         Destroy(gameObject);
     }
 }

@@ -22,20 +22,22 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Maximum angle deviation for zigzag movement")]
     [SerializeField] private float maxZigzagAngle = 30f;
 
-    [Tooltip("Distance from the base where tanks will spawn")]
-    [SerializeField] private float spawnDistance = 50f;
+    [Tooltip("Minimum distance from the base where tanks will spawn")]
+    [SerializeField] private float minSpawnDistance = 40f;
+    
+    [Tooltip("Maximum distance from the base where tanks will spawn")]
+    [SerializeField] private float maxSpawnDistance = 60f;
 
-    [Tooltip("Minimum speed of spawned tanks")]
-    [SerializeField] private float minSpeed = 2f;
+    [Tooltip("Base minimum speed of spawned tanks (wave 1)")]
+    [SerializeField] private float baseMinSpeed = 2f;
     
-    [Tooltip("Maximum speed of spawned tanks")]
-    [SerializeField] private float maxSpeed = 5f;
+    [Tooltip("Base maximum speed of spawned tanks (wave 1)")]
+    [SerializeField] private float baseMaxSpeed = 5f;
    
-    [Tooltip("Time between tank spawns in seconds")]
-    [SerializeField] private float spawnInterval = 3f;
+    [Tooltip("Number of tanks for wave 1")]
+    [SerializeField] private int baseTankCount = 5;
     
-    [Tooltip("Maximum number of tanks alive at once")]
-    [SerializeField] private int maxTanks = 10;
+    public int BaseTankCount => baseTankCount;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for tank destruction")]
@@ -65,14 +67,11 @@ public class TankSpawner : MonoBehaviour
     
     [SerializeField] private float spawnHeight = 0.5f;
     
-    private float nextSpawnTime = 0f;
     private List<GameObject> activeTanks = new List<GameObject>();
     
     void Start()
     {
-        Debug.Log("TankSpawner started");
-        Debug.Log("Tank prefab assigned: " + (tankPrefab != null ? tankPrefab.name : "NULL"));
-        Debug.Log("Base transform assigned: " + (baseTransform != null ? baseTransform.name : "NULL"));
+        
     }
     
     void Update()
@@ -83,30 +82,45 @@ public class TankSpawner : MonoBehaviour
             return;
         }
         
+        // Check if WaveManager allows spawning
+        if (WaveManager.Instance == null || !WaveManager.Instance.CanSpawnTank())
+        {
+            return;
+        }
+        
         activeTanks.RemoveAll(tank => tank == null);
         
-        if (Time.time >= nextSpawnTime && activeTanks.Count < maxTanks)
+        // Spawn all tanks at once at wave start
+        float speedMultiplier = WaveManager.Instance.GetSpeedMultiplier();
+        bool spawnedAny = false;
+        while (WaveManager.Instance.CanSpawnTank())
         {
-            SpawnTank();
-            nextSpawnTime = Time.time + spawnInterval;
+            SpawnTank(speedMultiplier);
+            spawnedAny = true;
+        }
+        
+        // Update score display after spawning
+        if (spawnedAny)
+        {
+            WaveManager.Instance.UpdateScoreDisplay();
         }
     }
     
-    void SpawnTank()
+    void SpawnTank(float speedMultiplier)
     {
         if (tankPrefab == null)
         {
-            Debug.LogWarning("Tank prefab not assigned!");
             return;
         }
         
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        float randomDistance = Random.Range(minSpawnDistance, maxSpawnDistance);
         
         Vector3 spawnOffset = new Vector3(
-            Mathf.Cos(randomAngle) * spawnDistance,
+            Mathf.Cos(randomAngle) * randomDistance,
             spawnHeight,
-            Mathf.Sin(randomAngle) * spawnDistance
+            Mathf.Sin(randomAngle) * randomDistance
         );
         
         Vector3 spawnPosition = basePosition + spawnOffset;
@@ -131,9 +145,19 @@ public class TankSpawner : MonoBehaviour
             tankScript = tank.AddComponent<Tank>();
         }
         
+        // Apply wave speed multiplier
+        float minSpeed = baseMinSpeed * speedMultiplier;
+        float maxSpeed = baseMaxSpeed * speedMultiplier;
         float speed = Random.Range(minSpeed, maxSpeed);
+        
         tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
         
         activeTanks.Add(tank);
+        
+        // Register spawn with WaveManager
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.RegisterTankSpawned();
+        }
     }
 }

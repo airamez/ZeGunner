@@ -8,7 +8,16 @@ public class ScoreManager : MonoBehaviour
     [Header("UI References")]
     public TextMeshProUGUI scoreText;
     
-    private int tanksDestroyed = 0;
+    // Wave tracking
+    private int currentWave = 1;
+    private int tanksDestroyedThisWave = 0;
+    private int totalTanksThisWave = 0;
+    private int helicoptersDestroyedThisWave = 0;
+    private int totalHelicoptersThisWave = 0;
+    
+    // Total stats
+    private int totalTanksDestroyed = 0;
+    private int totalHelicoptersDestroyed = 0;
     private int shotsFired = 0;
     private int shotsHit = 0;
     private float longestDistance = 0f;
@@ -36,11 +45,10 @@ public class ScoreManager : MonoBehaviour
         if (baseObj != null)
         {
             baseTransform = baseObj.transform;
-            Debug.Log("Base found at position: " + baseTransform.position);
         }
         else
         {
-            Debug.LogWarning("Base GameObject not found in scene!");
+            
         }
         
         // Find the main camera (turret)
@@ -48,14 +56,12 @@ public class ScoreManager : MonoBehaviour
         if (mainCamera != null)
         {
             cameraTransform = mainCamera.transform;
-            Debug.Log("Camera found for height tracking");
         }
         else
         {
-            Debug.LogWarning("Main camera not found!");
+            
         }
         
-        Debug.Log("ScoreManager initialized. scoreText is " + (scoreText == null ? "NULL" : "assigned"));
         UpdateUI();
     }
     
@@ -67,7 +73,7 @@ public class ScoreManager : MonoBehaviour
     
     public void RegisterTankDestroyed(Vector3 tankPosition)
     {
-        tanksDestroyed++;
+        totalTanksDestroyed++;
         shotsHit++;
         
         if (baseTransform != null)
@@ -79,37 +85,67 @@ public class ScoreManager : MonoBehaviour
             }
         }
         
+        // Notify WaveManager
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.RegisterTankDestroyed();
+        }
+        
+        UpdateUI();
+    }
+    
+    public void RegisterHelicopterDestroyed(Vector3 helicopterPosition)
+    {
+        totalHelicoptersDestroyed++;
+        shotsHit++;
+        
+        if (baseTransform != null)
+        {
+            float distance = Vector3.Distance(helicopterPosition, baseTransform.position);
+            if (distance > longestDistance)
+            {
+                longestDistance = distance;
+            }
+        }
+        
+        // Notify WaveManager
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.RegisterHelicopterDestroyed();
+        }
+        
+        UpdateUI();
+    }
+    
+    public void UpdateWaveInfo(int wave, int tanksDestroyed, int totalTanks, int helisDestroyed, int totalHelis)
+    {
+        currentWave = wave;
+        tanksDestroyedThisWave = tanksDestroyed;
+        totalTanksThisWave = totalTanks;
+        helicoptersDestroyedThisWave = helisDestroyed;
+        totalHelicoptersThisWave = totalHelis;
         UpdateUI();
     }
     
     public void DamageBase(float damage)
     {
-        Debug.Log("DamageBase called with damage: " + damage + ", current HP: " + baseHP + ", isGameOver: " + isGameOver);
         
         if (isGameOver) 
         {
-            Debug.Log("Already game over, ignoring damage");
             return;
         }
         
         baseHP -= damage;
-        Debug.Log("Base HP after damage: " + baseHP);
         
         if (baseHP <= 0)
         {
             baseHP = 0;
             isGameOver = true;
-            Debug.Log("GAME OVER - Base Destroyed! HP reached zero.");
             
             // Show game over screen
             if (GameManager.Instance != null)
             {
-                Debug.Log("Calling GameManager.Instance.ShowGameOver()...");
                 GameManager.Instance.ShowGameOver();
-            }
-            else
-            {
-                Debug.LogError("GameManager.Instance is null!");
             }
         }
         
@@ -140,10 +176,32 @@ public class ScoreManager : MonoBehaviour
             turretElevation = Mathf.Min(cameraTransform.position.y, 50f);
         }
         
-        scoreText.text = $"Enemies Destroyed: {tanksDestroyed}\n" +
+        scoreText.text = $"Wave: {currentWave}\n" +
+                         $"Tanks: {tanksDestroyedThisWave}/{totalTanksThisWave}\n" +
+                         $"Helicopters: {helicoptersDestroyedThisWave}/{totalHelicoptersThisWave}\n" +
                          $"Longest Kill: {longestDistance:F1}\n" +
                          $"Accuracy: {accuracy:F1}%\n" +
-                         $"Turret Elevation: {turretElevation:F1}\n" +
                          $"Base HP: {baseHP:F0}";
+    }
+    
+    // Getters for game over screen
+    public int GetCurrentWave()
+    {
+        return currentWave;
+    }
+    
+    public int GetTotalTanksDestroyed()
+    {
+        return totalTanksDestroyed;
+    }
+    
+    public int GetTotalHelicoptersDestroyed()
+    {
+        return totalHelicoptersDestroyed;
+    }
+    
+    public float GetBaseHP()
+    {
+        return baseHP;
     }
 }

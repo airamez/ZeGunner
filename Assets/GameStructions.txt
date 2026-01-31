@@ -1,6 +1,0 @@
-- Move the turret using the mouse
-- Fire with the mouse left button
-- Move the Turret up and down using W and S keys
-- If enemies get close to the base they will fire at it
-- If the Base HP reach zero you lose
-- Have fun!

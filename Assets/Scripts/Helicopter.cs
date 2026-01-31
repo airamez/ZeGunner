@@ -24,6 +24,7 @@ public class Helicopter : MonoBehaviour
     private float projectileScale;
     private bool isFiring = false;
     private float nextFireTime;
+    private bool isDestroyed = false;
     
     public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
     {
@@ -52,7 +53,6 @@ public class Helicopter : MonoBehaviour
             transform.rotation = Quaternion.LookRotation(directionToBase);
         }
         
-        Debug.Log("Helicopter initialized with speed: " + speed);
     }
     
     void FindRotorComponents()
@@ -61,17 +61,16 @@ public class Helicopter : MonoBehaviour
         topRotor = transform.Find("Top_Rotor");
         if (topRotor == null)
         {
-            Debug.LogWarning("Top_Rotor not found on helicopter prefab!");
+            
         }
         
         // Find tail rotor
         tailRotor = transform.Find("Tail_Rotor");
         if (tailRotor == null)
         {
-            Debug.LogWarning("Tail_Rotor not found on helicopter prefab!");
+            
         }
         
-        Debug.Log("Found rotors - Top: " + (topRotor != null ? "Yes" : "No") + ", Tail: " + (tailRotor != null ? "Yes" : "No"));
     }
     
     void Update()
@@ -89,7 +88,6 @@ public class Helicopter : MonoBehaviour
         {
             isFiring = true;
             nextFireTime = Time.time; // Fire immediately when entering range
-            Debug.Log("Helicopter in firing range at distance: " + distanceToBase);
             
             // Face the base
             Vector3 toBase = (targetPosition - transform.position).normalized;
@@ -139,7 +137,6 @@ public class Helicopter : MonoBehaviour
             {
                 ScoreManager.Instance.DamageBase(projectileDamage);
             }
-            Debug.Log("Helicopter fired at base (no projectile) - Damage: " + projectileDamage);
             return;
         }
         
@@ -161,7 +158,6 @@ public class Helicopter : MonoBehaviour
         }
         enemyProj.Initialize(projectileDamage, projectileSpeed, direction);
         
-        Debug.Log("Helicopter fired projectile at base");
     }
     
     void AnimateRotors()
@@ -181,7 +177,7 @@ public class Helicopter : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
-        Debug.Log("Helicopter collision with: " + collision.gameObject.name);
+        if (isDestroyed) return;
         
         // Check if hit by projectile
         GameObject hitObject = collision.gameObject;
@@ -192,14 +188,13 @@ public class Helicopter : MonoBehaviour
             hitObject.GetComponent<CannonProjectile>() != null ||
             hitObject.GetComponent<RocketCollision>() != null)
         {
-            Debug.Log("Helicopter hit by projectile!");
             DestroyHelicopter(true);
         }
     }
     
     void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Helicopter trigger with: " + other.gameObject.name);
+        if (isDestroyed) return;
         
         // Also check trigger collisions (some projectiles use triggers)
         GameObject hitObject = other.gameObject;
@@ -210,16 +205,18 @@ public class Helicopter : MonoBehaviour
             hitObject.GetComponent<CannonProjectile>() != null ||
             hitObject.GetComponent<RocketCollision>() != null)
         {
-            Debug.Log("Helicopter hit by projectile (trigger)!");
             DestroyHelicopter(true);
         }
     }
     
     public void DestroyHelicopter(bool byPlayer)
     {
+        if (isDestroyed) return;
+        isDestroyed = true;
+        
         if (byPlayer && ScoreManager.Instance != null)
         {
-            ScoreManager.Instance.RegisterTankDestroyed(transform.position); // Reuse tank destroyed for now
+            ScoreManager.Instance.RegisterHelicopterDestroyed(transform.position);
         }
         
         // Play explosion effect
@@ -236,7 +233,6 @@ public class Helicopter : MonoBehaviour
             AudioSource.PlayClipAtPoint(explosionSound, transform.position);
         }
         
-        Debug.Log("Helicopter destroyed by " + (byPlayer ? "player" : "reaching base"));
         Destroy(gameObject);
     }
 }

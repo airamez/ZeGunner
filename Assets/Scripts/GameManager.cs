@@ -41,6 +41,12 @@ public class GameManager : MonoBehaviour
             GameTimer.Instance.StartTimer();
             GameTimer.Instance.ShowTimer(true);
         }
+        
+        // Start the first wave
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.StartFirstWave();
+        }
     }
     
     public void ShowGameOver()
@@ -67,6 +73,21 @@ public class GameManager : MonoBehaviour
         if (gameOverScreen != null)
         {
             Destroy(gameOverScreen);
+        }
+        
+        // Get wave and stats info
+        int wavesSurvived = 0;
+        int totalTanks = 0;
+        int totalHelis = 0;
+        
+        if (WaveManager.Instance != null)
+        {
+            wavesSurvived = WaveManager.Instance.GetCurrentWave();
+        }
+        if (ScoreManager.Instance != null)
+        {
+            totalTanks = ScoreManager.Instance.GetTotalTanksDestroyed();
+            totalHelis = ScoreManager.Instance.GetTotalHelicoptersDestroyed();
         }
         
         // Find or create canvas
@@ -99,9 +120,9 @@ public class GameManager : MonoBehaviour
         GameObject titleObj = new GameObject("Title");
         titleObj.transform.SetParent(gameOverScreen.transform, false);
         RectTransform titleRect = titleObj.AddComponent<RectTransform>();
-        titleRect.anchorMin = new Vector2(0.5f, 0.6f);
-        titleRect.anchorMax = new Vector2(0.5f, 0.8f);
-        titleRect.sizeDelta = new Vector2(800, 150);
+        titleRect.anchorMin = new Vector2(0.5f, 0.7f);
+        titleRect.anchorMax = new Vector2(0.5f, 0.85f);
+        titleRect.sizeDelta = new Vector2(800, 120);
         titleRect.anchoredPosition = Vector2.zero;
         
         TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
@@ -111,28 +132,31 @@ public class GameManager : MonoBehaviour
         titleText.color = Color.red;
         titleText.alignment = TextAlignmentOptions.Center;
         
-        // Survival time
-        GameObject survivalObj = new GameObject("SurvivalTime");
-        survivalObj.transform.SetParent(gameOverScreen.transform, false);
-        RectTransform survivalRect = survivalObj.AddComponent<RectTransform>();
-        survivalRect.anchorMin = new Vector2(0.5f, 0.4f);
-        survivalRect.anchorMax = new Vector2(0.5f, 0.55f);
-        survivalRect.sizeDelta = new Vector2(600, 100);
-        survivalRect.anchoredPosition = Vector2.zero;
+        // Stats display
+        GameObject statsObj = new GameObject("Stats");
+        statsObj.transform.SetParent(gameOverScreen.transform, false);
+        RectTransform statsRect = statsObj.AddComponent<RectTransform>();
+        statsRect.anchorMin = new Vector2(0.5f, 0.35f);
+        statsRect.anchorMax = new Vector2(0.5f, 0.65f);
+        statsRect.sizeDelta = new Vector2(600, 250);
+        statsRect.anchoredPosition = Vector2.zero;
         
-        TextMeshProUGUI survivalText = survivalObj.AddComponent<TextMeshProUGUI>();
-        survivalText.text = "You survived " + survivalTime;
-        survivalText.fontSize = 42;
-        survivalText.fontStyle = FontStyles.Bold;
-        survivalText.color = Color.white;
-        survivalText.alignment = TextAlignmentOptions.Center;
+        TextMeshProUGUI statsText = statsObj.AddComponent<TextMeshProUGUI>();
+        statsText.text = $"Waves Survived: {wavesSurvived}\n" +
+                         $"Total Time: {survivalTime}\n\n" +
+                         $"Tanks Destroyed: {totalTanks}\n" +
+                         $"Helicopters Destroyed: {totalHelis}";
+        statsText.fontSize = 36;
+        statsText.fontStyle = FontStyles.Bold;
+        statsText.color = Color.white;
+        statsText.alignment = TextAlignmentOptions.Center;
         
         // Restart message
         GameObject restartObj = new GameObject("RestartMessage");
         restartObj.transform.SetParent(gameOverScreen.transform, false);
         RectTransform restartRect = restartObj.AddComponent<RectTransform>();
-        restartRect.anchorMin = new Vector2(0.5f, 0.2f);
-        restartRect.anchorMax = new Vector2(0.5f, 0.35f);
+        restartRect.anchorMin = new Vector2(0.5f, 0.15f);
+        restartRect.anchorMax = new Vector2(0.5f, 0.25f);
         restartRect.sizeDelta = new Vector2(600, 80);
         restartRect.anchoredPosition = Vector2.zero;
         

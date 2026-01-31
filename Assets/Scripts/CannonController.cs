@@ -63,11 +63,8 @@ public class CannonController : MonoBehaviour
         
         if (selectedProjectile == null)
         {
-            Debug.LogWarning("No projectile prefab assigned!");
             return;
         }
-        
-        Debug.Log("Fire() called, using projectile: " + selectedProjectile.name);
         
         if (ScoreManager.Instance != null)
         {
@@ -75,20 +72,17 @@ public class CannonController : MonoBehaviour
         }
         
         Vector3 spawnPosition = mainCamera.transform.position + mainCamera.transform.forward * spawnOffset;
-        Debug.Log("Spawning projectile at: " + spawnPosition);
         
         GameObject projectile = Instantiate(selectedProjectile, spawnPosition, Quaternion.LookRotation(mainCamera.transform.forward));
-        Debug.Log("Projectile instantiated: " + projectile.name);
         
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb == null)
         {
-            Debug.Log("Adding Rigidbody to projectile");
             rb = projectile.AddComponent<Rigidbody>();
         }
         else
         {
-            Debug.Log("Found existing Rigidbody on projectile");
+            
         }
         
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
@@ -104,23 +98,16 @@ public class CannonController : MonoBehaviour
         }
         
         rb.linearVelocity = fireDirection * projectileSpeed;
-        Debug.Log("Camera forward: " + mainCamera.transform.forward);
-        Debug.Log("Fire direction: " + fireDirection);
-        Debug.Log("Set velocity to: " + rb.linearVelocity);
         
         // Fix scale and orientation for rocket AFTER setting velocity
-        Debug.Log("useRocketProjectile is: " + useRocketProjectile);
         if (useRocketProjectile)
         {
-            Debug.Log("Applying rocket fixes...");
             projectile.transform.localScale = Vector3.one * rocketScale;
-            Debug.Log("Rocket scale set to: " + projectile.transform.localScale);
             
             // Add collider if rocket doesn't have one
             Collider rocketCollider = projectile.GetComponent<Collider>();
             if (rocketCollider == null)
             {
-                Debug.Log("Adding capsule collider to rocket");
                 CapsuleCollider capsuleCollider = projectile.AddComponent<CapsuleCollider>();
                 capsuleCollider.radius = 0.5f;
                 capsuleCollider.height = 2f;
@@ -128,7 +115,7 @@ public class CannonController : MonoBehaviour
             }
             else
             {
-                Debug.Log("Rocket already has collider: " + rocketCollider.GetType().Name);
+                
             }
             
             // Make rocket follow its velocity direction
@@ -136,11 +123,6 @@ public class CannonController : MonoBehaviour
             Quaternion rocketRotation = Quaternion.LookRotation(velocityDirection) * Quaternion.Euler(90, 0, 0);
             projectile.transform.rotation = rocketRotation;
             
-            Debug.Log("Rocket orientation set to follow velocity: " + velocityDirection);
-        }
-        else
-        {
-            Debug.Log("Not using rocket projectile - skipping rocket fixes");
         }
         
         // Add appropriate collision handling
@@ -150,12 +132,11 @@ public class CannonController : MonoBehaviour
             RocketCollision rocketScript = projectile.GetComponent<RocketCollision>();
             if (rocketScript == null)
             {
-                Debug.Log("Adding RocketCollision script");
                 projectile.AddComponent<RocketCollision>();
             }
             else
             {
-                Debug.Log("Found existing RocketCollision script");
+                
             }
         }
         else
@@ -164,12 +145,11 @@ public class CannonController : MonoBehaviour
             CannonProjectile projectileScript = projectile.GetComponent<CannonProjectile>();
             if (projectileScript == null)
             {
-                Debug.Log("Adding CannonProjectile script to sphere");
                 projectile.AddComponent<CannonProjectile>();
             }
             else
             {
-                Debug.Log("Found existing CannonProjectile script");
+                
             }
         }
     }
@@ -195,7 +175,6 @@ public class CannonController : MonoBehaviour
         // Final fallback - try to find sphere projectile
         if (sphereProjectile != null)
         {
-            Debug.LogWarning("Using sphere projectile as fallback");
             return sphereProjectile;
         }
         

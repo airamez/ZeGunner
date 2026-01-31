@@ -12,8 +12,11 @@ public class HelicopterSpawner : MonoBehaviour
     [SerializeField] private float helicopterScale = 1.0f;
     
     [Header("Spawn Settings")]
-    [Tooltip("Distance from the base where helicopters will spawn")]
-    [SerializeField] private float spawnDistance = 60f;
+    [Tooltip("Minimum distance from the base where helicopters will spawn")]
+    [SerializeField] private float minSpawnDistance = 50f;
+    
+    [Tooltip("Maximum distance from the base where helicopters will spawn")]
+    [SerializeField] private float maxSpawnDistance = 70f;
     
     [Tooltip("Minimum height for helicopter spawn")]
     [SerializeField] private float minSpawnHeight = 20f;
@@ -22,18 +25,17 @@ public class HelicopterSpawner : MonoBehaviour
     [SerializeField] private float maxSpawnHeight = 40f;
     
     [Header("Helicopter Speed")]
-    [Tooltip("Minimum speed of spawned helicopters")]
-    [SerializeField] private float minSpeed = 8f;
+    [Tooltip("Base minimum speed of spawned helicopters (wave 1)")]
+    [SerializeField] private float baseMinSpeed = 8f;
     
-    [Tooltip("Maximum speed of spawned helicopters")]
-    [SerializeField] private float maxSpeed = 15f;
+    [Tooltip("Base maximum speed of spawned helicopters (wave 1)")]
+    [SerializeField] private float baseMaxSpeed = 15f;
     
-    [Header("Spawn Rate")]
-    [Tooltip("Time between helicopter spawns in seconds")]
-    [SerializeField] private float spawnInterval = 8f;
+    [Header("Wave Settings")]
+    [Tooltip("Number of helicopters for wave 1")]
+    [SerializeField] private int baseHelicopterCount = 2;
     
-    [Tooltip("Maximum number of helicopters alive at once")]
-    [SerializeField] private int maxHelicopters = 5;
+    public int BaseHelicopterCount => baseHelicopterCount;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for helicopter destruction")]
@@ -61,14 +63,11 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Scale of fired projectiles")]
     [SerializeField] private float projectileScale = 0.1f;
     
-    private float nextSpawnTime = 0f;
     private List<GameObject> activeHelicopters = new List<GameObject>();
     
     void Start()
     {
-        Debug.Log("HelicopterSpawner started");
-        Debug.Log("Helicopter prefab assigned: " + (helicopterPrefab != null ? helicopterPrefab.name : "NULL"));
-        Debug.Log("Base transform assigned: " + (baseTransform != null ? baseTransform.name : "NULL"));
+        
     }
     
     void Update()
@@ -79,30 +78,45 @@ public class HelicopterSpawner : MonoBehaviour
             return;
         }
         
+        // Check if WaveManager allows spawning
+        if (WaveManager.Instance == null || !WaveManager.Instance.CanSpawnHelicopter())
+        {
+            return;
+        }
+        
         activeHelicopters.RemoveAll(helicopter => helicopter == null);
         
-        if (Time.time >= nextSpawnTime && activeHelicopters.Count < maxHelicopters)
+        // Spawn all helicopters at once at wave start
+        float speedMultiplier = WaveManager.Instance.GetSpeedMultiplier();
+        bool spawnedAny = false;
+        while (WaveManager.Instance.CanSpawnHelicopter())
         {
-            SpawnHelicopter();
-            nextSpawnTime = Time.time + spawnInterval;
+            SpawnHelicopter(speedMultiplier);
+            spawnedAny = true;
+        }
+        
+        // Update score display after spawning
+        if (spawnedAny)
+        {
+            WaveManager.Instance.UpdateScoreDisplay();
         }
     }
     
-    void SpawnHelicopter()
+    void SpawnHelicopter(float speedMultiplier)
     {
         if (helicopterPrefab == null)
         {
-            Debug.LogWarning("Helicopter prefab not assigned!");
             return;
         }
         
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        float randomDistance = Random.Range(minSpawnDistance, maxSpawnDistance);
         
         Vector3 spawnOffset = new Vector3(
-            Mathf.Cos(randomAngle) * spawnDistance,
+            Mathf.Cos(randomAngle) * randomDistance,
             0f,
-            Mathf.Sin(randomAngle) * spawnDistance
+            Mathf.Sin(randomAngle) * randomDistance
         );
         
         // Random height between min and max
@@ -124,27 +138,23 @@ public class HelicopterSpawner : MonoBehaviour
         if (rb == null)
         {
             rb = helicopter.AddComponent<Rigidbody>();
-            rb.useGravity = false; // Helicopters don't fall
-            rb.isKinematic = false; // Allow collision detection
+            rb.useGravity = false;
+            rb.isKinematic = false;
         }
         
         // Add Collider if missing
         Collider helicopterCollider = helicopter.GetComponent<Collider>();
         if (helicopterCollider == null)
         {
-            // Add BoxCollider as default
             BoxCollider boxCollider = helicopter.AddComponent<BoxCollider>();
-            boxCollider.size = Vector3.one * 5f; // Adjust size as needed
-            boxCollider.isTrigger = false; // Need physical collision
-            Debug.Log("Added BoxCollider to helicopter");
+            boxCollider.size = Vector3.one * 5f;
+            boxCollider.isTrigger = false;
         }
         else
         {
-            // Ensure existing collider is not a trigger
             if (helicopterCollider.isTrigger)
             {
                 helicopterCollider.isTrigger = false;
-                Debug.Log("Changed helicopter collider to non-trigger");
             }
         }
         
@@ -155,12 +165,19 @@ public class HelicopterSpawner : MonoBehaviour
             helicopterScript = helicopter.AddComponent<Helicopter>();
         }
         
-        // Initialize helicopter with random speed and firing parameters
+        // Apply wave speed multiplier
+        float minSpeed = baseMinSpeed * speedMultiplier;
+        float maxSpeed = baseMaxSpeed * speedMultiplier;
         float speed = Random.Range(minSpeed, maxSpeed);
+        
         helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
         
         activeHelicopters.Add(helicopter);
         
-        Debug.Log("Spawned helicopter at height: " + randomHeight + "m with speed: " + speed);
+        // Register spawn with WaveManager
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.RegisterHelicopterSpawned();
+        }
     }
 }

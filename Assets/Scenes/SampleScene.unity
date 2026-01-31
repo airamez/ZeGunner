@@ -166,15 +166,15 @@ MonoBehaviour:
   tankPrefab: {fileID: 1788451793792189928, guid: 5f3d07d75c5cb02478bb3154bf64bc0d, type: 3}
   baseTransform: {fileID: 1595826105}
   tankScale: 0.5
-  closeStraightLineDistance: 25
+  closeStraightLineDistance: 30
   zigzagMinInterval: 10
   zigzagIntervalOffset: 15
   maxZigzagAngle: 25
-  spawnDistance: 250
-  minSpeed: 2
-  maxSpeed: 5
-  spawnInterval: 5
-  maxTanks: 500
+  minSpawnDistance: 200
+  maxSpawnDistance: 250
+  baseMinSpeed: 2
+  baseMaxSpeed: 5
+  baseTankCount: 10
   explosionPrefab: {fileID: 100002, guid: ac1aa04288fad804ba1cd769f4377aaf, type: 3}
   explosionSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
   projectilePrefab: {fileID: 5254963598224360212, guid: 41518750c49d5384eba5ff5f176ee847, type: 3}
@@ -941,17 +941,17 @@ MonoBehaviour:
   helicopterPrefab: {fileID: -927199367670048503, guid: 1102787bb5eb2874385b8e60f5f342ca, type: 3}
   baseTransform: {fileID: 1595826105}
   helicopterScale: 0.2
-  spawnDistance: 250
+  minSpawnDistance: 300
+  maxSpawnDistance: 350
   minSpawnHeight: 5
   maxSpawnHeight: 100
-  minSpeed: 7
-  maxSpeed: 10
-  spawnInterval: 7
-  maxHelicopters: 100
+  baseMinSpeed: 5
+  baseMaxSpeed: 10
+  baseHelicopterCount: 5
   explosionPrefab: {fileID: 100006, guid: 2e7e92bc7175b744ea40878dedfa79e4, type: 3}
   explosionSound: {fileID: 8300000, guid: bbbd451773f5e514d80c78e791d4692e, type: 3}
   projectilePrefab: {fileID: 5639003199960037019, guid: bc1101b41da57f84ba9cde8e9687a233, type: 3}
-  distanceToFire: 20
+  distanceToFire: 15
   rateOfFire: 2
   hitPoints: 1
   projectileSpeed: 30

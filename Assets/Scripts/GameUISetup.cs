@@ -33,6 +33,13 @@ public class GameUISetup : MonoBehaviour
     
     void Start()
     {
+        // Ensure WaveManager exists
+        if (WaveManager.Instance == null)
+        {
+            GameObject wmObj = new GameObject("WaveManager");
+            wmObj.AddComponent<WaveManager>();
+        }
+        
         if (autoSetupOnStart)
         {
             SetupGameUI();
@@ -41,16 +48,6 @@ public class GameUISetup : MonoBehaviour
     
     void Update()
     {
-        // Debug every frame for troubleshooting
-        if (Time.frameCount % 30 == 0) // Log every 0.5 seconds
-        {
-            Debug.Log("Frame " + Time.frameCount + " - GameManager.Instance: " + (GameManager.Instance != null ? "exists" : "null"));
-            if (GameManager.Instance != null)
-            {
-                Debug.Log("Frame " + Time.frameCount + " - Current State: " + GameManager.Instance.CurrentState);
-            }
-        }
-        
         if (GameManager.Instance != null)
         {
             // Check if we're in menu state and any key is pressed
@@ -58,7 +55,6 @@ public class GameUISetup : MonoBehaviour
             {
                 if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
                 {
-                    Debug.Log("KEY DETECTED! Any key pressed in Menu state - calling StartGame()");
                     StartGame();
                     return;
                 }
@@ -68,7 +64,6 @@ public class GameUISetup : MonoBehaviour
             {
                 if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
                 {
-                    Debug.Log("KEY DETECTED! Any key pressed in GameOver state - calling RestartGame()");
                     RestartGame();
                     return;
                 }
@@ -76,7 +71,6 @@ public class GameUISetup : MonoBehaviour
         }
         else
         {
-            Debug.LogWarning("GameManager.Instance is null! Trying to create GameManager...");
             CreateGameManager();
         }
     }
@@ -85,14 +79,19 @@ public class GameUISetup : MonoBehaviour
     {
         GameObject gmObj = new GameObject("GameManager");
         GameManager gm = gmObj.AddComponent<GameManager>();
-        Debug.Log("Created GameManager manually");
+        
+        // Also create WaveManager if it doesn't exist
+        if (FindAnyObjectByType<WaveManager>() == null)
+        {
+            GameObject wmObj = new GameObject("WaveManager");
+            wmObj.AddComponent<WaveManager>();
+        }
     }
     
     [ContextMenu("Setup Game UI")]
     public void SetupGameUI()
     {
         // No EventSystem needed since we're not using clickable buttons
-        Debug.Log("Skipping EventSystem creation - using keyboard input only");
         
         // Create or find Canvas
         canvas = FindAnyObjectByType<Canvas>();
@@ -119,7 +118,6 @@ public class GameUISetup : MonoBehaviour
         
         // Create Game Over Panel
         gameOverPanel = CreatePanel("GameOverPanel", canvas.transform);
-        Debug.Log("Created Game Over panel: " + (gameOverPanel != null ? "success" : "failed"));
         CreateGameOverContent(gameOverPanel);
         gameOverPanel.SetActive(false);
         
@@ -130,7 +128,6 @@ public class GameUISetup : MonoBehaviour
         // Setup GameManager references
         SetupGameManager();
         
-        Debug.Log("Game UI Setup Complete!");
     }
     
     GameObject CreatePanel(string name, Transform parent)
@@ -187,8 +184,8 @@ public class GameUISetup : MonoBehaviour
         bgImage.raycastTarget = false;
         
         // Instructions text (left-aligned)
-        string instructions = "- Move the turret using the mouse\n" +
-                             "- Fire with the mouse left button\n" +
+        string instructions = "- Move the turret (Aiming) using the mouse\n" +
+                             "- Fire with the left mouse button\n" +
                              "- Move the Turret up and down using W and S keys\n" +
                              "- If enemies get close to the base they will fire at it\n" +
                              "- If the Base HP reach zero you lose\n" +
@@ -219,12 +216,10 @@ public class GameUISetup : MonoBehaviour
         msgRect.anchorMax = new Vector2(0.5f, 0.18f);
         msgRect.sizeDelta = new Vector2(600, 80);
         
-        Debug.Log("Created professional menu with styled instructions");
     }
     
     void CreateGameOverContent(GameObject panel)
     {
-        Debug.Log("Creating Game Over content...");
         
         // Game Over Title with professional styling
         GameObject titleObj = CreateStyledTextObject("GameOverTitle", panel.transform, "GAME OVER", titleFontSize, FontStyles.Bold, Color.red, TextAlignmentOptions.Center);
@@ -232,8 +227,6 @@ public class GameUISetup : MonoBehaviour
         titleRect.anchorMin = new Vector2(0.5f, 0.65f);
         titleRect.anchorMax = new Vector2(0.5f, 0.85f);
         titleRect.sizeDelta = new Vector2(800, 150);
-        
-        Debug.Log("Created Game Over title");
         
         // Add shadow effect to title
         TextMeshProUGUI titleText = titleObj.GetComponent<TextMeshProUGUI>();
@@ -260,8 +253,6 @@ public class GameUISetup : MonoBehaviour
         msgRect.anchorMax = new Vector2(0.5f, 0.35f);
         msgRect.sizeDelta = new Vector2(600, 80);
         
-        Debug.Log("Created professional game over screen");
-        Debug.Log("Game Over panel children count: " + panel.transform.childCount);
     }
     
     GameObject CreateGameUI(Transform parent)
@@ -315,7 +306,6 @@ public class GameUISetup : MonoBehaviour
             if (scoreTextField != null)
             {
                 scoreTextField.SetValue(scoreManager, scoreText);
-                Debug.Log("Assigned professional score text to ScoreManager");
             }
         }
         
@@ -421,7 +411,6 @@ public class GameUISetup : MonoBehaviour
         {
             GameObject gmObj = new GameObject("GameManager");
             gm = gmObj.AddComponent<GameManager>();
-            Debug.Log("Created GameManager during UI setup");
         }
         
         // Create GameTimer component
@@ -430,14 +419,12 @@ public class GameUISetup : MonoBehaviour
         {
             GameObject timerObj = new GameObject("GameTimer");
             timer = timerObj.AddComponent<GameTimer>();
-            Debug.Log("Created GameTimer during UI setup");
         }
         
         // Set initial state to Menu
         if (gm != null)
         {
             gm.SetGameState(GameManager.GameState.Menu);
-            Debug.Log("Set initial GameState to Menu");
         }
         
         // Find the buttons and panels we created
@@ -446,40 +433,24 @@ public class GameUISetup : MonoBehaviour
         TextMeshProUGUI instructionsText = menuPanel.transform.Find("Instructions")?.GetComponent<TextMeshProUGUI>();
         
         // The GameManager will find these by name if needed
-        Debug.Log("GameManager setup - Menu Panel: " + menuPanel.name + ", GameOver Panel: " + gameOverPanel.name);
     }
     
     public void StartGame()
     {
-        Debug.Log("=== START GAME CALLED ===");
-        Debug.Log("GameManager.Instance: " + (GameManager.Instance != null ? "exists" : "null"));
-        Debug.Log("Menu Panel: " + (menuPanel != null ? "exists" : "null"));
-        Debug.Log("Game UI: " + (gameUI != null ? "exists" : "null"));
-        
         if (GameManager.Instance != null)
         {
-            Debug.Log("Calling GameManager.Instance.StartGame()...");
             GameManager.Instance.StartGame();
-            Debug.Log("GameManager.Instance.StartGame() completed");
-        }
-        else
-        {
-            Debug.LogError("GameManager.Instance is null!");
         }
         
         if (menuPanel != null) 
         {
             menuPanel.SetActive(false);
-            Debug.Log("Menu panel hidden");
         }
         if (gameOverPanel != null) gameOverPanel.SetActive(false);
         if (gameUI != null) 
         {
             gameUI.SetActive(true);
-            Debug.Log("Game UI shown");
         }
-        
-        Debug.Log("=== START GAME FINISHED ===");
     }
     
     void RestartGame()
