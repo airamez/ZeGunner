@@ -276,7 +276,7 @@ public class GameUISetup : MonoBehaviour
         RectTransform scorePanelRect = scorePanel.AddComponent<RectTransform>();
         scorePanelRect.anchorMin = new Vector2(0, 1); // Top-left
         scorePanelRect.anchorMax = new Vector2(0, 1);
-        scorePanelRect.sizeDelta = new Vector2(400, 200);
+        scorePanelRect.sizeDelta = new Vector2(800, 600); // Increased size
         scorePanelRect.anchoredPosition = new Vector2(20, -20);
         
         // Score background with styling
@@ -284,17 +284,7 @@ public class GameUISetup : MonoBehaviour
         scoreBg.color = new Color(0, 0, 0, 0.7f);
         scoreBg.raycastTarget = false;
         
-        // Add border effect
-        GameObject scoreBorder = new GameObject("ScoreBorder");
-        scoreBorder.transform.SetParent(scorePanel.transform, false);
-        RectTransform borderRect = scoreBorder.AddComponent<RectTransform>();
-        borderRect.anchorMin = Vector2.zero;
-        borderRect.anchorMax = Vector2.one;
-        borderRect.offsetMin = new Vector2(-2, -2);
-        borderRect.offsetMax = new Vector2(2, 2);
-        Image borderImg = scoreBorder.AddComponent<Image>();
-        borderImg.color = new Color(1f, 0.8f, 0.2f, 0.5f);
-        borderImg.raycastTarget = false;
+        // No border needed - clean look with just the background
         
         // Create score text object for ScoreManager to use
         GameObject scoreTextObj = CreateStyledTextObject("ScoreText", scorePanel.transform, "", scoreFontSize, FontStyles.Bold, Color.white, TextAlignmentOptions.TopLeft);
