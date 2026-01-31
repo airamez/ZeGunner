@@ -119,6 +119,7 @@ public class GameUISetup : MonoBehaviour
         
         // Create Game Over Panel
         gameOverPanel = CreatePanel("GameOverPanel", canvas.transform);
+        Debug.Log("Created Game Over panel: " + (gameOverPanel != null ? "success" : "failed"));
         CreateGameOverContent(gameOverPanel);
         gameOverPanel.SetActive(false);
         
@@ -223,12 +224,16 @@ public class GameUISetup : MonoBehaviour
     
     void CreateGameOverContent(GameObject panel)
     {
+        Debug.Log("Creating Game Over content...");
+        
         // Game Over Title with professional styling
         GameObject titleObj = CreateStyledTextObject("GameOverTitle", panel.transform, "GAME OVER", titleFontSize, FontStyles.Bold, Color.red, TextAlignmentOptions.Center);
         RectTransform titleRect = titleObj.GetComponent<RectTransform>();
         titleRect.anchorMin = new Vector2(0.5f, 0.65f);
         titleRect.anchorMax = new Vector2(0.5f, 0.85f);
         titleRect.sizeDelta = new Vector2(800, 150);
+        
+        Debug.Log("Created Game Over title");
         
         // Add shadow effect to title
         TextMeshProUGUI titleText = titleObj.GetComponent<TextMeshProUGUI>();
@@ -256,6 +261,7 @@ public class GameUISetup : MonoBehaviour
         msgRect.sizeDelta = new Vector2(600, 80);
         
         Debug.Log("Created professional game over screen");
+        Debug.Log("Game Over panel children count: " + panel.transform.childCount);
     }
     
     GameObject CreateGameUI(Transform parent)
@@ -274,9 +280,9 @@ public class GameUISetup : MonoBehaviour
         scorePanel.transform.SetParent(gameUIObj.transform, false);
         
         RectTransform scorePanelRect = scorePanel.AddComponent<RectTransform>();
-        scorePanelRect.anchorMin = new Vector2(0, 1); // Top-left
+        scorePanelRect.anchorMin = new Vector2(0, 1);
         scorePanelRect.anchorMax = new Vector2(0, 1);
-        scorePanelRect.sizeDelta = new Vector2(800, 600); // Increased size
+        scorePanelRect.sizeDelta = new Vector2(800, 500);
         scorePanelRect.anchoredPosition = new Vector2(20, -20);
         
         // Score background with styling
@@ -416,6 +422,15 @@ public class GameUISetup : MonoBehaviour
             GameObject gmObj = new GameObject("GameManager");
             gm = gmObj.AddComponent<GameManager>();
             Debug.Log("Created GameManager during UI setup");
+        }
+        
+        // Create GameTimer component
+        GameTimer timer = FindAnyObjectByType<GameTimer>();
+        if (timer == null)
+        {
+            GameObject timerObj = new GameObject("GameTimer");
+            timer = timerObj.AddComponent<GameTimer>();
+            Debug.Log("Created GameTimer during UI setup");
         }
         
         // Set initial state to Menu

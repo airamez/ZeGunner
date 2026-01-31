@@ -140,11 +140,10 @@ public class ScoreManager : MonoBehaviour
             turretElevation = Mathf.Min(cameraTransform.position.y, 50f);
         }
         
-        string gameOverText = isGameOver ? "\n*** GAME OVER ***" : "";
         scoreText.text = $"Enemies Destroyed: {tanksDestroyed}\n" +
                          $"Longest Kill: {longestDistance:F1}\n" +
                          $"Accuracy: {accuracy:F1}%\n" +
                          $"Turret Elevation: {turretElevation:F1}\n" +
-                         $"Base HP: {baseHP:F0}{gameOverText}";
+                         $"Base HP: {baseHP:F0}";
     }
 }
