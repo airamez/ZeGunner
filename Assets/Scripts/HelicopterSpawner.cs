@@ -7,6 +7,10 @@ public class HelicopterSpawner : MonoBehaviour
     [SerializeField] private GameObject helicopterPrefab;
     [SerializeField] private Transform baseTransform;
     
+    [Header("Helicopter Settings")]
+    [Tooltip("Scale factor for spawned helicopters")]
+    [SerializeField] private float helicopterScale = 1.0f;
+    
     [Header("Spawn Settings")]
     [Tooltip("Distance from the base where helicopters will spawn")]
     [SerializeField] private float spawnDistance = 60f;
@@ -80,6 +84,9 @@ public class HelicopterSpawner : MonoBehaviour
         spawnPosition.y = randomHeight;
         
         GameObject helicopter = Instantiate(helicopterPrefab, spawnPosition, Quaternion.identity);
+        
+        // Apply scale
+        helicopter.transform.localScale = Vector3.one * helicopterScale;
         
         // Set helicopter tag
         helicopter.tag = "Enemy";
