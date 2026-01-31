@@ -182,7 +182,7 @@ MonoBehaviour:
   rateOfFire: 3
   hitPoints: 2
   projectileSpeed: 20
-  projectileScale: 0.1
+  projectileScale: 0.05
   spawnHeight: 0.1
 --- !u!1 &330585543
 GameObject:
