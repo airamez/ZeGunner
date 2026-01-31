@@ -21,8 +21,9 @@ public class Tank : MonoBehaviour
     private Vector3 currentDirection;
     private Vector3 zigzagDirection;
     private bool lastZigzagWasLeft = false; // Track last direction for alternating
+    private string explosionFolderPath;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, string explosionPath)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -32,6 +33,7 @@ public class Tank : MonoBehaviour
         zigzagMinInterval = minInterval;
         zigzagIntervalOffset = intervalOffset;
         maxZigzagAngle = maxAngle;
+        explosionFolderPath = explosionPath;
         isInitialized = true;
         
         // Initialize zigzag movement

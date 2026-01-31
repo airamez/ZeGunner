@@ -14,11 +14,13 @@ public class Helicopter : MonoBehaviour
     
     private Transform topRotor;
     private Transform tailRotor;
+    private string explosionFolderPath;
     
-    public void Initialize(Vector3 target, float speed)
+    public void Initialize(Vector3 target, float speed, string explosionPath)
     {
         targetPosition = target;
         moveSpeed = speed;
+        explosionFolderPath = explosionPath;
         isInitialized = true;
         
         // Find rotor components

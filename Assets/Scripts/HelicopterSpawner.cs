@@ -31,6 +31,10 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Maximum number of helicopters alive at once")]
     [SerializeField] private int maxHelicopters = 5;
     
+    [Header("Explosion Settings")]
+    [Tooltip("Folder path for helicopter explosion effects")]
+    [SerializeField] private string explosionFolderPath = "Assets/JMO Assets/WarFX/_Effects/Explosions";
+    
     private float nextSpawnTime = 0f;
     private List<GameObject> activeHelicopters = new List<GameObject>();
     
@@ -118,7 +122,7 @@ public class HelicopterSpawner : MonoBehaviour
         
         // Initialize helicopter with random speed
         float speed = Random.Range(minSpeed, maxSpeed);
-        helicopterScript.Initialize(basePosition, speed);
+        helicopterScript.Initialize(basePosition, speed, explosionFolderPath);
         
         activeHelicopters.Add(helicopter);
         
