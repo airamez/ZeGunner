@@ -109,7 +109,7 @@ public class ScoreManager : MonoBehaviour
         scoreText.text = $"Enemies Destroyed: {tanksDestroyed}\n" +
                          $"Longest Kill: {longestDistance:F1}\n" +
                          $"Accuracy: {accuracy:F1}%\n" +
-                         $"Enemies Reached Base: {tanksReachedBase}\n" +
-                         $"Turret Elevation: {turretElevation:F1}";
+                         $"Turret Elevation: {turretElevation:F1}\n" +
+                         $"Enemies Reached Base: {tanksReachedBase}\n";
     }
 }

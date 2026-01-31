@@ -166,11 +166,11 @@ MonoBehaviour:
   tankPrefab: {fileID: 1788451793792189928, guid: 5f3d07d75c5cb02478bb3154bf64bc0d, type: 3}
   baseTransform: {fileID: 1595826105}
   tankScale: 0.5
-  closeStraightLineDistance: 20
+  closeStraightLineDistance: 25
   zigzagMinInterval: 10
   zigzagIntervalOffset: 15
   maxZigzagAngle: 25
-  spawnDistance: 150
+  spawnDistance: 200
   minSpeed: 2
   maxSpeed: 10
   spawnInterval: 1
