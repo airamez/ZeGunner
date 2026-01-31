@@ -37,7 +37,15 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Number of tanks for wave 1")]
     [SerializeField] private int baseTankCount = 5;
     
+    [Tooltip("Percentage increase in tank count per wave (0.2 = 20%)")]
+    [SerializeField] private float baseCountWaveIncrement = 0.2f;
+    
+    [Tooltip("Percentage increase in tank speed per wave (0.1 = 10%)")]
+    [SerializeField] private float baseSpeedWaveIncrement = 0.1f;
+    
     public int BaseTankCount => baseTankCount;
+    public float BaseCountWaveIncrement => baseCountWaveIncrement;
+    public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for tank destruction")]
@@ -91,7 +99,7 @@ public class TankSpawner : MonoBehaviour
         activeTanks.RemoveAll(tank => tank == null);
         
         // Spawn all tanks at once at wave start
-        float speedMultiplier = WaveManager.Instance.GetSpeedMultiplier();
+        float speedMultiplier = WaveManager.Instance.GetTankSpeedMultiplier();
         bool spawnedAny = false;
         while (WaveManager.Instance.CanSpawnTank())
         {

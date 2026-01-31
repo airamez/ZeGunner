@@ -35,7 +35,15 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Number of helicopters for wave 1")]
     [SerializeField] private int baseHelicopterCount = 2;
     
+    [Tooltip("Percentage increase in helicopter count per wave (0.2 = 20%)")]
+    [SerializeField] private float baseCountWaveIncrement = 0.2f;
+    
+    [Tooltip("Percentage increase in helicopter speed per wave (0.1 = 10%)")]
+    [SerializeField] private float baseSpeedWaveIncrement = 0.1f;
+    
     public int BaseHelicopterCount => baseHelicopterCount;
+    public float BaseCountWaveIncrement => baseCountWaveIncrement;
+    public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for helicopter destruction")]
@@ -87,7 +95,7 @@ public class HelicopterSpawner : MonoBehaviour
         activeHelicopters.RemoveAll(helicopter => helicopter == null);
         
         // Spawn all helicopters at once at wave start
-        float speedMultiplier = WaveManager.Instance.GetSpeedMultiplier();
+        float speedMultiplier = WaveManager.Instance.GetHelicopterSpeedMultiplier();
         bool spawnedAny = false;
         while (WaveManager.Instance.CanSpawnHelicopter())
         {

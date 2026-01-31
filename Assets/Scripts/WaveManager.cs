@@ -8,8 +8,8 @@ public class WaveManager : MonoBehaviour
     public static WaveManager Instance { get; private set; }
     
     [Header("Wave Settings")]
-    [Tooltip("Percentage increase per wave (0.2 = 20%)")]
-    public float waveIncreasePercent = 0.2f;
+    // Wave increment percentages are now configured per-spawner
+    // TankSpawner and HelicopterSpawner each have their own baseCountWaveIncrement and baseSpeedWaveIncrement
     
     // References to spawners to get base counts
     private TankSpawner tankSpawner;
@@ -98,9 +98,11 @@ public class WaveManager : MonoBehaviour
         if (helicopterSpawner == null)
             helicopterSpawner = FindAnyObjectByType<HelicopterSpawner>();
         
-        // Get base counts from spawners
+        // Get base counts and increment values from spawners
         int baseTankCount = tankSpawner != null ? tankSpawner.BaseTankCount : 5;
         int baseHelicopterCount = helicopterSpawner != null ? helicopterSpawner.BaseHelicopterCount : 2;
+        float tankCountIncrement = tankSpawner != null ? tankSpawner.BaseCountWaveIncrement : 0.2f;
+        float heliCountIncrement = helicopterSpawner != null ? helicopterSpawner.BaseCountWaveIncrement : 0.2f;
         
         if (waveCompletePanel != null)
         {
@@ -111,10 +113,11 @@ public class WaveManager : MonoBehaviour
         waitingForNextWave = false;
         waveInProgress = true;
         
-        // Calculate enemies for this wave with 20% increase per wave
-        float multiplier = 1f + (waveIncreasePercent * (currentWave - 1));
-        tanksToSpawnThisWave = Mathf.RoundToInt(baseTankCount * multiplier);
-        helicoptersToSpawnThisWave = Mathf.RoundToInt(baseHelicopterCount * multiplier);
+        // Calculate enemies for this wave with separate increment percentages
+        float tankCountMultiplier = 1f + (tankCountIncrement * (currentWave - 1));
+        float heliCountMultiplier = 1f + (heliCountIncrement * (currentWave - 1));
+        tanksToSpawnThisWave = Mathf.RoundToInt(baseTankCount * tankCountMultiplier);
+        helicoptersToSpawnThisWave = Mathf.RoundToInt(baseHelicopterCount * heliCountMultiplier);
         
         // Reset counters
         tanksSpawnedThisWave = 0;
@@ -263,10 +266,24 @@ public class WaveManager : MonoBehaviour
         }
     }
     
-    // Get wave settings with multiplier
+    // Get wave speed multiplier for tanks
+    public float GetTankSpeedMultiplier()
+    {
+        float speedIncrement = tankSpawner != null ? tankSpawner.BaseSpeedWaveIncrement : 0.1f;
+        return 1f + (speedIncrement * (currentWave - 1));
+    }
+    
+    // Get wave speed multiplier for helicopters
+    public float GetHelicopterSpeedMultiplier()
+    {
+        float speedIncrement = helicopterSpawner != null ? helicopterSpawner.BaseSpeedWaveIncrement : 0.1f;
+        return 1f + (speedIncrement * (currentWave - 1));
+    }
+    
+    // Legacy method - returns tank speed multiplier for backwards compatibility
     public float GetSpeedMultiplier()
     {
-        return 1f + (waveIncreasePercent * (currentWave - 1));
+        return GetTankSpeedMultiplier();
     }
     
     // Getters for game over screen
