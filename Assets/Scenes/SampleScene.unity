@@ -877,6 +877,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HelicopterSpawner
   helicopterPrefab: {fileID: -927199367670048503, guid: 1102787bb5eb2874385b8e60f5f342ca, type: 3}
   baseTransform: {fileID: 1595826105}
+  helicopterScale: 0.5
   spawnDistance: 250
   minSpawnHeight: 5
   maxSpawnHeight: 100
