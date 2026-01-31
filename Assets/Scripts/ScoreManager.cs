@@ -15,6 +15,7 @@ public class ScoreManager : MonoBehaviour
     private int tanksReachedBase = 0;
     
     private Transform baseTransform;
+    private Transform cameraTransform;
     
     void Awake()
     {
@@ -39,6 +40,18 @@ public class ScoreManager : MonoBehaviour
         else
         {
             Debug.LogWarning("Base GameObject not found in scene!");
+        }
+        
+        // Find the main camera (turret)
+        Camera mainCamera = Camera.main;
+        if (mainCamera != null)
+        {
+            cameraTransform = mainCamera.transform;
+            Debug.Log("Camera found for height tracking");
+        }
+        else
+        {
+            Debug.LogWarning("Main camera not found!");
         }
         
         Debug.Log("ScoreManager initialized. scoreText is " + (scoreText == null ? "NULL" : "assigned"));
@@ -74,15 +87,29 @@ public class ScoreManager : MonoBehaviour
         UpdateUI();
     }
     
+    void Update()
+    {
+        // Continuously update UI to show current turret height
+        UpdateUI();
+    }
+    
     private void UpdateUI()
     {
         if (scoreText == null) return;
         
         float accuracy = shotsFired > 0 ? (shotsHit / (float)shotsFired) * 100f : 0f;
         
+        // Get turret elevation from camera with max limit of 50
+        float turretElevation = 0f;
+        if (cameraTransform != null)
+        {
+            turretElevation = Mathf.Min(cameraTransform.position.y, 50f);
+        }
+        
         scoreText.text = $"Enemies Destroyed: {tanksDestroyed}\n" +
                          $"Longest Kill: {longestDistance:F1}\n" +
                          $"Accuracy: {accuracy:F1}%\n" +
-                         $"Enemies Reached Base: {tanksReachedBase}";
+                         $"Enemies Reached Base: {tanksReachedBase}\n" +
+                         $"Turret Elevation: {turretElevation:F1}";
     }
 }

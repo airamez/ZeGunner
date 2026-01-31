@@ -4,6 +4,8 @@ public class Tank : MonoBehaviour
 {
     private Vector3 targetPosition;
     private float moveSpeed;
+    private float minSpeed;
+    private float maxSpeed;
     private bool isInitialized = false;
     private float reachedBaseDistance = 2f;
     private bool hasReachedBase = false;
@@ -16,15 +18,16 @@ public class Tank : MonoBehaviour
     [SerializeField] private float straightLineDistance = 10f; // Distance from base to move straight
     
     private float nextZigzagTime;
-    private float currentZigzagAngle;
     private Vector3 currentDirection;
     private Vector3 zigzagDirection;
     private bool lastZigzagWasLeft = false; // Track last direction for alternating
     
-    public void Initialize(Vector3 target, float speed, float straightDistance, float minInterval, float intervalOffset, float maxAngle)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle)
     {
         targetPosition = target;
         moveSpeed = speed;
+        minSpeed = minSpd;
+        maxSpeed = maxSpd;
         straightLineDistance = straightDistance;
         zigzagMinInterval = minInterval;
         zigzagIntervalOffset = intervalOffset;
@@ -36,7 +39,6 @@ public class Tank : MonoBehaviour
         currentDirection.y = 0;
         zigzagDirection = currentDirection;
         CalculateNextZigzagTime();
-        currentZigzagAngle = 0f;
         lastZigzagWasLeft = false; // Reset alternating direction
         
         if (currentDirection != Vector3.zero)
@@ -126,8 +128,7 @@ public class Tank : MonoBehaviour
         Vector3 baseDirection = (targetPosition - transform.position).normalized;
         baseDirection.y = 0;
         
-        // Generate alternating zigzag angle (left/right pattern)
-        // ALWAYS start from direction toward base, then apply alternating angle
+        // Generate boat-like zigzag that never moves away from base
         Vector3 toBase = (targetPosition - transform.position).normalized;
         toBase.y = 0;
         
@@ -137,31 +138,58 @@ public class Tank : MonoBehaviour
         if (lastZigzagWasLeft)
         {
             // Last was left, so now go right
-            zigzagAngle = Random.Range(15f, maxZigzagAngle); // Positive angle = right turn
+            zigzagAngle = Random.Range(10f, maxZigzagAngle); // Positive angle = right turn
             lastZigzagWasLeft = false;
             direction = "RIGHT";
         }
         else
         {
             // Last was right (or first turn), so now go left
-            zigzagAngle = Random.Range(-maxZigzagAngle, -15f); // Negative angle = left turn
+            zigzagAngle = Random.Range(-maxZigzagAngle, -10f); // Negative angle = left turn
             lastZigzagWasLeft = true;
             direction = "LEFT";
         }
         
         Debug.Log("Zigzag " + direction + " - Angle: " + zigzagAngle + "°");
         
-        // Apply zigzag angle to direction toward base (NOT baseDirection)
-        Quaternion rotation = Quaternion.Euler(0, zigzagAngle, 0);
+        // Change speed with each direction change
+        ChangeSpeed();
+        
+        // CRITICAL: Calculate safe zigzag angle that never moves away from base
+        // Boat movement: can go sideways but never backward
+        float safeAngle = zigzagAngle;
+        
+        // Limit angle to ensure forward progress (never more than 75 degrees from base direction)
+        float maxSafeAngle = 75f; // Maximum deviation from base direction
+        safeAngle = Mathf.Clamp(safeAngle, -maxSafeAngle, maxSafeAngle);
+        
+        // Apply the safe angle to direction toward base
+        Quaternion rotation = Quaternion.Euler(0, safeAngle, 0);
         currentDirection = rotation * toBase;
         
-        // FINAL CHECK: Ensure tank moves toward base (dot product > 0)
+        // FINAL VERIFICATION: Ensure dot product is always positive (moving toward base)
         float dotProduct = Vector3.Dot(currentDirection.normalized, toBase.normalized);
-        if (dotProduct <= 0)
+        if (dotProduct <= 0.2588f) // cos(75°) = 0.2588 - minimum forward progress
         {
-            // If somehow still moving away, force straight to base
-            currentDirection = toBase;
-            Debug.LogWarning("Tank was moving away - forced straight to base");
+            // Force a safer angle if still moving away
+            safeAngle = lastZigzagWasLeft ? 30f : -30f; // Conservative 30-degree turn
+            rotation = Quaternion.Euler(0, safeAngle, 0);
+            currentDirection = rotation * toBase;
+            
+            Debug.LogWarning("Tank angle too wide - forced to safe angle: " + safeAngle + "°");
         }
+        
+        // Log final direction for debugging
+        float finalDot = Vector3.Dot(currentDirection.normalized, toBase.normalized);
+        Debug.Log("Final dot product: " + finalDot + " (always positive = moving toward base)");
+    }
+    
+    void ChangeSpeed()
+    {
+        // Generate random speed within min/max range
+        float newSpeed = Random.Range(minSpeed, maxSpeed);
+        moveSpeed = newSpeed;
+        
+        Debug.Log("Tank speed changed to: " + moveSpeed.ToString("F2") + " (range: " + minSpeed + " - " + maxSpeed + ")");
     }
 }

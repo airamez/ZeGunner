@@ -100,7 +100,7 @@ public class TankSpawner : MonoBehaviour
         }
         
         float speed = Random.Range(minSpeed, maxSpeed);
-        tankScript.Initialize(basePosition, speed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle);
         
         activeTanks.Add(tank);
     }
