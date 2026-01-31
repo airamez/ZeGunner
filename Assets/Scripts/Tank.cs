@@ -19,7 +19,6 @@ public class Tank : MonoBehaviour
     private Vector3 currentDirection;
     private Vector3 zigzagDirection;
     private bool lastZigzagWasLeft = false; // Track last direction for alternating
-    private string explosionFolderPath;
     
     // Firing system
     private GameObject projectilePrefab;
@@ -30,8 +29,11 @@ public class Tank : MonoBehaviour
     private float projectileScale;
     private bool isFiring = false;
     private float nextFireTime;
+    private Transform barrelTransform;
+    private GameObject explosionPrefab;
+    private AudioClip explosionSound;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, string explosionPath, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -41,7 +43,8 @@ public class Tank : MonoBehaviour
         zigzagMinInterval = minInterval;
         zigzagIntervalOffset = intervalOffset;
         maxZigzagAngle = maxAngle;
-        explosionFolderPath = explosionPath;
+        explosionPrefab = explosion;
+        explosionSound = sound;
         
         // Firing parameters
         projectilePrefab = projectile;
@@ -52,6 +55,42 @@ public class Tank : MonoBehaviour
         projectileScale = projScale;
         
         isInitialized = true;
+        
+        // Find barrel transform - try multiple possible names
+        string[] barrelNames = { "Barrel", "Turret_Barrel", "Gun_Barrel", "Cannon_Barrel", "Gun", "Cannon", "Turret_Gun" };
+        
+        foreach (string barrelName in barrelNames)
+        {
+            barrelTransform = transform.Find(barrelName);
+            if (barrelTransform != null)
+            {
+                Debug.Log("Found barrel transform: " + barrelName + " at position: " + barrelTransform.position);
+                break;
+            }
+        }
+        
+        // Also try searching in children recursively
+        if (barrelTransform == null)
+        {
+            foreach (Transform child in transform.GetComponentsInChildren<Transform>())
+            {
+                foreach (string barrelName in barrelNames)
+                {
+                    if (child.name.Contains(barrelName))
+                    {
+                        barrelTransform = child;
+                        Debug.Log("Found barrel transform in children: " + child.name + " at position: " + barrelTransform.position);
+                        break;
+                    }
+                }
+                if (barrelTransform != null) break;
+            }
+        }
+        
+        if (barrelTransform == null)
+        {
+            Debug.LogWarning("Barrel transform not found on tank! Will use forward offset spawn position.");
+        }
         
         // Initialize zigzag movement
         currentDirection = (targetPosition - transform.position).normalized;
@@ -167,14 +206,12 @@ public class Tank : MonoBehaviour
             return;
         }
         
-        // Spawn projectile
-        Vector3 spawnPos = transform.position + Vector3.up * 1f; // Spawn slightly above tank
+        // Spawn projectile from in front of tank
+        Vector3 spawnPos = transform.position + transform.forward * 2f + Vector3.up * 0.5f;
         Vector3 direction = (targetPosition - spawnPos).normalized;
         
-        // Create projectile with correct orientation (nose pointing toward target)
-        // Rotate 90 degrees on X axis so the rocket points forward instead of up
-        Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90f, 0f, 0f);
-        GameObject projectile = Instantiate(projectilePrefab, spawnPos, rotation);
+        // Create projectile - EnemyProjectile will handle rotation
+        GameObject projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
         
         // Apply scale
         projectile.transform.localScale = Vector3.one * projectileScale;
@@ -259,5 +296,66 @@ public class Tank : MonoBehaviour
         moveSpeed = newSpeed;
         
         Debug.Log("Tank speed changed to: " + moveSpeed.ToString("F2") + " (range: " + minSpeed + " - " + maxSpeed + ")");
+    }
+    
+    void OnCollisionEnter(Collision collision)
+    {
+        Debug.Log("Tank collision with: " + collision.gameObject.name);
+        
+        // Check if hit by projectile
+        GameObject hitObject = collision.gameObject;
+        if (hitObject.CompareTag("Projectile") || 
+            hitObject.name.Contains("Projectile") || 
+            hitObject.name.Contains("Rocket") || 
+            hitObject.name.Contains("Sphere") ||
+            hitObject.GetComponent<CannonProjectile>() != null ||
+            hitObject.GetComponent<RocketCollision>() != null)
+        {
+            Debug.Log("Tank hit by projectile!");
+            DestroyTank(true);
+        }
+    }
+    
+    void OnTriggerEnter(Collider other)
+    {
+        Debug.Log("Tank trigger with: " + other.gameObject.name);
+        
+        // Also check trigger collisions (some projectiles use triggers)
+        GameObject hitObject = other.gameObject;
+        if (hitObject.CompareTag("Projectile") || 
+            hitObject.name.Contains("Projectile") || 
+            hitObject.name.Contains("Rocket") || 
+            hitObject.name.Contains("Sphere") ||
+            hitObject.GetComponent<CannonProjectile>() != null ||
+            hitObject.GetComponent<RocketCollision>() != null)
+        {
+            Debug.Log("Tank hit by projectile (trigger)!");
+            DestroyTank(true);
+        }
+    }
+    
+    public void DestroyTank(bool byPlayer)
+    {
+        if (byPlayer && ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.RegisterTankDestroyed(transform.position);
+        }
+        
+        // Play explosion effect
+        if (explosionPrefab != null)
+        {
+            GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            // Optional: Destroy explosion after some time
+            Destroy(explosion, 5f);
+        }
+        
+        // Play explosion sound
+        if (explosionSound != null)
+        {
+            AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+        }
+        
+        Debug.Log("Tank destroyed by " + (byPlayer ? "player" : "reaching base"));
+        Destroy(gameObject);
     }
 }

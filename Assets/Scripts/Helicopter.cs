@@ -12,7 +12,8 @@ public class Helicopter : MonoBehaviour
     
     private Transform topRotor;
     private Transform tailRotor;
-    private string explosionFolderPath;
+    private GameObject explosionPrefab;
+    private AudioClip explosionSound;
     
     // Firing system
     private GameObject projectilePrefab;
@@ -24,11 +25,12 @@ public class Helicopter : MonoBehaviour
     private bool isFiring = false;
     private float nextFireTime;
     
-    public void Initialize(Vector3 target, float speed, string explosionPath, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
+    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
     {
         targetPosition = target;
         moveSpeed = speed;
-        explosionFolderPath = explosionPath;
+        explosionPrefab = explosion;
+        explosionSound = sound;
         
         // Firing parameters
         projectilePrefab = projectile;
@@ -141,14 +143,12 @@ public class Helicopter : MonoBehaviour
             return;
         }
         
-        // Spawn projectile
-        Vector3 spawnPos = transform.position + Vector3.down * 1f; // Spawn below helicopter
+        // Spawn projectile below helicopter
+        Vector3 spawnPos = transform.position + Vector3.down * 1f;
         Vector3 direction = (targetPosition - spawnPos).normalized;
         
-        // Create projectile with correct orientation (nose pointing toward target)
-        // Rotate 90 degrees on X axis so the rocket points forward instead of up
-        Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90f, 0f, 0f);
-        GameObject projectile = Instantiate(projectilePrefab, spawnPos, rotation);
+        // Create projectile - EnemyProjectile will handle rotation
+        GameObject projectile = Instantiate(projectilePrefab, spawnPos, Quaternion.identity);
         
         // Apply scale
         projectile.transform.localScale = Vector3.one * projectileScale;
@@ -215,17 +215,25 @@ public class Helicopter : MonoBehaviour
         }
     }
     
-    void DestroyHelicopter(bool byPlayer)
+    public void DestroyHelicopter(bool byPlayer)
     {
         if (byPlayer && ScoreManager.Instance != null)
         {
             ScoreManager.Instance.RegisterTankDestroyed(transform.position); // Reuse tank destroyed for now
         }
         
-        // Play explosion effect if ExplosionManager exists
-        if (ExplosionManager.Instance != null)
+        // Play explosion effect
+        if (explosionPrefab != null)
         {
-            ExplosionManager.Instance.PlayExplosionEffect(transform.position);
+            GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
+            // Optional: Destroy explosion after some time
+            Destroy(explosion, 5f);
+        }
+        
+        // Play explosion sound
+        if (explosionSound != null)
+        {
+            AudioSource.PlayClipAtPoint(explosionSound, transform.position);
         }
         
         Debug.Log("Helicopter destroyed by " + (byPlayer ? "player" : "reaching base"));

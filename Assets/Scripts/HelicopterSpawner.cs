@@ -36,8 +36,11 @@ public class HelicopterSpawner : MonoBehaviour
     [SerializeField] private int maxHelicopters = 5;
     
     [Header("Explosion Settings")]
-    [Tooltip("Folder path for helicopter explosion effects")]
-    [SerializeField] private string explosionFolderPath = "Assets/JMO Assets/WarFX/_Effects/Explosions";
+    [Tooltip("Explosion prefab for helicopter destruction")]
+    [SerializeField] private GameObject explosionPrefab;
+    
+    [Tooltip("Explosion sound for helicopter destruction")]
+    [SerializeField] private AudioClip explosionSound;
     
     [Header("Enemy Firing")]
     [Tooltip("Projectile prefab for helicopters to fire at base")]
@@ -154,7 +157,7 @@ public class HelicopterSpawner : MonoBehaviour
         
         // Initialize helicopter with random speed and firing parameters
         float speed = Random.Range(minSpeed, maxSpeed);
-        helicopterScript.Initialize(basePosition, speed, explosionFolderPath, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
+        helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
         
         activeHelicopters.Add(helicopter);
         

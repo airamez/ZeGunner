@@ -38,8 +38,11 @@ public class TankSpawner : MonoBehaviour
     [SerializeField] private int maxTanks = 10;
     
     [Header("Explosion Settings")]
-    [Tooltip("Folder path for tank explosion effects")]
-    [SerializeField] private string explosionFolderPath = "Assets/JMO Assets/WarFX/_Effects/Explosions";
+    [Tooltip("Explosion prefab for tank destruction")]
+    [SerializeField] private GameObject explosionPrefab;
+    
+    [Tooltip("Explosion sound for tank destruction")]
+    [SerializeField] private AudioClip explosionSound;
     
     [Header("Enemy Firing")]
     [Tooltip("Projectile prefab for tanks to fire at base")]
@@ -129,7 +132,7 @@ public class TankSpawner : MonoBehaviour
         }
         
         float speed = Random.Range(minSpeed, maxSpeed);
-        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionFolderPath, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
         
         activeTanks.Add(tank);
     }

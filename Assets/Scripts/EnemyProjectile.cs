@@ -6,7 +6,7 @@ public class EnemyProjectile : MonoBehaviour
     private float speed;
     private Vector3 direction;
     private bool isInitialized = false;
-    private float lifetime = 10f; // Destroy after 10 seconds if no collision
+    private float lifetime = 10f;
     private float spawnTime;
     
     public void Initialize(float projectileDamage, float projectileSpeed, Vector3 moveDirection)
@@ -23,7 +23,12 @@ public class EnemyProjectile : MonoBehaviour
         {
             rb = gameObject.AddComponent<Rigidbody>();
             rb.useGravity = false;
-            rb.isKinematic = false;
+            rb.isKinematic = true;
+        }
+        else
+        {
+            rb.useGravity = false;
+            rb.isKinematic = true;
         }
         
         // Add Collider if missing
@@ -34,8 +39,11 @@ public class EnemyProjectile : MonoBehaviour
             sphereCol.radius = 0.5f;
             sphereCol.isTrigger = true;
         }
+        else
+        {
+            col.isTrigger = true;
+        }
         
-        // Set tag
         gameObject.tag = "EnemyProjectile";
     }
     
@@ -43,10 +51,17 @@ public class EnemyProjectile : MonoBehaviour
     {
         if (!isInitialized) return;
         
-        // Move projectile
+        // Move projectile in straight line toward target
         transform.position += direction * speed * Time.deltaTime;
         
-        // Destroy after lifetime
+        // Rotate to face direction of travel (tip-first)
+        if (direction != Vector3.zero)
+        {
+            // LookRotation makes Z+ point toward direction
+            // Add 90 on X to make projectile tip point toward direction
+            transform.rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90f, 0f, 0f);
+        }
+        
         if (Time.time - spawnTime > lifetime)
         {
             Destroy(gameObject);
@@ -58,13 +73,20 @@ public class EnemyProjectile : MonoBehaviour
         // Check if hit the base
         if (other.gameObject.name.Contains("Base") || other.gameObject.CompareTag("Base"))
         {
-            // Damage the base
             if (ScoreManager.Instance != null)
             {
                 ScoreManager.Instance.DamageBase(damage);
             }
-            
-            Debug.Log("Enemy projectile hit base - Damage: " + damage);
+            Destroy(gameObject);
+            return;
+        }
+        
+        // Destroy on terrain hit
+        if (other.gameObject.CompareTag("Terrain") || 
+            other.gameObject.GetComponent<Terrain>() != null ||
+            other.gameObject.name.Contains("Terrain") ||
+            other.gameObject.name.Contains("Ground"))
+        {
             Destroy(gameObject);
         }
     }
@@ -74,14 +96,15 @@ public class EnemyProjectile : MonoBehaviour
         // Check if hit the base
         if (collision.gameObject.name.Contains("Base") || collision.gameObject.CompareTag("Base"))
         {
-            // Damage the base
             if (ScoreManager.Instance != null)
             {
                 ScoreManager.Instance.DamageBase(damage);
             }
-            
-            Debug.Log("Enemy projectile hit base (collision) - Damage: " + damage);
             Destroy(gameObject);
+            return;
         }
+        
+        // Destroy on any collision
+        Destroy(gameObject);
     }
 }

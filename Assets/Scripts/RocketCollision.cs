@@ -29,19 +29,31 @@ public class RocketCollision : MonoBehaviour
         if (collision.gameObject.CompareTag("Enemy"))
         {
             Debug.Log("Rocket destroyed enemy (direct hit)!");
-            if (ScoreManager.Instance != null)
+            
+            // Let the enemy handle its own destruction (with its configured explosion)
+            Tank tank = collision.gameObject.GetComponent<Tank>();
+            if (tank != null)
             {
-                ScoreManager.Instance.RegisterTankDestroyed(collision.gameObject.transform.position);
+                tank.SendMessage("DestroyTank", true, SendMessageOptions.DontRequireReceiver);
+            }
+            else
+            {
+                Helicopter heli = collision.gameObject.GetComponent<Helicopter>();
+                if (heli != null)
+                {
+                    heli.SendMessage("DestroyHelicopter", true, SendMessageOptions.DontRequireReceiver);
+                }
+                else
+                {
+                    // Fallback: destroy directly if no Tank/Helicopter component
+                    if (ScoreManager.Instance != null)
+                    {
+                        ScoreManager.Instance.RegisterTankDestroyed(collision.gameObject.transform.position);
+                    }
+                    Destroy(collision.gameObject);
+                }
             }
             
-            // Play explosion effect and sound
-            if (ExplosionManager.Instance != null)
-            {
-                ExplosionManager.Instance.PlayExplosionEffect(collision.gameObject.transform.position);
-                ExplosionManager.Instance.PlayExplosionSound(collision.gameObject.transform.position);
-            }
-            
-            Destroy(collision.gameObject);
             Destroy(gameObject);
         }
         else
@@ -53,19 +65,31 @@ public class RocketCollision : MonoBehaviour
                 if (parent.CompareTag("Enemy"))
                 {
                     Debug.Log("Rocket destroyed enemy tank (hit part: " + collision.gameObject.name + ")!");
-                    if (ScoreManager.Instance != null)
+                    
+                    // Let the enemy handle its own destruction (with its configured explosion)
+                    Tank tank = parent.GetComponent<Tank>();
+                    if (tank != null)
                     {
-                        ScoreManager.Instance.RegisterTankDestroyed(parent.position);
+                        tank.SendMessage("DestroyTank", true, SendMessageOptions.DontRequireReceiver);
+                    }
+                    else
+                    {
+                        Helicopter heli = parent.GetComponent<Helicopter>();
+                        if (heli != null)
+                        {
+                            heli.SendMessage("DestroyHelicopter", true, SendMessageOptions.DontRequireReceiver);
+                        }
+                        else
+                        {
+                            // Fallback: destroy directly if no Tank/Helicopter component
+                            if (ScoreManager.Instance != null)
+                            {
+                                ScoreManager.Instance.RegisterTankDestroyed(parent.position);
+                            }
+                            Destroy(parent.gameObject);
+                        }
                     }
                     
-                    // Play explosion effect and sound
-                    if (ExplosionManager.Instance != null)
-                    {
-                        ExplosionManager.Instance.PlayExplosionEffect(parent.position);
-                        ExplosionManager.Instance.PlayExplosionSound(parent.position);
-                    }
-                    
-                    Destroy(parent.gameObject); // Destroy the whole tank
                     Destroy(gameObject);
                     return;
                 }

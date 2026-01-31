@@ -170,12 +170,19 @@ MonoBehaviour:
   zigzagMinInterval: 10
   zigzagIntervalOffset: 15
   maxZigzagAngle: 25
-  spawnDistance: 200
+  spawnDistance: 250
   minSpeed: 2
-  maxSpeed: 10
-  spawnInterval: 1
+  maxSpeed: 5
+  spawnInterval: 5
   maxTanks: 500
-  explosionFolderPath: Assets/JMO Assets/WarFX/_Effects/Explosions
+  explosionPrefab: {fileID: 100002, guid: ac1aa04288fad804ba1cd769f4377aaf, type: 3}
+  explosionSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
+  projectilePrefab: {fileID: 5254963598224360212, guid: 41518750c49d5384eba5ff5f176ee847, type: 3}
+  distanceToFire: 15
+  rateOfFire: 3
+  hitPoints: 2
+  projectileSpeed: 20
+  projectileScale: 0.1
   spawnHeight: 0.1
 --- !u!1 &330585543
 GameObject:
@@ -846,6 +853,62 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!1 &1809158621
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1809158623}
+  - component: {fileID: 1809158622}
+  m_Layer: 0
+  m_Name: GameUISetup
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1809158622
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809158621}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 674c0543d108cc142a8a2135d4684cc3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameUISetup
+  autoSetupOnStart: 1
+  instructionsFile: {fileID: 4900000, guid: 9bea3bfb7334ee04da24aa15f865312c, type: 3}
+  panelColor: {r: 0, g: 0, b: 0, a: 0.85}
+  buttonColor: {r: 0.2, g: 0.6, b: 0.2, a: 1}
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  titleColor: {r: 1, g: 0.8, b: 0.2, a: 1}
+  instructionColor: {r: 0.9, g: 0.9, b: 0.9, a: 1}
+  titleFont: {fileID: 0}
+  bodyFont: {fileID: 0}
+  titleFontSize: 72
+  instructionFontSize: 28
+  scoreFontSize: 24
+--- !u!4 &1809158623
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1809158621}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 1.3033, y: -0.00001, z: -4.42427}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2074464211
 GameObject:
   m_ObjectHideFlags: 0
@@ -877,15 +940,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HelicopterSpawner
   helicopterPrefab: {fileID: -927199367670048503, guid: 1102787bb5eb2874385b8e60f5f342ca, type: 3}
   baseTransform: {fileID: 1595826105}
-  helicopterScale: 0.5
+  helicopterScale: 0.2
   spawnDistance: 250
   minSpawnHeight: 5
   maxSpawnHeight: 100
-  minSpeed: 10
-  maxSpeed: 15
-  spawnInterval: 5
+  minSpeed: 7
+  maxSpeed: 10
+  spawnInterval: 7
   maxHelicopters: 100
-  explosionFolderPath: Assets/JMO Assets/WarFX/_Effects/Explosions
+  explosionPrefab: {fileID: 100006, guid: 2e7e92bc7175b744ea40878dedfa79e4, type: 3}
+  explosionSound: {fileID: 8300000, guid: bbbd451773f5e514d80c78e791d4692e, type: 3}
+  projectilePrefab: {fileID: 5639003199960037019, guid: bc1101b41da57f84ba9cde8e9687a233, type: 3}
+  distanceToFire: 20
+  rateOfFire: 2
+  hitPoints: 1
+  projectileSpeed: 30
+  projectileScale: 0.1
 --- !u!4 &2074464213
 Transform:
   m_ObjectHideFlags: 0
@@ -960,3 +1030,4 @@ SceneRoots:
   - {fileID: 1563003875}
   - {fileID: 2091168401}
   - {fileID: 2074464213}
+  - {fileID: 1809158623}
