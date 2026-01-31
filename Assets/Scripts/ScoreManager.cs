@@ -84,21 +84,35 @@ public class ScoreManager : MonoBehaviour
     
     public void DamageBase(float damage)
     {
-        if (isGameOver) return;
+        Debug.Log("DamageBase called with damage: " + damage + ", current HP: " + baseHP + ", isGameOver: " + isGameOver);
+        
+        if (isGameOver) 
+        {
+            Debug.Log("Already game over, ignoring damage");
+            return;
+        }
         
         baseHP -= damage;
+        Debug.Log("Base HP after damage: " + baseHP);
+        
         if (baseHP <= 0)
         {
             baseHP = 0;
             isGameOver = true;
-            Debug.Log("GAME OVER - Base Destroyed!");
+            Debug.Log("GAME OVER - Base Destroyed! HP reached zero.");
             
             // Show game over screen
             if (GameManager.Instance != null)
             {
+                Debug.Log("Calling GameManager.Instance.ShowGameOver()...");
                 GameManager.Instance.ShowGameOver();
             }
+            else
+            {
+                Debug.LogError("GameManager.Instance is null!");
+            }
         }
+        
         UpdateUI();
     }
     

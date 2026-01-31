@@ -13,9 +13,18 @@ public class GameUISetup : MonoBehaviour
     [SerializeField] private TextAsset instructionsFile;
     
     [Header("Colors")]
-    [SerializeField] private Color panelColor = new Color(0, 0, 0, 0.85f);
+    [SerializeField] private Color panelColor = new Color(0.1f, 0.1f, 0.1f, 0.9f);
     [SerializeField] private Color buttonColor = new Color(0.2f, 0.6f, 0.2f, 1f);
     [SerializeField] private Color textColor = Color.white;
+    [SerializeField] private Color titleColor = new Color(1f, 0.8f, 0.2f);
+    [SerializeField] private Color instructionColor = new Color(0.9f, 0.9f, 0.9f);
+    
+    [Header("Typography")]
+    [SerializeField] private Font titleFont;
+    [SerializeField] private Font bodyFont;
+    [SerializeField] private int titleFontSize = 72;
+    [SerializeField] private int instructionFontSize = 28;
+    [SerializeField] private int scoreFontSize = 24;
     
     private Canvas canvas;
     private GameObject menuPanel;
@@ -142,14 +151,41 @@ public class GameUISetup : MonoBehaviour
     
     void CreateMenuContent(GameObject panel)
     {
-        // Title
-        GameObject titleObj = CreateTextObject("Title", panel.transform, "ZE GUNNER", 72, FontStyles.Bold);
+        // Title with professional styling
+        GameObject titleObj = CreateStyledTextObject("Title", panel.transform, "ZE GUNNER", titleFontSize, FontStyles.Bold, titleColor, TextAlignmentOptions.Center);
         RectTransform titleRect = titleObj.GetComponent<RectTransform>();
         titleRect.anchorMin = new Vector2(0.5f, 0.85f);
         titleRect.anchorMax = new Vector2(0.5f, 0.95f);
         titleRect.sizeDelta = new Vector2(800, 100);
         
-        // Instructions
+        // Add shadow effect to title
+        TextMeshProUGUI titleText = titleObj.GetComponent<TextMeshProUGUI>();
+        titleText.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
+        titleText.outlineColor = Color.black;
+        titleText.outlineWidth = 0.2f;
+        
+        // Instructions container
+        GameObject instructionsContainer = new GameObject("InstructionsContainer");
+        instructionsContainer.transform.SetParent(panel.transform, false);
+        RectTransform containerRect = instructionsContainer.AddComponent<RectTransform>();
+        containerRect.anchorMin = new Vector2(0.5f, 0.25f);
+        containerRect.anchorMax = new Vector2(0.5f, 0.65f);
+        containerRect.sizeDelta = new Vector2(800, 400);
+        containerRect.anchoredPosition = Vector2.zero;
+        
+        // Instructions background panel
+        GameObject instructionsBg = new GameObject("InstructionsBackground");
+        instructionsBg.transform.SetParent(instructionsContainer.transform, false);
+        RectTransform bgRect = instructionsBg.AddComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
+        bgRect.offsetMin = new Vector2(-20, -20);
+        bgRect.offsetMax = new Vector2(20, 20);
+        Image bgImage = instructionsBg.AddComponent<Image>();
+        bgImage.color = new Color(0, 0, 0, 0.3f);
+        bgImage.raycastTarget = false;
+        
+        // Instructions text (left-aligned)
         string instructions = "- Move the turret using the mouse\n" +
                              "- Fire with the mouse left button\n" +
                              "- Move the Turret up and down using W and S keys\n" +
@@ -162,56 +198,64 @@ public class GameUISetup : MonoBehaviour
             instructions = instructionsFile.text;
         }
         
-        GameObject instructionsObj = CreateTextObject("Instructions", panel.transform, instructions, 28, FontStyles.Normal);
+        GameObject instructionsObj = CreateStyledTextObject("Instructions", instructionsContainer.transform, instructions, instructionFontSize, FontStyles.Normal, instructionColor, TextAlignmentOptions.TopLeft);
         RectTransform instrRect = instructionsObj.GetComponent<RectTransform>();
-        instrRect.anchorMin = new Vector2(0.5f, 0.35f);
-        instrRect.anchorMax = new Vector2(0.5f, 0.75f);
-        instrRect.sizeDelta = new Vector2(700, 400);
+        instrRect.anchorMin = new Vector2(0, 0);
+        instrRect.anchorMax = new Vector2(1, 1);
+        instrRect.offsetMin = new Vector2(20, 20);
+        instrRect.offsetMax = new Vector2(-20, -20);
         
-        // "Press Any Key to Start" message
-        GameObject startMsgObj = CreateTextObject("StartMessage", panel.transform, "Press Any Key to Start", 36, FontStyles.Bold);
+        // Add styling to instructions
+        TextMeshProUGUI instrText = instructionsObj.GetComponent<TextMeshProUGUI>();
+        instrText.lineSpacing = 1.2f;
+        instrText.outlineColor = Color.black;
+        instrText.outlineWidth = 0.1f;
+        
+        // "Press Any Key to Start" message with animation
+        GameObject startMsgObj = CreateAnimatedTextObject("StartMessage", panel.transform, "Press Any Key to Start", 36, FontStyles.Bold, new Color(1f, 1f, 0.5f, 1f));
         RectTransform msgRect = startMsgObj.GetComponent<RectTransform>();
-        msgRect.anchorMin = new Vector2(0.5f, 0.15f);
-        msgRect.anchorMax = new Vector2(0.5f, 0.25f);
+        msgRect.anchorMin = new Vector2(0.5f, 0.08f);
+        msgRect.anchorMax = new Vector2(0.5f, 0.18f);
         msgRect.sizeDelta = new Vector2(600, 80);
         
-        // Make it pulse/flash
-        TextMeshProUGUI msgText = startMsgObj.GetComponent<TextMeshProUGUI>();
-        msgText.color = new Color(1f, 1f, 0.5f, 1f); // Yellow color
-        
-        Debug.Log("Created Start Message: Press Any Key to Start");
+        Debug.Log("Created professional menu with styled instructions");
     }
     
     void CreateGameOverContent(GameObject panel)
     {
-        // Game Over Title
-        GameObject titleObj = CreateTextObject("GameOverTitle", panel.transform, "GAME OVER", 72, FontStyles.Bold);
+        // Game Over Title with professional styling
+        GameObject titleObj = CreateStyledTextObject("GameOverTitle", panel.transform, "GAME OVER", titleFontSize, FontStyles.Bold, Color.red, TextAlignmentOptions.Center);
         RectTransform titleRect = titleObj.GetComponent<RectTransform>();
-        titleRect.anchorMin = new Vector2(0.5f, 0.6f);
-        titleRect.anchorMax = new Vector2(0.5f, 0.8f);
+        titleRect.anchorMin = new Vector2(0.5f, 0.65f);
+        titleRect.anchorMax = new Vector2(0.5f, 0.85f);
         titleRect.sizeDelta = new Vector2(800, 150);
-        TextMeshProUGUI titleText = titleObj.GetComponent<TextMeshProUGUI>();
-        titleText.color = Color.red;
         
-        // Subtitle
-        GameObject subtitleObj = CreateTextObject("Subtitle", panel.transform, "Your base was destroyed!", 36, FontStyles.Normal);
+        // Add shadow effect to title
+        TextMeshProUGUI titleText = titleObj.GetComponent<TextMeshProUGUI>();
+        titleText.fontStyle = FontStyles.Bold | FontStyles.UpperCase;
+        titleText.outlineColor = Color.black;
+        titleText.outlineWidth = 0.3f;
+        
+        // Subtitle with styling
+        GameObject subtitleObj = CreateStyledTextObject("Subtitle", panel.transform, "Your base was destroyed!", 36, FontStyles.Normal, new Color(1f, 0.8f, 0.8f), TextAlignmentOptions.Center);
         RectTransform subRect = subtitleObj.GetComponent<RectTransform>();
         subRect.anchorMin = new Vector2(0.5f, 0.45f);
         subRect.anchorMax = new Vector2(0.5f, 0.55f);
         subRect.sizeDelta = new Vector2(600, 80);
         
-        // "Press Any Key to Restart" message
-        GameObject restartMsgObj = CreateTextObject("RestartMessage", panel.transform, "Press Any Key to Restart", 36, FontStyles.Bold);
+        // Add styling to subtitle
+        TextMeshProUGUI subtitleText = subtitleObj.GetComponent<TextMeshProUGUI>();
+        subtitleText.outlineColor = Color.black;
+        subtitleText.outlineWidth = 0.15f;
+        
+        // "Press Any Key to Restart" message with animation
+        GameObject restartMsgObj = CreateAnimatedTextObject("RestartMessage", panel.transform, "Press Any Key", 36, FontStyles.Bold, new Color(1f, 1f, 0.5f, 1f));
         RectTransform msgRect = restartMsgObj.GetComponent<RectTransform>();
-        msgRect.anchorMin = new Vector2(0.5f, 0.2f);
+        msgRect.anchorMin = new Vector2(0.5f, 0.25f);
         msgRect.anchorMax = new Vector2(0.5f, 0.35f);
         msgRect.sizeDelta = new Vector2(600, 80);
         
-        // Make it pulse/flash
-        TextMeshProUGUI msgText = restartMsgObj.GetComponent<TextMeshProUGUI>();
-        msgText.color = new Color(1f, 1f, 0.5f, 1f); // Yellow color
-        
-        Debug.Log("Created Restart Message: Press Any Key to Restart");
+        Debug.Log("Created professional game over screen");
     }
     
     GameObject CreateGameUI(Transform parent)
@@ -225,8 +269,59 @@ public class GameUISetup : MonoBehaviour
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
         
-        // The ScoreManager already has its own UI text, so this is just a container
-        // You can add additional game UI elements here if needed
+        // Create professional score display panel
+        GameObject scorePanel = new GameObject("ScorePanel");
+        scorePanel.transform.SetParent(gameUIObj.transform, false);
+        
+        RectTransform scorePanelRect = scorePanel.AddComponent<RectTransform>();
+        scorePanelRect.anchorMin = new Vector2(0, 1); // Top-left
+        scorePanelRect.anchorMax = new Vector2(0, 1);
+        scorePanelRect.sizeDelta = new Vector2(400, 200);
+        scorePanelRect.anchoredPosition = new Vector2(20, -20);
+        
+        // Score background with styling
+        Image scoreBg = scorePanel.AddComponent<Image>();
+        scoreBg.color = new Color(0, 0, 0, 0.7f);
+        scoreBg.raycastTarget = false;
+        
+        // Add border effect
+        GameObject scoreBorder = new GameObject("ScoreBorder");
+        scoreBorder.transform.SetParent(scorePanel.transform, false);
+        RectTransform borderRect = scoreBorder.AddComponent<RectTransform>();
+        borderRect.anchorMin = Vector2.zero;
+        borderRect.anchorMax = Vector2.one;
+        borderRect.offsetMin = new Vector2(-2, -2);
+        borderRect.offsetMax = new Vector2(2, 2);
+        Image borderImg = scoreBorder.AddComponent<Image>();
+        borderImg.color = new Color(1f, 0.8f, 0.2f, 0.5f);
+        borderImg.raycastTarget = false;
+        
+        // Create score text object for ScoreManager to use
+        GameObject scoreTextObj = CreateStyledTextObject("ScoreText", scorePanel.transform, "", scoreFontSize, FontStyles.Bold, Color.white, TextAlignmentOptions.TopLeft);
+        RectTransform scoreTextRect = scoreTextObj.GetComponent<RectTransform>();
+        scoreTextRect.anchorMin = new Vector2(0, 0);
+        scoreTextRect.anchorMax = new Vector2(1, 1);
+        scoreTextRect.offsetMin = new Vector2(10, 10);
+        scoreTextRect.offsetMax = new Vector2(-10, -10);
+        
+        // Add styling to score text
+        TextMeshProUGUI scoreText = scoreTextObj.GetComponent<TextMeshProUGUI>();
+        scoreText.lineSpacing = 1.3f;
+        scoreText.outlineColor = Color.black;
+        scoreText.outlineWidth = 0.15f;
+        
+        // Find ScoreManager and assign the text object
+        ScoreManager scoreManager = FindAnyObjectByType<ScoreManager>();
+        if (scoreManager != null)
+        {
+            // Use reflection to set the private scoreText field
+            var scoreTextField = typeof(ScoreManager).GetField("scoreText", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+            if (scoreTextField != null)
+            {
+                scoreTextField.SetValue(scoreManager, scoreText);
+                Debug.Log("Assigned professional score text to ScoreManager");
+            }
+        }
         
         return gameUIObj;
     }
@@ -246,6 +341,36 @@ public class GameUISetup : MonoBehaviour
         tmp.color = textColor;
         tmp.alignment = TextAlignmentOptions.Center;
         tmp.raycastTarget = false; // Don't block button clicks
+        
+        return textObj;
+    }
+    
+    GameObject CreateStyledTextObject(string name, Transform parent, string text, int fontSize, FontStyles style, Color color, TextAlignmentOptions alignment)
+    {
+        GameObject textObj = new GameObject(name);
+        textObj.transform.SetParent(parent, false);
+        
+        RectTransform rect = textObj.AddComponent<RectTransform>();
+        rect.anchoredPosition = Vector2.zero;
+        
+        TextMeshProUGUI tmp = textObj.AddComponent<TextMeshProUGUI>();
+        tmp.text = text;
+        tmp.fontSize = fontSize;
+        tmp.fontStyle = style;
+        tmp.color = color;
+        tmp.alignment = alignment;
+        tmp.raycastTarget = false;
+        
+        return textObj;
+    }
+    
+    GameObject CreateAnimatedTextObject(string name, Transform parent, string text, int fontSize, FontStyles style, Color color)
+    {
+        GameObject textObj = CreateStyledTextObject(name, parent, text, fontSize, style, color, TextAlignmentOptions.Center);
+        
+        // Add pulsing animation component
+        TextAnimator animator = textObj.AddComponent<TextAnimator>();
+        animator.Initialize(color);
         
         return textObj;
     }
