@@ -27,10 +27,10 @@ public class BaseZone : MonoBehaviour
         
         if (other.CompareTag("Enemy"))
         {
-            Debug.Log("Tank reached base! Registering with ScoreManager.");
+            Debug.Log("Enemy reached base! Damaging base.");
             if (ScoreManager.Instance != null)
             {
-                ScoreManager.Instance.RegisterTankReachedBase();
+                ScoreManager.Instance.DamageBase(20f); // Direct contact does 20 damage
             }
             Destroy(other.gameObject);
         }
@@ -42,10 +42,10 @@ public class BaseZone : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Enemy"))
         {
-            Debug.Log("Tank reached base via collision! Registering with ScoreManager.");
+            Debug.Log("Enemy reached base via collision! Damaging base.");
             if (ScoreManager.Instance != null)
             {
-                ScoreManager.Instance.RegisterTankReachedBase();
+                ScoreManager.Instance.DamageBase(20f); // Direct contact does 20 damage
             }
             Destroy(collision.gameObject);
         }

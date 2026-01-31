@@ -41,6 +41,25 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Folder path for tank explosion effects")]
     [SerializeField] private string explosionFolderPath = "Assets/JMO Assets/WarFX/_Effects/Explosions";
     
+    [Header("Enemy Firing")]
+    [Tooltip("Projectile prefab for tanks to fire at base")]
+    [SerializeField] private GameObject projectilePrefab;
+    
+    [Tooltip("Distance from base where tanks stop and start firing")]
+    [SerializeField] private float distanceToFire = 15f;
+    
+    [Tooltip("Time between shots in seconds")]
+    [SerializeField] private float rateOfFire = 2f;
+    
+    [Tooltip("Damage dealt to base HP per projectile hit")]
+    [SerializeField] private float hitPoints = 5f;
+    
+    [Tooltip("Speed of fired projectiles")]
+    [SerializeField] private float projectileSpeed = 20f;
+    
+    [Tooltip("Scale of fired projectiles")]
+    [SerializeField] private float projectileScale = 0.1f;
+    
     [SerializeField] private float spawnHeight = 0.5f;
     
     private float nextSpawnTime = 0f;
@@ -55,6 +74,12 @@ public class TankSpawner : MonoBehaviour
     
     void Update()
     {
+        // Only spawn when game is playing
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying())
+        {
+            return;
+        }
+        
         activeTanks.RemoveAll(tank => tank == null);
         
         if (Time.time >= nextSpawnTime && activeTanks.Count < maxTanks)
@@ -104,7 +129,7 @@ public class TankSpawner : MonoBehaviour
         }
         
         float speed = Random.Range(minSpeed, maxSpeed);
-        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionFolderPath);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionFolderPath, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
         
         activeTanks.Add(tank);
     }

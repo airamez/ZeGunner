@@ -12,7 +12,8 @@ public class ScoreManager : MonoBehaviour
     private int shotsFired = 0;
     private int shotsHit = 0;
     private float longestDistance = 0f;
-    private int tanksReachedBase = 0;
+    private float baseHP = 100f;
+    private bool isGameOver = false;
     
     private Transform baseTransform;
     private Transform cameraTransform;
@@ -81,10 +82,29 @@ public class ScoreManager : MonoBehaviour
         UpdateUI();
     }
     
-    public void RegisterTankReachedBase()
+    public void DamageBase(float damage)
     {
-        tanksReachedBase++;
+        if (isGameOver) return;
+        
+        baseHP -= damage;
+        if (baseHP <= 0)
+        {
+            baseHP = 0;
+            isGameOver = true;
+            Debug.Log("GAME OVER - Base Destroyed!");
+            
+            // Show game over screen
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.ShowGameOver();
+            }
+        }
         UpdateUI();
+    }
+    
+    public bool IsGameOver()
+    {
+        return isGameOver;
     }
     
     void Update()
@@ -106,10 +126,11 @@ public class ScoreManager : MonoBehaviour
             turretElevation = Mathf.Min(cameraTransform.position.y, 50f);
         }
         
+        string gameOverText = isGameOver ? "\n*** GAME OVER ***" : "";
         scoreText.text = $"Enemies Destroyed: {tanksDestroyed}\n" +
                          $"Longest Kill: {longestDistance:F1}\n" +
                          $"Accuracy: {accuracy:F1}%\n" +
                          $"Turret Elevation: {turretElevation:F1}\n" +
-                         $"Enemies Reached Base: {tanksReachedBase}\n";
+                         $"Base HP: {baseHP:F0}{gameOverText}";
     }
 }

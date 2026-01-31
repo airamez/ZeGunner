@@ -5,8 +5,6 @@ public class Helicopter : MonoBehaviour
     private Vector3 targetPosition;
     private float moveSpeed;
     private bool isInitialized = false;
-    private float reachedBaseDistance = 5f;
-    private bool hasReachedBase = false;
     
     [Header("Rotor Animation")]
     [SerializeField] private float topRotorSpeed = 1000f;
@@ -16,11 +14,30 @@ public class Helicopter : MonoBehaviour
     private Transform tailRotor;
     private string explosionFolderPath;
     
-    public void Initialize(Vector3 target, float speed, string explosionPath)
+    // Firing system
+    private GameObject projectilePrefab;
+    private float distanceToFire;
+    private float rateOfFire;
+    private float projectileDamage;
+    private float projectileSpeed;
+    private float projectileScale;
+    private bool isFiring = false;
+    private float nextFireTime;
+    
+    public void Initialize(Vector3 target, float speed, string explosionPath, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
     {
         targetPosition = target;
         moveSpeed = speed;
         explosionFolderPath = explosionPath;
+        
+        // Firing parameters
+        projectilePrefab = projectile;
+        distanceToFire = fireDist;
+        rateOfFire = fireRate;
+        projectileDamage = damage;
+        projectileSpeed = projSpeed;
+        projectileScale = projScale;
+        
         isInitialized = true;
         
         // Find rotor components
@@ -59,8 +76,44 @@ public class Helicopter : MonoBehaviour
     {
         if (!isInitialized) return;
         
-        // Animate rotors
+        // Animate rotors (always spin)
         AnimateRotors();
+        
+        // Check distance to base
+        float distanceToBase = Vector3.Distance(transform.position, targetPosition);
+        
+        // Check if helicopter should stop and fire at base
+        if (!isFiring && distanceToBase <= distanceToFire)
+        {
+            isFiring = true;
+            nextFireTime = Time.time; // Fire immediately when entering range
+            Debug.Log("Helicopter in firing range at distance: " + distanceToBase);
+            
+            // Face the base
+            Vector3 toBase = (targetPosition - transform.position).normalized;
+            if (toBase != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(toBase);
+            }
+        }
+        
+        // Fire at base when in range (hover in place)
+        if (isFiring)
+        {
+            // Keep facing the base
+            Vector3 toBase = (targetPosition - transform.position).normalized;
+            if (toBase != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(toBase);
+            }
+            
+            if (Time.time >= nextFireTime)
+            {
+                FireAtBase();
+                nextFireTime = Time.time + rateOfFire;
+            }
+            return; // Don't move while firing
+        }
         
         // Move toward the base
         Vector3 directionToBase = (targetPosition - transform.position).normalized;
@@ -73,21 +126,42 @@ public class Helicopter : MonoBehaviour
             // Rotate helicopter to face movement direction
             transform.rotation = Quaternion.LookRotation(directionToBase);
         }
-        
-        // Check if helicopter reached base
-        if (!hasReachedBase)
+    }
+    
+    void FireAtBase()
+    {
+        if (projectilePrefab == null)
         {
-            float distanceToBase = Vector3.Distance(transform.position, targetPosition);
-            if (distanceToBase <= reachedBaseDistance)
+            // No projectile, just damage base directly
+            if (ScoreManager.Instance != null)
             {
-                hasReachedBase = true;
-                if (ScoreManager.Instance != null)
-                {
-                    ScoreManager.Instance.RegisterTankReachedBase(); // Reuse tank reached base for now
-                }
-                DestroyHelicopter(false); // False = not by player
+                ScoreManager.Instance.DamageBase(projectileDamage);
             }
+            Debug.Log("Helicopter fired at base (no projectile) - Damage: " + projectileDamage);
+            return;
         }
+        
+        // Spawn projectile
+        Vector3 spawnPos = transform.position + Vector3.down * 1f; // Spawn below helicopter
+        Vector3 direction = (targetPosition - spawnPos).normalized;
+        
+        // Create projectile with correct orientation (nose pointing toward target)
+        // Rotate 90 degrees on X axis so the rocket points forward instead of up
+        Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90f, 0f, 0f);
+        GameObject projectile = Instantiate(projectilePrefab, spawnPos, rotation);
+        
+        // Apply scale
+        projectile.transform.localScale = Vector3.one * projectileScale;
+        
+        // Add EnemyProjectile component to handle damage
+        EnemyProjectile enemyProj = projectile.GetComponent<EnemyProjectile>();
+        if (enemyProj == null)
+        {
+            enemyProj = projectile.AddComponent<EnemyProjectile>();
+        }
+        enemyProj.Initialize(projectileDamage, projectileSpeed, direction);
+        
+        Debug.Log("Helicopter fired projectile at base");
     }
     
     void AnimateRotors()

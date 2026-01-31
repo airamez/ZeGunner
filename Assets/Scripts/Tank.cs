@@ -7,8 +7,6 @@ public class Tank : MonoBehaviour
     private float minSpeed;
     private float maxSpeed;
     private bool isInitialized = false;
-    private float reachedBaseDistance = 2f;
-    private bool hasReachedBase = false;
     
     [Header("Zigzag Movement")]
     [SerializeField] private float zigzagMinInterval = 2f; // Minimum time before direction change
@@ -23,7 +21,17 @@ public class Tank : MonoBehaviour
     private bool lastZigzagWasLeft = false; // Track last direction for alternating
     private string explosionFolderPath;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, string explosionPath)
+    // Firing system
+    private GameObject projectilePrefab;
+    private float distanceToFire;
+    private float rateOfFire;
+    private float projectileDamage;
+    private float projectileSpeed;
+    private float projectileScale;
+    private bool isFiring = false;
+    private float nextFireTime;
+    
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, string explosionPath, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -34,6 +42,15 @@ public class Tank : MonoBehaviour
         zigzagIntervalOffset = intervalOffset;
         maxZigzagAngle = maxAngle;
         explosionFolderPath = explosionPath;
+        
+        // Firing parameters
+        projectilePrefab = projectile;
+        distanceToFire = fireDist;
+        rateOfFire = fireRate;
+        projectileDamage = damage;
+        projectileSpeed = projSpeed;
+        projectileScale = projScale;
+        
         isInitialized = true;
         
         // Initialize zigzag movement
@@ -62,6 +79,34 @@ public class Tank : MonoBehaviour
         
         // Check distance to base
         float distanceToBase = Vector3.Distance(transform.position, targetPosition);
+        
+        // Check if tank should stop and fire at base
+        if (!isFiring && distanceToBase <= distanceToFire)
+        {
+            isFiring = true;
+            nextFireTime = Time.time; // Fire immediately when entering range
+            Debug.Log("Tank in firing range at distance: " + distanceToBase);
+            
+            // Face the base
+            Vector3 toBase = (targetPosition - transform.position).normalized;
+            toBase.y = 0;
+            if (toBase != Vector3.zero)
+            {
+                transform.rotation = Quaternion.LookRotation(toBase);
+            }
+        }
+        
+        // Fire at base when in range (don't move)
+        if (isFiring)
+        {
+            if (Time.time >= nextFireTime)
+            {
+                FireAtBase();
+                nextFireTime = Time.time + rateOfFire;
+            }
+            return; // Don't move while firing
+        }
+        
         bool shouldMoveStraight = distanceToBase <= straightLineDistance;
         
         Vector3 movementDirection;
@@ -107,21 +152,42 @@ public class Tank : MonoBehaviour
         {
             transform.rotation = Quaternion.LookRotation(movementDirection);
         }
-        
-        // Check if tank reached base
-        if (!hasReachedBase)
+    }
+    
+    void FireAtBase()
+    {
+        if (projectilePrefab == null)
         {
-            if (distanceToBase <= reachedBaseDistance)
+            // No projectile, just damage base directly
+            if (ScoreManager.Instance != null)
             {
-                hasReachedBase = true;
-                if (ScoreManager.Instance != null)
-                {
-                    ScoreManager.Instance.RegisterTankReachedBase();
-                    Debug.Log("Tank reached base at distance: " + distanceToBase);
-                }
-                Destroy(gameObject);
+                ScoreManager.Instance.DamageBase(projectileDamage);
             }
+            Debug.Log("Tank fired at base (no projectile) - Damage: " + projectileDamage);
+            return;
         }
+        
+        // Spawn projectile
+        Vector3 spawnPos = transform.position + Vector3.up * 1f; // Spawn slightly above tank
+        Vector3 direction = (targetPosition - spawnPos).normalized;
+        
+        // Create projectile with correct orientation (nose pointing toward target)
+        // Rotate 90 degrees on X axis so the rocket points forward instead of up
+        Quaternion rotation = Quaternion.LookRotation(direction) * Quaternion.Euler(90f, 0f, 0f);
+        GameObject projectile = Instantiate(projectilePrefab, spawnPos, rotation);
+        
+        // Apply scale
+        projectile.transform.localScale = Vector3.one * projectileScale;
+        
+        // Add EnemyProjectile component to handle damage
+        EnemyProjectile enemyProj = projectile.GetComponent<EnemyProjectile>();
+        if (enemyProj == null)
+        {
+            enemyProj = projectile.AddComponent<EnemyProjectile>();
+        }
+        enemyProj.Initialize(projectileDamage, projectileSpeed, direction);
+        
+        Debug.Log("Tank fired projectile at base");
     }
     
     void UpdateZigzagDirection()

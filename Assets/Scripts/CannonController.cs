@@ -41,6 +41,12 @@ public class CannonController : MonoBehaviour
     
     void Update()
     {
+        // Only allow controls when game is playing
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying())
+        {
+            return;
+        }
+        
         HandleVerticalMovement();
         
         if (mouse != null && mouse.leftButton.isPressed && Time.time >= nextFireTime)

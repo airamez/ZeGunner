@@ -39,6 +39,25 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Folder path for helicopter explosion effects")]
     [SerializeField] private string explosionFolderPath = "Assets/JMO Assets/WarFX/_Effects/Explosions";
     
+    [Header("Enemy Firing")]
+    [Tooltip("Projectile prefab for helicopters to fire at base")]
+    [SerializeField] private GameObject projectilePrefab;
+    
+    [Tooltip("Distance from base where helicopters stop and start firing")]
+    [SerializeField] private float distanceToFire = 25f;
+    
+    [Tooltip("Time between shots in seconds")]
+    [SerializeField] private float rateOfFire = 1.5f;
+    
+    [Tooltip("Damage dealt to base HP per projectile hit")]
+    [SerializeField] private float hitPoints = 10f;
+    
+    [Tooltip("Speed of fired projectiles")]
+    [SerializeField] private float projectileSpeed = 30f;
+    
+    [Tooltip("Scale of fired projectiles")]
+    [SerializeField] private float projectileScale = 0.1f;
+    
     private float nextSpawnTime = 0f;
     private List<GameObject> activeHelicopters = new List<GameObject>();
     
@@ -51,6 +70,12 @@ public class HelicopterSpawner : MonoBehaviour
     
     void Update()
     {
+        // Only spawn when game is playing
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying())
+        {
+            return;
+        }
+        
         activeHelicopters.RemoveAll(helicopter => helicopter == null);
         
         if (Time.time >= nextSpawnTime && activeHelicopters.Count < maxHelicopters)
@@ -127,9 +152,9 @@ public class HelicopterSpawner : MonoBehaviour
             helicopterScript = helicopter.AddComponent<Helicopter>();
         }
         
-        // Initialize helicopter with random speed
+        // Initialize helicopter with random speed and firing parameters
         float speed = Random.Range(minSpeed, maxSpeed);
-        helicopterScript.Initialize(basePosition, speed, explosionFolderPath);
+        helicopterScript.Initialize(basePosition, speed, explosionFolderPath, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
         
         activeHelicopters.Add(helicopter);
         
