@@ -22,12 +22,12 @@ public class CameraController : MonoBehaviour
         
         mouse = Mouse.current;
         
-        Vector3 currentRotation = transform.eulerAngles;
-        rotationX = currentRotation.x;
-        rotationY = currentRotation.y;
+        // Force horizontal initial rotation (looking at horizon)
+        rotationX = 0f;  // No vertical angle (horizontal)
+        rotationY = 0f;  // No horizontal rotation (forward)
         
-        if (rotationX > 180f)
-            rotationX -= 360f;
+        // Apply the initial rotation immediately
+        transform.rotation = Quaternion.Euler(rotationX, rotationY, 0f);
     }
     
     void Update()
