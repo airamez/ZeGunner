@@ -5,11 +5,13 @@ public class RangeIndicator : MonoBehaviour
 {
     [Header("Range Indicator Settings")]
     [SerializeField] private bool showIndicators = true;
-    [SerializeField] private Color tankRangeColor = new Color(1f, 0.5f, 0f, 0.3f); // Orange
-    [SerializeField] private Color helicopterRangeColor = new Color(1f, 0.5f, 0f, 0.3f); // Orange
+    [SerializeField] private Color tankRangeColor = new Color(1f, 0.3f, 0f, 0.4f); // Red-orange
+    [SerializeField] private Color helicopterRangeColor = new Color(1f, 0.7f, 0f, 0.3f); // Yellow-orange
     [SerializeField] private int circleSegments = 64;
-    [SerializeField] private float lineWidth = 0.1f;
+    [SerializeField] private float tankLineWidth = 0.15f;
+    [SerializeField] private float helicopterLineWidth = 0.1f;
     [SerializeField] private float heightAboveGround = 0.1f;
+    [SerializeField] private float radiusReduction = 10f; // Reduce diameter by 10 units
     
     private GameObject tankRangeCircle;
     private GameObject helicopterRangeCircle;
@@ -30,8 +32,8 @@ public class RangeIndicator : MonoBehaviour
         
         tankLineRenderer = tankRangeCircle.AddComponent<LineRenderer>();
         tankLineRenderer.material = CreateCircleMaterial(tankRangeColor);
-        tankLineRenderer.startWidth = lineWidth;
-        tankLineRenderer.endWidth = lineWidth;
+        tankLineRenderer.startWidth = tankLineWidth;
+        tankLineRenderer.endWidth = tankLineWidth;
         tankLineRenderer.loop = true;
         tankLineRenderer.useWorldSpace = false;
         
@@ -41,8 +43,8 @@ public class RangeIndicator : MonoBehaviour
         
         helicopterLineRenderer = helicopterRangeCircle.AddComponent<LineRenderer>();
         helicopterLineRenderer.material = CreateCircleMaterial(helicopterRangeColor);
-        helicopterLineRenderer.startWidth = lineWidth;
-        helicopterLineRenderer.endWidth = lineWidth;
+        helicopterLineRenderer.startWidth = helicopterLineWidth;
+        helicopterLineRenderer.endWidth = helicopterLineWidth;
         helicopterLineRenderer.loop = true;
         helicopterLineRenderer.useWorldSpace = false;
     }
@@ -62,13 +64,13 @@ public class RangeIndicator : MonoBehaviour
         
         if (tankSpawner != null && tankLineRenderer != null)
         {
-            float tankRange = tankSpawner.DistanceToFire;
+            float tankRange = tankSpawner.DistanceToFire - radiusReduction;
             DrawCircle(tankLineRenderer, tankRange);
         }
         
         if (helicopterSpawner != null && helicopterLineRenderer != null)
         {
-            float helicopterRange = helicopterSpawner.DistanceToFire;
+            float helicopterRange = helicopterSpawner.DistanceToFire - radiusReduction;
             DrawCircle(helicopterLineRenderer, helicopterRange);
         }
     }

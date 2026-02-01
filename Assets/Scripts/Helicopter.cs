@@ -14,8 +14,7 @@ public class Helicopter : MonoBehaviour
     private Transform tailRotor;
     private GameObject explosionPrefab;
     private AudioClip explosionSound;
-    
-    // Firing system
+    private AudioClip firingSound;
     private GameObject projectilePrefab;
     private float distanceToFire;
     private float rateOfFire;
@@ -26,12 +25,13 @@ public class Helicopter : MonoBehaviour
     private float nextFireTime;
     private bool isDestroyed = false;
     
-    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
+    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound)
     {
         targetPosition = target;
         moveSpeed = speed;
         explosionPrefab = explosion;
         explosionSound = sound;
+        firingSound = fireSound;
         
         // Firing parameters
         projectilePrefab = projectile;
@@ -137,6 +137,12 @@ public class Helicopter : MonoBehaviour
     
     void FireAtBase()
     {
+        // Play firing sound
+        if (firingSound != null)
+        {
+            AudioSource.PlayClipAtPoint(firingSound, transform.position);
+        }
+        
         if (projectilePrefab == null)
         {
             // No projectile, just damage base directly

@@ -47,6 +47,7 @@ public class TankSpawner : MonoBehaviour
     public float BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     public float DistanceToFire => distanceToFire;
+    public AudioClip FiringSound => firingSound;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for tank destruction")]
@@ -61,6 +62,9 @@ public class TankSpawner : MonoBehaviour
     
     [Tooltip("Distance from base where tanks stop and start firing")]
     [SerializeField] private float distanceToFire = 15f;
+    
+    [Tooltip("Sound played when tank fires at base")]
+    [SerializeField] private AudioClip firingSound;
     
     [Tooltip("Time between shots in seconds")]
     [SerializeField] private float rateOfFire = 2f;
@@ -165,7 +169,7 @@ public class TankSpawner : MonoBehaviour
         float maxSpeed = baseMaxSpeed * speedMultiplier;
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound);
         
         activeTanks.Add(tank);
         

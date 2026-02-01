@@ -45,6 +45,7 @@ public class HelicopterSpawner : MonoBehaviour
     public float BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     public float DistanceToFire => distanceToFire;
+    public AudioClip FiringSound => firingSound;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for helicopter destruction")]
@@ -59,6 +60,9 @@ public class HelicopterSpawner : MonoBehaviour
     
     [Tooltip("Distance from base where helicopters stop and start firing")]
     [SerializeField] private float distanceToFire = 25f;
+    
+    [Tooltip("Sound played when helicopter fires at base")]
+    [SerializeField] private AudioClip firingSound;
     
     [Tooltip("Time between shots in seconds")]
     [SerializeField] private float rateOfFire = 1.5f;
@@ -204,7 +208,7 @@ public class HelicopterSpawner : MonoBehaviour
         float maxSpeed = baseMaxSpeed * speedMultiplier;
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale);
+        helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound);
         
         activeHelicopters.Add(helicopter);
         

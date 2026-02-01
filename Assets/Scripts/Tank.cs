@@ -32,9 +32,10 @@ public class Tank : MonoBehaviour
     private Transform barrelTransform;
     private GameObject explosionPrefab;
     private AudioClip explosionSound;
+    private AudioClip firingSound;
     private bool isDestroyed = false;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -46,6 +47,7 @@ public class Tank : MonoBehaviour
         maxZigzagAngle = maxAngle;
         explosionPrefab = explosion;
         explosionSound = sound;
+        firingSound = fireSound;
         
         // Firing parameters
         projectilePrefab = projectile;
@@ -200,6 +202,12 @@ public class Tank : MonoBehaviour
     
     void FireAtBase()
     {
+        // Play firing sound
+        if (firingSound != null)
+        {
+            AudioSource.PlayClipAtPoint(firingSound, transform.position);
+        }
+        
         if (projectilePrefab == null)
         {
             // No projectile, just damage base directly
