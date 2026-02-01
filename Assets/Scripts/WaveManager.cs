@@ -91,6 +91,15 @@ public class WaveManager : MonoBehaviour
     
     public void StartNextWave()
     {
+        // Resume time when starting next wave
+        Time.timeScale = 1f;
+        
+        // Resume the game timer
+        if (GameTimer.Instance != null)
+        {
+            GameTimer.Instance.ResumeTimer();
+        }
+        
         // Find spawners if not already found
         if (tankSpawner == null)
             tankSpawner = FindAnyObjectByType<TankSpawner>();
@@ -180,6 +189,15 @@ public class WaveManager : MonoBehaviour
     
     void ShowWaveCompleteScreen(float waveDuration)
     {
+        // Stop time when showing wave complete screen
+        Time.timeScale = 0f;
+        
+        // Pause the game timer
+        if (GameTimer.Instance != null)
+        {
+            GameTimer.Instance.PauseTimer();
+        }
+        
         if (waveCompletePanel != null)
         {
             waveCompletePanel.SetActive(true);
