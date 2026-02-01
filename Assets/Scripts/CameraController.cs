@@ -15,6 +15,16 @@ public class CameraController : MonoBehaviour
     private float rotationY = 0f;
     private Mouse mouse;
     
+    void Awake()
+    {
+        // Force horizontal initial rotation (looking at horizon)
+        rotationX = 0f;  // No vertical angle (horizontal)
+        rotationY = 0f;  // No horizontal rotation (forward)
+        
+        // Apply the initial rotation immediately in Awake
+        transform.rotation = Quaternion.Euler(rotationX, rotationY, 0f);
+    }
+    
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
