@@ -134,14 +134,31 @@ public class HelicopterSpawner : MonoBehaviour
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         
-        // Calculate current max spawn distance based on wave
+        // Calculate current max spawn distance using compound growth
         int currentWave = WaveManager.Instance != null ? WaveManager.Instance.GetCurrentWave() : 1;
-        float waveMaxDistanceIncrease = initialMaxSpawnDistance * (spawnDistanceIncrement / 100f) * (currentWave - 1);
-        float currentMaxSpawnDistance = Mathf.Min(initialMaxSpawnDistance + waveMaxDistanceIncrease, maxSpawnDistance);
+        float currentMaxSpawnDistance = initialMaxSpawnDistance;
+        
+        // Apply compound growth: each wave uses previous wave's distance as base
+        for (int wave = 2; wave <= currentWave; wave++)
+        {
+            float increase = currentMaxSpawnDistance * (spawnDistanceIncrement / 100f);
+            currentMaxSpawnDistance = Mathf.Min(currentMaxSpawnDistance + increase, maxSpawnDistance);
+            
+            // Stop if we've reached the maximum
+            if (currentMaxSpawnDistance >= maxSpawnDistance) break;
+        }
 
-        // Calculate current min spawn distance based on wave (increases outward like max)
-        float waveMinDistanceIncrease = initialMinSpawnDistance * (spawnDistanceIncrement / 100f) * (currentWave - 1);
-        float currentMinSpawnDistance = Mathf.Min(initialMinSpawnDistance + waveMinDistanceIncrease, minSpawnDistance);
+        // Calculate current min spawn distance using compound growth (same logic as max)
+        float currentMinSpawnDistance = initialMinSpawnDistance;
+        
+        for (int wave = 2; wave <= currentWave; wave++)
+        {
+            float increase = currentMinSpawnDistance * (spawnDistanceIncrement / 100f);
+            currentMinSpawnDistance = Mathf.Min(currentMinSpawnDistance + increase, minSpawnDistance);
+            
+            // Stop if we've reached the maximum
+            if (currentMinSpawnDistance >= minSpawnDistance) break;
+        }
 
         // Ensure min is strictly less than max to avoid invalid Range
         if (currentMinSpawnDistance >= currentMaxSpawnDistance)

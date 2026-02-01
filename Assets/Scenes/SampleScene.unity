@@ -173,7 +173,7 @@ MonoBehaviour:
   initialMinSpawnDistance: 100
   minSpawnDistance: 150
   initialMaxSpawnDistance: 150
-  maxSpawnDistance: 500
+  maxSpawnDistance: 800
   spawnHeight: 0.5
   baseMinSpeed: 1
   baseMaxSpeed: 5
@@ -1038,8 +1038,8 @@ MonoBehaviour:
   baseTransform: {fileID: 1595826105}
   helicopterScale: 0.5
   initialMinSpawnDistance: 150
-  minSpawnDistance: 200
-  initialMaxSpawnDistance: 150
+  minSpawnDistance: 700
+  initialMaxSpawnDistance: 200
   maxSpawnDistance: 600
   minSpawnHeight: 5
   maxSpawnHeight: 50
@@ -1048,7 +1048,7 @@ MonoBehaviour:
   baseHelicopterCount: 5
   baseCountWaveIncrement: 10
   baseSpeedWaveIncrement: 5
-  spawnDistanceIncrement: 25
+  spawnDistanceIncrement: 30
   explosionPrefab: {fileID: 100008, guid: 2ae9e8f0dfbef424c839cad8118abc5f, type: 3}
   explosionSound: {fileID: 8300000, guid: bbbd451773f5e514d80c78e791d4692e, type: 3}
   projectilePrefab: {fileID: 5639003199960037019, guid: bc1101b41da57f84ba9cde8e9687a233, type: 3}
