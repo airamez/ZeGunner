@@ -431,6 +431,14 @@ public class GameUISetup : MonoBehaviour
             timer = timerObj.AddComponent<GameTimer>();
         }
         
+        // Create RadarHUD component
+        RadarHUD radarHUD = FindAnyObjectByType<RadarHUD>();
+        if (radarHUD == null)
+        {
+            GameObject radarObj = new GameObject("RadarHUD");
+            radarHUD = radarObj.AddComponent<RadarHUD>();
+        }
+        
         // Create MouseSensitivityManager component
         MouseSensitivityManager sensitivityManager = FindAnyObjectByType<MouseSensitivityManager>();
         if (sensitivityManager == null)
