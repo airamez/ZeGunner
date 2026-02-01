@@ -275,7 +275,7 @@ public class GameUISetup : MonoBehaviour
         RectTransform scorePanelRect = scorePanel.AddComponent<RectTransform>();
         scorePanelRect.anchorMin = new Vector2(0, 1);
         scorePanelRect.anchorMax = new Vector2(0, 1);
-        scorePanelRect.sizeDelta = new Vector2(1000, 500);
+        scorePanelRect.sizeDelta = new Vector2(500, 450);
         scorePanelRect.anchoredPosition = new Vector2(20, -20);
         
         // Score background with styling

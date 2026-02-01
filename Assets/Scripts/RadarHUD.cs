@@ -5,8 +5,8 @@ using System.Collections.Generic;
 public class RadarHUD : MonoBehaviour
 {
     [Header("Radar Settings")]
-    [SerializeField] private float radarSize = 225f;
-    [SerializeField] private float radarRange = 150f; // Max distance to show on radar
+    [SerializeField] private float radarSize = 300f;
+    [SerializeField] private float radarRange = 200f; // Max distance to show on radar
     [SerializeField] private float dotSize = 6f;
     [SerializeField] private float heightLineWidth = 2f;
     [SerializeField] private float maxHeightLineLength = 30f;
