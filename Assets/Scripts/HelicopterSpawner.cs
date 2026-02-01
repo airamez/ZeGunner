@@ -41,13 +41,9 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Percentage increase in helicopter speed per wave (10 = 10%)")]
     [SerializeField] private float baseSpeedWaveIncrement = 10f;
     
-    [Tooltip("Percentage increase in max spawn distance per wave (10 = 10%)")]
-    [SerializeField] private float baseDistanceWaveIncrement = 10f;
-    
     public int BaseHelicopterCount => baseHelicopterCount;
     public float BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
-    public float BaseDistanceWaveIncrement => baseDistanceWaveIncrement;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for helicopter destruction")]
@@ -129,7 +125,7 @@ public class HelicopterSpawner : MonoBehaviour
         
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-        float randomDistance = Random.Range(currentMinSpawnDistance, currentMaxSpawnDistance);
+        float randomDistance = Random.Range(minSpawnDistance, maxSpawnDistance);
         
         Vector3 spawnOffset = new Vector3(
             Mathf.Cos(randomAngle) * randomDistance,
@@ -199,10 +195,5 @@ public class HelicopterSpawner : MonoBehaviour
         }
     }
     
-    public void UpdateSpawnDistances(float incrementPercent)
-    {
-        // Min distance stays constant, max distance increases by percentage
-        currentMinSpawnDistance = minSpawnDistance;
-        currentMaxSpawnDistance = maxSpawnDistance * (1f + incrementPercent * (WaveManager.Instance.GetCurrentWave() - 1));
-    }
+    // Remove UpdateSpawnDistances - now using fixed min/max distances
 }

@@ -103,17 +103,7 @@ public class WaveManager : MonoBehaviour
         float tankCountIncrement = tankSpawner != null ? tankSpawner.BaseCountWaveIncrement / 100f : 0.2f;
         float heliCountIncrement = helicopterSpawner != null ? helicopterSpawner.BaseCountWaveIncrement / 100f : 0.2f;
         
-        // Update spawn distances for this wave (only max distance increases)
-        if (tankSpawner != null)
-        {
-            float distanceIncrement = tankSpawner.BaseDistanceWaveIncrement / 100f;
-            tankSpawner.UpdateSpawnDistances(distanceIncrement);
-        }
-        if (helicopterSpawner != null)
-        {
-            float distanceIncrement = helicopterSpawner.BaseDistanceWaveIncrement / 100f;
-            helicopterSpawner.UpdateSpawnDistances(distanceIncrement);
-        }
+        // Distance progression removed - now using fixed min/max distances from spawners
         
         if (waveCompletePanel != null)
         {
