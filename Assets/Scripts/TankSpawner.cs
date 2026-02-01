@@ -23,7 +23,10 @@ public class TankSpawner : MonoBehaviour
     [SerializeField] private float maxZigzagAngle = 30f;
 
     [Header("Spawn Settings")]
-    [Tooltip("Minimum distance from the base where tanks will spawn")]
+    [Tooltip("Initial minimum distance for wave 1")]
+    [SerializeField] private float initialMinSpawnDistance = 40f;
+
+    [Tooltip("Minimum distance from the base where tanks will spawn (upper limit for min as waves increase)")]
     [SerializeField] private float minSpawnDistance = 40f;
     
     [Tooltip("Initial maximum distance for wave 1")]
@@ -142,9 +145,19 @@ public class TankSpawner : MonoBehaviour
         int currentWave = WaveManager.Instance != null ? WaveManager.Instance.GetCurrentWave() : 1;
         float waveMaxDistanceIncrease = initialMaxSpawnDistance * (spawnDistanceIncrement / 100f) * (currentWave - 1);
         float currentMaxSpawnDistance = Mathf.Min(initialMaxSpawnDistance + waveMaxDistanceIncrease, maxSpawnDistance);
-        
-        // Spawn at random distance between min and current max
-        float randomDistance = Random.Range(minSpawnDistance, currentMaxSpawnDistance);
+
+        // Calculate current min spawn distance based on wave (increases outward like max)
+        float waveMinDistanceIncrease = initialMinSpawnDistance * (spawnDistanceIncrement / 100f) * (currentWave - 1);
+        float currentMinSpawnDistance = Mathf.Min(initialMinSpawnDistance + waveMinDistanceIncrease, minSpawnDistance);
+
+        // Ensure min is strictly less than max to avoid invalid Range
+        if (currentMinSpawnDistance >= currentMaxSpawnDistance)
+        {
+            currentMinSpawnDistance = Mathf.Max(0f, currentMaxSpawnDistance - 1f);
+        }
+
+        // Spawn at random distance between current min and current max
+        float randomDistance = Random.Range(currentMinSpawnDistance, currentMaxSpawnDistance);
         
         Vector3 spawnOffset = new Vector3(
             Mathf.Cos(randomAngle) * randomDistance,
