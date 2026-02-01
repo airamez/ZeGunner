@@ -22,18 +22,24 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Maximum angle deviation for zigzag movement")]
     [SerializeField] private float maxZigzagAngle = 30f;
 
+    [Header("Spawn Settings")]
     [Tooltip("Minimum distance from the base where tanks will spawn")]
     [SerializeField] private float minSpawnDistance = 40f;
     
-    [Tooltip("Maximum distance from the base where tanks will spawn")]
-    [SerializeField] private float maxSpawnDistance = 60f;
+    [Tooltip("Initial maximum distance for wave 1")]
+    [SerializeField] private float initialMaxSpawnDistance = 60f;
+    
+    [Tooltip("Absolute maximum spawn distance (upper limit)")]
+    [SerializeField] private float maxSpawnDistance = 100f;
 
+    [Header("Tank Speed")]
     [Tooltip("Base minimum speed of spawned tanks (wave 1)")]
     [SerializeField] private float baseMinSpeed = 2f;
     
     [Tooltip("Base maximum speed of spawned tanks (wave 1)")]
     [SerializeField] private float baseMaxSpeed = 5f;
    
+    [Header("Wave Settings")]
     [Tooltip("Number of tanks for wave 1")]
     [SerializeField] private int baseTankCount = 5;
     
@@ -43,8 +49,8 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Percentage increase in tank speed per wave (10 = 10%)")]
     [SerializeField] private float baseSpeedWaveIncrement = 10f;
     
-    [Tooltip("Percentage increase in spawn distance per wave (10 = 10%)")]
-    [SerializeField] private float spawnDistancePercentualIncrement = 10f;
+    [Tooltip("Percentage increase in max spawn distance per wave (10 = 10%)")]
+    [SerializeField] private float spawnDistanceIncrement = 10f;
     
     public int BaseTankCount => baseTankCount;
     public float BaseCountWaveIncrement => baseCountWaveIncrement;
@@ -132,13 +138,13 @@ public class TankSpawner : MonoBehaviour
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         
-        // Calculate spawn distance based on current wave
+        // Calculate current max spawn distance based on wave
         int currentWave = WaveManager.Instance != null ? WaveManager.Instance.GetCurrentWave() : 1;
-        float waveDistanceIncrease = minSpawnDistance * (spawnDistancePercentualIncrement / 100f) * (currentWave - 1);
-        float currentSpawnDistance = Mathf.Min(minSpawnDistance + waveDistanceIncrease, maxSpawnDistance);
+        float waveMaxDistanceIncrease = initialMaxSpawnDistance * (spawnDistanceIncrement / 100f) * (currentWave - 1);
+        float currentMaxSpawnDistance = Mathf.Min(initialMaxSpawnDistance + waveMaxDistanceIncrease, maxSpawnDistance);
         
-        // Spawn at the calculated distance (all enemies at same distance for this wave)
-        float randomDistance = currentSpawnDistance;
+        // Spawn at random distance between min and current max
+        float randomDistance = Random.Range(minSpawnDistance, currentMaxSpawnDistance);
         
         Vector3 spawnOffset = new Vector3(
             Mathf.Cos(randomAngle) * randomDistance,
