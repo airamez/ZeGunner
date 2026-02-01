@@ -143,6 +143,12 @@ public class WaveManager : MonoBehaviour
         helicoptersDestroyedThisWave = 0;
         waveStartTime = Time.time;
         
+        // Reset base HP to 100 for new wave
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ResetBaseHP();
+        }
+        
         
         OnWaveStart?.Invoke();
         

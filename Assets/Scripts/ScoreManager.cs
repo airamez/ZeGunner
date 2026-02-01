@@ -197,4 +197,11 @@ public class ScoreManager : MonoBehaviour
     {
         return baseHP;
     }
+    
+    public void ResetBaseHP()
+    {
+        baseHP = 100f;
+        isGameOver = false;
+        UpdateUI();
+    }
 }
