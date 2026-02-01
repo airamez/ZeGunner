@@ -13,6 +13,7 @@ public class CannonController : MonoBehaviour
     [SerializeField] private GameObject rocketProjectile;
     [SerializeField] private bool useRocketProjectile = false;
     [SerializeField] private float rocketScale = 0.05f;
+    [SerializeField] private float maxProjectileDistance = 500f;
     
     [Header("Spawn Point")]
     [SerializeField] private Transform baseTransform;
@@ -86,7 +87,7 @@ public class CannonController : MonoBehaviour
         }
         
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        rb.useGravity = true;
+        rb.useGravity = !useRocketProjectile; // Rockets don't use gravity, spheres do
         
         Vector3 fireDirection = mainCamera.transform.forward;
         // For rockets, we might need to adjust the forward direction
@@ -132,12 +133,11 @@ public class CannonController : MonoBehaviour
             RocketCollision rocketScript = projectile.GetComponent<RocketCollision>();
             if (rocketScript == null)
             {
-                projectile.AddComponent<RocketCollision>();
+                rocketScript = projectile.AddComponent<RocketCollision>();
             }
-            else
-            {
-                
-            }
+            
+            // Set max distance for rocket
+            rocketScript.SetMaxDistance(maxProjectileDistance);
         }
         else
         {

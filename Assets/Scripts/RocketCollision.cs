@@ -3,10 +3,32 @@ using UnityEngine;
 public class RocketCollision : MonoBehaviour
 {
     private float lifetime = 10f;
+    private float maxDistance = 500f;
+    private Vector3 spawnPosition;
+    private bool hasMaxDistance = false;
     
     void Start()
     {
+        spawnPosition = transform.position;
         Destroy(gameObject, lifetime);
+    }
+    
+    public void SetMaxDistance(float distance)
+    {
+        maxDistance = distance;
+        hasMaxDistance = true;
+    }
+    
+    void Update()
+    {
+        if (hasMaxDistance)
+        {
+            float currentDistance = Vector3.Distance(transform.position, spawnPosition);
+            if (currentDistance >= maxDistance)
+            {
+                Destroy(gameObject);
+            }
+        }
     }
     
     void OnCollisionEnter(Collision collision)
