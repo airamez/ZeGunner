@@ -185,13 +185,7 @@ public class GameUISetup : MonoBehaviour
         bgImage.raycastTarget = false;
         
         // Instructions text (left-aligned)
-        string instructions = "- Move the turret (Aiming) using the mouse\n" +
-                             "- Fire with the left mouse button\n" +
-                             "- Move the Turret up and down using W and S keys\n" +
-                             "- Adjust mouse sensitivity with + / - keys\n" +
-                             "- If enemies get close to the base they will fire at it\n" +
-                             "- If the Base HP reach zero you lose\n" +
-                             "- Have fun!";
+        string instructions = GameInstructions.Get();
         
         if (instructionsFile != null)
         {

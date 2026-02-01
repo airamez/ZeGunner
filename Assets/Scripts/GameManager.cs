@@ -286,13 +286,34 @@ public class GameManager : MonoBehaviour
         Image bg = pauseScreen.AddComponent<Image>();
         bg.color = new Color(0, 0, 0, 0.7f);
         
-        // Paused title
+        // Game instructions container (moved up to include title)
+        GameObject instructionsContainer = new GameObject("PauseInstructions");
+        instructionsContainer.transform.SetParent(pauseScreen.transform, false);
+        RectTransform instrContainerRect = instructionsContainer.AddComponent<RectTransform>();
+        instrContainerRect.anchorMin = new Vector2(0.5f, 0.15f);
+        instrContainerRect.anchorMax = new Vector2(0.5f, 0.65f);
+        instrContainerRect.sizeDelta = new Vector2(800, 400);
+        instrContainerRect.anchoredPosition = Vector2.zero;
+        
+        // Instructions background panel
+        GameObject instructionsBg = new GameObject("PauseInstructionsBackground");
+        instructionsBg.transform.SetParent(instructionsContainer.transform, false);
+        RectTransform bgRect = instructionsBg.AddComponent<RectTransform>();
+        bgRect.anchorMin = Vector2.zero;
+        bgRect.anchorMax = Vector2.one;
+        bgRect.offsetMin = new Vector2(-10, -10);
+        bgRect.offsetMax = new Vector2(10, 10);
+        Image bgImage = instructionsBg.AddComponent<Image>();
+        bgImage.color = new Color(0, 0, 0, 0.3f);
+        bgImage.raycastTarget = false;
+        
+        // Paused title (now at top of instructions panel)
         GameObject titleObj = new GameObject("Title");
-        titleObj.transform.SetParent(pauseScreen.transform, false);
+        titleObj.transform.SetParent(instructionsContainer.transform, false);
         RectTransform titleRect = titleObj.AddComponent<RectTransform>();
-        titleRect.anchorMin = new Vector2(0.5f, 0.55f);
-        titleRect.anchorMax = new Vector2(0.5f, 0.7f);
-        titleRect.sizeDelta = new Vector2(600, 100);
+        titleRect.anchorMin = new Vector2(0.5f, 0.8f);
+        titleRect.anchorMax = new Vector2(0.5f, 1f);
+        titleRect.sizeDelta = new Vector2(600, 80);
         titleRect.anchoredPosition = Vector2.zero;
         
         TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
@@ -302,18 +323,40 @@ public class GameManager : MonoBehaviour
         titleText.color = Color.white;
         titleText.alignment = TextAlignmentOptions.Center;
         
-        // Continue message
+        
+        // Game instructions text (larger font)
+        string instructions = GameInstructions.Get();
+        
+        GameObject instructionsObj = new GameObject("PauseInstructionsText");
+        instructionsObj.transform.SetParent(instructionsContainer.transform, false);
+        RectTransform instrRect = instructionsObj.AddComponent<RectTransform>();
+        instrRect.anchorMin = new Vector2(0, 0);
+        instrRect.anchorMax = new Vector2(1, 0.75f);
+        instrRect.offsetMin = new Vector2(20, 10);
+        instrRect.offsetMax = new Vector2(-20, -10);
+        
+        TextMeshProUGUI instrText = instructionsObj.AddComponent<TextMeshProUGUI>();
+        instrText.text = instructions;
+        instrText.fontSize = 24; // Increased from 20
+        instrText.fontStyle = FontStyles.Normal;
+        instrText.color = new Color(0.9f, 0.9f, 0.9f);
+        instrText.alignment = TextAlignmentOptions.TopLeft;
+        instrText.lineSpacing = 1.2f;
+        instrText.outlineColor = Color.black;
+        instrText.outlineWidth = 0.1f;
+        
+        // Continue message (moved up a bit more)
         GameObject continueObj = new GameObject("ContinueMessage");
         continueObj.transform.SetParent(pauseScreen.transform, false);
         RectTransform continueRect = continueObj.AddComponent<RectTransform>();
-        continueRect.anchorMin = new Vector2(0.5f, 0.35f);
-        continueRect.anchorMax = new Vector2(0.5f, 0.45f);
-        continueRect.sizeDelta = new Vector2(600, 80);
+        continueRect.anchorMin = new Vector2(0.5f, 0.11f);
+        continueRect.anchorMax = new Vector2(0.5f, 0.18f);
+        continueRect.sizeDelta = new Vector2(600, 60);
         continueRect.anchoredPosition = Vector2.zero;
         
         TextMeshProUGUI continueText = continueObj.AddComponent<TextMeshProUGUI>();
-        continueText.text = "Press SPACE to Continue\n\nPress ESC Again to Close Game";
-        continueText.fontSize = 36;
+        continueText.text = "Press SPACE to Continue\n\nPress ESC Again to Exit Game";
+        continueText.fontSize = 28;
         continueText.fontStyle = FontStyles.Bold;
         continueText.color = new Color(1f, 1f, 0.5f, 1f);
         continueText.alignment = TextAlignmentOptions.Center;
