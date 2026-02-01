@@ -34,7 +34,7 @@ public class GameManager : MonoBehaviour
     
     void Update()
     {
-        // Check for ESC key to pause/unpause or close game
+        // Check for ESC key to pause/unpause
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
             if (CurrentState == GameState.Playing)
@@ -43,7 +43,16 @@ public class GameManager : MonoBehaviour
             }
             else if (CurrentState == GameState.Paused)
             {
-                // Close the game when ESC is pressed while paused
+                ResumeGame();
+            }
+        }
+        
+        // Check for X key to exit when paused
+        if (Keyboard.current != null && Keyboard.current.xKey.wasPressedThisFrame)
+        {
+            if (CurrentState == GameState.Paused)
+            {
+                // Close the game when X is pressed while paused
                 Application.Quit();
             }
         }
@@ -360,7 +369,7 @@ public class GameManager : MonoBehaviour
         continueRect.anchoredPosition = Vector2.zero;
         
         TextMeshProUGUI continueText = continueObj.AddComponent<TextMeshProUGUI>();
-        continueText.text = "Press SPACE to Continue\n\nPress ESC Again to Exit Game";
+        continueText.text = "Press SPACE to Continue\n\nPress X to Exit the game";
         continueText.fontSize = 36;
         continueText.fontStyle = FontStyles.Bold;
         continueText.color = new Color(1f, 0.85f, 0.3f, 1f); // Military amber
