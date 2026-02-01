@@ -171,7 +171,7 @@ MonoBehaviour:
   zigzagIntervalOffset: 15
   maxZigzagAngle: 25
   minSpawnDistance: 100
-  maxSpawnDistance: 150
+  maxSpawnDistance: 300
   baseMinSpeed: 1
   baseMaxSpeed: 3
   baseTankCount: 10
@@ -355,13 +355,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b322c1c310040b40aab479c98d4f083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 8948963032308155249, guid: f528c0f8e38f37a428930db18b7e2fe6, type: 3}
+  rocketProjectile: {fileID: 919132149155446097, guid: 4a1029142eefab644bbcbab3875e5aed, type: 3}
   projectileSpeed: 150
   fireRate: 0.25
-  sphereProjectile: {fileID: 9097215538662818992, guid: 93c4ad59282c3624ab62a12be71e17d1, type: 3}
-  rocketProjectile: {fileID: 919132149155446097, guid: 4a1029142eefab644bbcbab3875e5aed, type: 3}
-  useRocketProjectile: 1
   rocketScale: 0.1
+  maxProjectileDistance: 500
   baseTransform: {fileID: 1595826105}
   spawnOffset: 1
   verticalSpeed: 5
@@ -945,8 +943,8 @@ MonoBehaviour:
   helicopterPrefab: {fileID: 4485264436599892038, guid: a1efafa8a3b3f78458ef7f9a033ed480, type: 3}
   baseTransform: {fileID: 1595826105}
   helicopterScale: 0.2
-  minSpawnDistance: 100
-  maxSpawnDistance: 150
+  minSpawnDistance: 150
+  maxSpawnDistance: 350
   minSpawnHeight: 5
   maxSpawnHeight: 100
   baseMinSpeed: 3

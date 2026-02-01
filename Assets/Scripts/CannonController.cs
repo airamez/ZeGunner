@@ -4,14 +4,9 @@ using UnityEngine.InputSystem;
 public class CannonController : MonoBehaviour
 {
     [Header("Projectile Settings")]
-    [SerializeField] private GameObject projectilePrefab;
+    [SerializeField] private GameObject rocketProjectile;
     [SerializeField] private float projectileSpeed = 80f;
     [SerializeField] private float fireRate = 0.5f;
-    
-    [Header("Projectile Options")]
-    [SerializeField] private GameObject sphereProjectile;
-    [SerializeField] private GameObject rocketProjectile;
-    [SerializeField] private bool useRocketProjectile = false;
     [SerializeField] private float rocketScale = 0.05f;
     [SerializeField] private float maxProjectileDistance = 500f;
     
@@ -59,10 +54,7 @@ public class CannonController : MonoBehaviour
     
     void Fire()
     {
-        // Determine which projectile to use
-        GameObject selectedProjectile = GetSelectedProjectile();
-        
-        if (selectedProjectile == null)
+        if (rocketProjectile == null)
         {
             return;
         }
@@ -74,7 +66,7 @@ public class CannonController : MonoBehaviour
         
         Vector3 spawnPosition = mainCamera.transform.position + mainCamera.transform.forward * spawnOffset;
         
-        GameObject projectile = Instantiate(selectedProjectile, spawnPosition, Quaternion.LookRotation(mainCamera.transform.forward));
+        GameObject projectile = Instantiate(rocketProjectile, spawnPosition, Quaternion.LookRotation(mainCamera.transform.forward));
         
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb == null)
@@ -87,98 +79,37 @@ public class CannonController : MonoBehaviour
         }
         
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
-        rb.useGravity = !useRocketProjectile; // Rockets don't use gravity, spheres do
+        rb.useGravity = false; // Rockets don't use gravity
         
-        Vector3 fireDirection = mainCamera.transform.forward;
-        // For rockets, we might need to adjust the forward direction
-        if (useRocketProjectile)
+        rb.linearVelocity = mainCamera.transform.forward * projectileSpeed;
+        
+        // Set rocket scale and orientation
+        projectile.transform.localScale = Vector3.one * rocketScale;
+        
+        // Add collider if rocket doesn't have one
+        Collider rocketCollider = projectile.GetComponent<Collider>();
+        if (rocketCollider == null)
         {
-            // Rockets might have their forward axis aligned differently
-            // Try different orientations if needed
-            fireDirection = mainCamera.transform.forward;
-        }
-        
-        rb.linearVelocity = fireDirection * projectileSpeed;
-        
-        // Fix scale and orientation for rocket AFTER setting velocity
-        if (useRocketProjectile)
-        {
-            projectile.transform.localScale = Vector3.one * rocketScale;
-            
-            // Add collider if rocket doesn't have one
-            Collider rocketCollider = projectile.GetComponent<Collider>();
-            if (rocketCollider == null)
-            {
-                CapsuleCollider capsuleCollider = projectile.AddComponent<CapsuleCollider>();
-                capsuleCollider.radius = 0.5f;
-                capsuleCollider.height = 2f;
-                capsuleCollider.direction = 2; // Z-axis
-            }
-            else
-            {
-                
-            }
-            
-            // Make rocket follow its velocity direction
-            Vector3 velocityDirection = rb.linearVelocity.normalized;
-            Quaternion rocketRotation = Quaternion.LookRotation(velocityDirection) * Quaternion.Euler(90, 0, 0);
-            projectile.transform.rotation = rocketRotation;
-            
+            CapsuleCollider capsuleCollider = projectile.AddComponent<CapsuleCollider>();
+            capsuleCollider.radius = 0.5f;
+            capsuleCollider.height = 2f;
+            capsuleCollider.direction = 2; // Z-axis
         }
         
-        // Add appropriate collision handling
-        if (useRocketProjectile)
+        // Make rocket follow its velocity direction
+        Vector3 velocityDirection = rb.linearVelocity.normalized;
+        Quaternion rocketRotation = Quaternion.LookRotation(velocityDirection) * Quaternion.Euler(90, 0, 0);
+        projectile.transform.rotation = rocketRotation;
+        
+        // Add rocket collision script
+        RocketCollision rocketScript = projectile.GetComponent<RocketCollision>();
+        if (rocketScript == null)
         {
-            // Add rocket collision script
-            RocketCollision rocketScript = projectile.GetComponent<RocketCollision>();
-            if (rocketScript == null)
-            {
-                rocketScript = projectile.AddComponent<RocketCollision>();
-            }
-            
-            // Set max distance for rocket
-            rocketScript.SetMaxDistance(maxProjectileDistance);
-        }
-        else
-        {
-            // Use sphere projectile collision handling
-            CannonProjectile projectileScript = projectile.GetComponent<CannonProjectile>();
-            if (projectileScript == null)
-            {
-                projectile.AddComponent<CannonProjectile>();
-            }
-            else
-            {
-                
-            }
-        }
-    }
-    
-    GameObject GetSelectedProjectile()
-    {
-        // Try the selected projectile first
-        if (useRocketProjectile && rocketProjectile != null)
-        {
-            return rocketProjectile;
-        }
-        else if (!useRocketProjectile && sphereProjectile != null)
-        {
-            return sphereProjectile;
+            rocketScript = projectile.AddComponent<RocketCollision>();
         }
         
-        // Fallback to the manually assigned projectile
-        if (projectilePrefab != null)
-        {
-            return projectilePrefab;
-        }
-        
-        // Final fallback - try to find sphere projectile
-        if (sphereProjectile != null)
-        {
-            return sphereProjectile;
-        }
-        
-        return null;
+        // Set max distance for rocket
+        rocketScript.SetMaxDistance(maxProjectileDistance);
     }
     
     void HandleVerticalMovement()
