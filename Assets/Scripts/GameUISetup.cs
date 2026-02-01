@@ -414,10 +414,6 @@ public class GameUISetup : MonoBehaviour
             GameObject gmObj = new GameObject("GameManager");
             gm = gmObj.AddComponent<GameManager>();
         }
-        else
-        {
-            Debug.Log("GameUISetup: GameManager already exists");
-        }
         
         // Create WaterRangeIndicator component
         WaterRangeIndicator waterIndicator = FindAnyObjectByType<WaterRangeIndicator>();
@@ -425,10 +421,6 @@ public class GameUISetup : MonoBehaviour
         {
             GameObject waterObj = new GameObject("WaterRangeIndicator");
             waterIndicator = waterObj.AddComponent<WaterRangeIndicator>();
-        }
-        else
-        {
-            Debug.Log("GameUISetup: WaterRangeIndicator already exists");
         }
         
         // Create GameTimer component
