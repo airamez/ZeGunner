@@ -32,6 +32,7 @@ public class Tank : MonoBehaviour
     private Transform barrelTransform;
     private GameObject explosionPrefab;
     private AudioClip explosionSound;
+    private bool isDestroyed = false;
     
     public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale)
     {
@@ -116,6 +117,13 @@ public class Tank : MonoBehaviour
         
         // Check distance to base
         float distanceToBase = Vector3.Distance(transform.position, targetPosition);
+        
+        // Destroy tank if it reaches the base
+        if (distanceToBase < 2f)
+        {
+            ReachBase();
+            return;
+        }
         
         // Check if tank should stop and fire at base
         if (!isFiring && distanceToBase <= distanceToFire)
@@ -233,21 +241,18 @@ public class Tank : MonoBehaviour
         toBase.y = 0;
         
         float zigzagAngle;
-        string direction;
         
         if (lastZigzagWasLeft)
         {
             // Last was left, so now go right
             zigzagAngle = Random.Range(10f, maxZigzagAngle); // Positive angle = right turn
             lastZigzagWasLeft = false;
-            direction = "RIGHT";
         }
         else
         {
             // Last was right (or first turn), so now go left
             zigzagAngle = Random.Range(-maxZigzagAngle, -10f); // Negative angle = left turn
             lastZigzagWasLeft = true;
-            direction = "LEFT";
         }
         
         // Change speed with each direction change
@@ -290,6 +295,7 @@ public class Tank : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
+        if (isDestroyed) return;
         
         // Check if hit by projectile
         GameObject hitObject = collision.gameObject;
@@ -306,6 +312,7 @@ public class Tank : MonoBehaviour
     
     void OnTriggerEnter(Collider other)
     {
+        if (isDestroyed) return;
         
         // Also check trigger collisions (some projectiles use triggers)
         GameObject hitObject = other.gameObject;
@@ -322,6 +329,16 @@ public class Tank : MonoBehaviour
     
     public void DestroyTank(bool byPlayer)
     {
+        if (isDestroyed) return;
+        isDestroyed = true;
+        
+        // Always register with WaveManager for wave completion tracking
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.RegisterTankDestroyed();
+        }
+        
+        // Only register with ScoreManager if destroyed by player (for stats)
         if (byPlayer && ScoreManager.Instance != null)
         {
             ScoreManager.Instance.RegisterTankDestroyed(transform.position);
@@ -331,7 +348,6 @@ public class Tank : MonoBehaviour
         if (explosionPrefab != null)
         {
             GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            // Optional: Destroy explosion after some time
             Destroy(explosion, 5f);
         }
         
@@ -342,5 +358,17 @@ public class Tank : MonoBehaviour
         }
         
         Destroy(gameObject);
+    }
+    
+    // Called when tank reaches the base - destroy without player credit
+    public void ReachBase()
+    {
+        // Damage the base
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.DamageBase(projectileDamage * 5f); // Heavy damage for reaching base
+        }
+        
+        DestroyTank(false);
     }
 }

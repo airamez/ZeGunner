@@ -85,11 +85,7 @@ public class ScoreManager : MonoBehaviour
             }
         }
         
-        // Notify WaveManager
-        if (WaveManager.Instance != null)
-        {
-            WaveManager.Instance.RegisterTankDestroyed();
-        }
+        // WaveManager is now called directly by Tank/Helicopter scripts
         
         UpdateUI();
     }
@@ -108,11 +104,7 @@ public class ScoreManager : MonoBehaviour
             }
         }
         
-        // Notify WaveManager
-        if (WaveManager.Instance != null)
-        {
-            WaveManager.Instance.RegisterHelicopterDestroyed();
-        }
+        // WaveManager is now called directly by Tank/Helicopter scripts
         
         UpdateUI();
     }
@@ -181,6 +173,7 @@ public class ScoreManager : MonoBehaviour
                          $"Helicopters: {helicoptersDestroyedThisWave}/{totalHelicoptersThisWave}\n" +
                          $"Longest Kill: {longestDistance:F1}\n" +
                          $"Accuracy: {accuracy:F1}%\n" +
+                         $"Base Height: {turretElevation:F1}\n" +
                          $"Base HP: {baseHP:F0}";
     }
     

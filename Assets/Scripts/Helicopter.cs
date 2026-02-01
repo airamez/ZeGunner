@@ -83,6 +83,13 @@ public class Helicopter : MonoBehaviour
         // Check distance to base
         float distanceToBase = Vector3.Distance(transform.position, targetPosition);
         
+        // Destroy helicopter if it reaches the base
+        if (distanceToBase < 5f)
+        {
+            ReachBase();
+            return;
+        }
+        
         // Check if helicopter should stop and fire at base
         if (!isFiring && distanceToBase <= distanceToFire)
         {
@@ -214,6 +221,13 @@ public class Helicopter : MonoBehaviour
         if (isDestroyed) return;
         isDestroyed = true;
         
+        // Always register with WaveManager for wave completion tracking
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.RegisterHelicopterDestroyed();
+        }
+        
+        // Only register with ScoreManager if destroyed by player (for stats)
         if (byPlayer && ScoreManager.Instance != null)
         {
             ScoreManager.Instance.RegisterHelicopterDestroyed(transform.position);
@@ -223,7 +237,6 @@ public class Helicopter : MonoBehaviour
         if (explosionPrefab != null)
         {
             GameObject explosion = Instantiate(explosionPrefab, transform.position, Quaternion.identity);
-            // Optional: Destroy explosion after some time
             Destroy(explosion, 5f);
         }
         
@@ -234,5 +247,17 @@ public class Helicopter : MonoBehaviour
         }
         
         Destroy(gameObject);
+    }
+    
+    // Called when helicopter reaches the base - destroy without player credit
+    public void ReachBase()
+    {
+        // Damage the base
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.DamageBase(projectileDamage * 5f); // Heavy damage for reaching base
+        }
+        
+        DestroyHelicopter(false);
     }
 }

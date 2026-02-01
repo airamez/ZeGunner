@@ -59,19 +59,18 @@ public class WaveManager : MonoBehaviour
     
     void Update()
     {
-        // Check for keyboard input to start next wave (no mouse)
+        // Check for SPACE key to start next wave
         if (waitingForNextWave)
         {
-            if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
+            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
             {
                 StartNextWave();
             }
         }
         
-        // Check if wave is complete - all SPAWNED enemies must be destroyed
+        // Check if wave is complete - all spawned enemies must be destroyed
         if (waveInProgress && !waitingForNextWave)
         {
-            // Only check completion after all enemies have been spawned
             bool allSpawned = tanksSpawnedThisWave >= tanksToSpawnThisWave && 
                               helicoptersSpawnedThisWave >= helicoptersToSpawnThisWave;
             bool allDestroyed = tanksDestroyedThisWave >= tanksSpawnedThisWave && 
@@ -101,8 +100,20 @@ public class WaveManager : MonoBehaviour
         // Get base counts and increment values from spawners
         int baseTankCount = tankSpawner != null ? tankSpawner.BaseTankCount : 5;
         int baseHelicopterCount = helicopterSpawner != null ? helicopterSpawner.BaseHelicopterCount : 2;
-        float tankCountIncrement = tankSpawner != null ? tankSpawner.BaseCountWaveIncrement : 0.2f;
-        float heliCountIncrement = helicopterSpawner != null ? helicopterSpawner.BaseCountWaveIncrement : 0.2f;
+        float tankCountIncrement = tankSpawner != null ? tankSpawner.BaseCountWaveIncrement / 100f : 0.2f;
+        float heliCountIncrement = helicopterSpawner != null ? helicopterSpawner.BaseCountWaveIncrement / 100f : 0.2f;
+        
+        // Update spawn distances for this wave (only max distance increases)
+        if (tankSpawner != null)
+        {
+            float distanceIncrement = tankSpawner.BaseDistanceWaveIncrement / 100f;
+            tankSpawner.UpdateSpawnDistances(distanceIncrement);
+        }
+        if (helicopterSpawner != null)
+        {
+            float distanceIncrement = helicopterSpawner.BaseDistanceWaveIncrement / 100f;
+            helicopterSpawner.UpdateSpawnDistances(distanceIncrement);
+        }
         
         if (waveCompletePanel != null)
         {
@@ -116,8 +127,8 @@ public class WaveManager : MonoBehaviour
         // Calculate enemies for this wave with separate increment percentages
         float tankCountMultiplier = 1f + (tankCountIncrement * (currentWave - 1));
         float heliCountMultiplier = 1f + (heliCountIncrement * (currentWave - 1));
-        tanksToSpawnThisWave = Mathf.RoundToInt(baseTankCount * tankCountMultiplier);
-        helicoptersToSpawnThisWave = Mathf.RoundToInt(baseHelicopterCount * heliCountMultiplier);
+        tanksToSpawnThisWave = Mathf.CeilToInt(baseTankCount * tankCountMultiplier / 5f) * 5;
+        helicoptersToSpawnThisWave = Mathf.CeilToInt(baseHelicopterCount * heliCountMultiplier / 5f) * 5;
         
         // Reset counters
         tanksSpawnedThisWave = 0;
@@ -138,8 +149,8 @@ public class WaveManager : MonoBehaviour
     {
         if (ScoreManager.Instance != null)
         {
-            ScoreManager.Instance.UpdateWaveInfo(currentWave, tanksDestroyedThisWave, tanksSpawnedThisWave,
-                helicoptersDestroyedThisWave, helicoptersSpawnedThisWave);
+            ScoreManager.Instance.UpdateWaveInfo(currentWave, tanksDestroyedThisWave, tanksToSpawnThisWave,
+                helicoptersDestroyedThisWave, helicoptersToSpawnThisWave);
         }
     }
     
@@ -167,7 +178,7 @@ public class WaveManager : MonoBehaviour
                                         $"Time: {FormatTime(waveDuration)}\n\n" +
                                         $"Tanks Destroyed: {tanksDestroyedThisWave}\n" +
                                         $"Helicopters Destroyed: {helicoptersDestroyedThisWave}\n\n" +
-                                        $"Press Any Key to Continue";
+                                        "Press SPACE to Continue";
             }
         }
     }
@@ -234,49 +245,39 @@ public class WaveManager : MonoBehaviour
     public void RegisterTankSpawned()
     {
         tanksSpawnedThisWave++;
+        UpdateScoreDisplay();
     }
     
     public void RegisterHelicopterSpawned()
     {
         helicoptersSpawnedThisWave++;
+        UpdateScoreDisplay();
     }
     
-    // Called when enemies are destroyed
+    // Called when enemies are destroyed (by player or reaching base)
     public void RegisterTankDestroyed()
     {
         tanksDestroyedThisWave++;
-        
-        if (ScoreManager.Instance != null)
-        {
-            // Use spawned count, not target count, for accurate display
-            ScoreManager.Instance.UpdateWaveInfo(currentWave, tanksDestroyedThisWave, tanksSpawnedThisWave,
-                helicoptersDestroyedThisWave, helicoptersSpawnedThisWave);
-        }
+        UpdateScoreDisplay();
     }
     
     public void RegisterHelicopterDestroyed()
     {
         helicoptersDestroyedThisWave++;
-        
-        if (ScoreManager.Instance != null)
-        {
-            // Use spawned count, not target count, for accurate display
-            ScoreManager.Instance.UpdateWaveInfo(currentWave, tanksDestroyedThisWave, tanksSpawnedThisWave,
-                helicoptersDestroyedThisWave, helicoptersSpawnedThisWave);
-        }
+        UpdateScoreDisplay();
     }
     
     // Get wave speed multiplier for tanks
     public float GetTankSpeedMultiplier()
     {
-        float speedIncrement = tankSpawner != null ? tankSpawner.BaseSpeedWaveIncrement : 0.1f;
+        float speedIncrement = tankSpawner != null ? tankSpawner.BaseSpeedWaveIncrement / 100f : 0.1f;
         return 1f + (speedIncrement * (currentWave - 1));
     }
     
     // Get wave speed multiplier for helicopters
     public float GetHelicopterSpeedMultiplier()
     {
-        float speedIncrement = helicopterSpawner != null ? helicopterSpawner.BaseSpeedWaveIncrement : 0.1f;
+        float speedIncrement = helicopterSpawner != null ? helicopterSpawner.BaseSpeedWaveIncrement / 100f : 0.1f;
         return 1f + (speedIncrement * (currentWave - 1));
     }
     

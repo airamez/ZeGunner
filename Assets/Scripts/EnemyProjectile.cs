@@ -44,7 +44,15 @@ public class EnemyProjectile : MonoBehaviour
             col.isTrigger = true;
         }
         
-        gameObject.tag = "EnemyProjectile";
+        // Try to set tag, but don't fail if tag doesn't exist
+        try
+        {
+            gameObject.tag = "EnemyProjectile";
+        }
+        catch (System.Exception)
+        {
+            // Tag not defined in Unity, ignore
+        }
     }
     
     void Update()
@@ -71,7 +79,7 @@ public class EnemyProjectile : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         // Check if hit the base
-        if (other.gameObject.name.Contains("Base") || other.gameObject.CompareTag("Base"))
+        if (other.gameObject.name.Contains("Base") || IsTaggedAs(other.gameObject, "Base"))
         {
             if (ScoreManager.Instance != null)
             {
@@ -82,7 +90,7 @@ public class EnemyProjectile : MonoBehaviour
         }
         
         // Destroy on terrain hit
-        if (other.gameObject.CompareTag("Terrain") || 
+        if (IsTaggedAs(other.gameObject, "Terrain") || 
             other.gameObject.GetComponent<Terrain>() != null ||
             other.gameObject.name.Contains("Terrain") ||
             other.gameObject.name.Contains("Ground"))
@@ -94,7 +102,7 @@ public class EnemyProjectile : MonoBehaviour
     void OnCollisionEnter(Collision collision)
     {
         // Check if hit the base
-        if (collision.gameObject.name.Contains("Base") || collision.gameObject.CompareTag("Base"))
+        if (collision.gameObject.name.Contains("Base") || IsTaggedAs(collision.gameObject, "Base"))
         {
             if (ScoreManager.Instance != null)
             {
@@ -106,5 +114,18 @@ public class EnemyProjectile : MonoBehaviour
         
         // Destroy on any collision
         Destroy(gameObject);
+    }
+    
+    // Safe tag check that doesn't throw if tag doesn't exist
+    bool IsTaggedAs(GameObject obj, string tagName)
+    {
+        try
+        {
+            return obj.CompareTag(tagName);
+        }
+        catch (System.Exception)
+        {
+            return false;
+        }
     }
 }

@@ -50,19 +50,19 @@ public class GameUISetup : MonoBehaviour
     {
         if (GameManager.Instance != null)
         {
-            // Check if we're in menu state and any key is pressed
+            // Check if we're in menu state and space key is pressed
             if (GameManager.Instance.CurrentState == GameManager.GameState.Menu)
             {
-                if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
+                if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
                 {
                     StartGame();
                     return;
                 }
             }
-            // Check if we're in game over state and any key is pressed
+            // Check if we're in game over state and space key is pressed
             else if (GameManager.Instance.CurrentState == GameManager.GameState.GameOver)
             {
-                if (Keyboard.current != null && Keyboard.current.anyKey.wasPressedThisFrame)
+                if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
                 {
                     RestartGame();
                     return;
@@ -209,8 +209,8 @@ public class GameUISetup : MonoBehaviour
         instrText.outlineColor = Color.black;
         instrText.outlineWidth = 0.1f;
         
-        // "Press Any Key to Start" message with animation
-        GameObject startMsgObj = CreateAnimatedTextObject("StartMessage", panel.transform, "Press Any Key to Start", 36, FontStyles.Bold, new Color(1f, 1f, 0.5f, 1f));
+        // "Press SPACE to Start" message with animation
+        GameObject startMsgObj = CreateAnimatedTextObject("StartMessage", panel.transform, "Press SPACE to Start", 36, FontStyles.Bold, new Color(1f, 1f, 0.5f, 1f));
         RectTransform msgRect = startMsgObj.GetComponent<RectTransform>();
         msgRect.anchorMin = new Vector2(0.5f, 0.08f);
         msgRect.anchorMax = new Vector2(0.5f, 0.18f);
@@ -246,8 +246,8 @@ public class GameUISetup : MonoBehaviour
         subtitleText.outlineColor = Color.black;
         subtitleText.outlineWidth = 0.15f;
         
-        // "Press Any Key to Restart" message with animation
-        GameObject restartMsgObj = CreateAnimatedTextObject("RestartMessage", panel.transform, "Press Any Key", 36, FontStyles.Bold, new Color(1f, 1f, 0.5f, 1f));
+        // "Press SPACE to Restart" message with animation
+        GameObject restartMsgObj = CreateAnimatedTextObject("RestartMessage", panel.transform, "Press SPACE to Restart", 36, FontStyles.Bold, new Color(1f, 1f, 0.5f, 1f));
         RectTransform msgRect = restartMsgObj.GetComponent<RectTransform>();
         msgRect.anchorMin = new Vector2(0.5f, 0.25f);
         msgRect.anchorMax = new Vector2(0.5f, 0.35f);
