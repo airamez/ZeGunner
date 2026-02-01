@@ -6,13 +6,13 @@ public class TerrainTextureGenerator : MonoBehaviour
     [SerializeField] private Terrain terrain;
     [SerializeField] private bool generateOnStart = true;
     [SerializeField] private bool regenerateInEditor = false;
-    [SerializeField] private int textureResolution = 1024;
+    [SerializeField] private int textureResolution = 4096;
     
-    [Header("Grass Colors")]
-    [SerializeField] private Color grassDark = new Color(0.15f, 0.28f, 0.08f, 1f);
-    [SerializeField] private Color grassMedium = new Color(0.22f, 0.38f, 0.12f, 1f);
-    [SerializeField] private Color grassLight = new Color(0.35f, 0.48f, 0.18f, 1f);
-    [SerializeField] private Color grassDry = new Color(0.45f, 0.42f, 0.22f, 1f);
+    [Header("Grass Colors - Professional Battlefield")]
+    [SerializeField] private Color grassDark = new Color(0.28f, 0.42f, 0.20f, 1f);
+    [SerializeField] private Color grassMedium = new Color(0.32f, 0.48f, 0.24f, 1f);
+    [SerializeField] private Color grassLight = new Color(0.38f, 0.54f, 0.28f, 1f);
+    [SerializeField] private Color grassDry = new Color(0.42f, 0.48f, 0.26f, 1f);
     
     [Header("Dirt Colors")]
     [SerializeField] private Color dirtDark = new Color(0.25f, 0.18f, 0.10f, 1f);
@@ -31,15 +31,15 @@ public class TerrainTextureGenerator : MonoBehaviour
     [SerializeField] private float rockMaxHeight = 0.75f;
     [SerializeField] private float snowMinHeight = 0.85f;
     
-    [Header("Noise Settings")]
-    [SerializeField] private float largeNoiseScale = 0.008f;
-    [SerializeField] private float mediumNoiseScale = 0.025f;
-    [SerializeField] private float smallNoiseScale = 0.08f;
-    [SerializeField] private float microNoiseScale = 0.2f;
+    [Header("Noise Settings - Smooth Battlefield Terrain")]
+    [SerializeField] private float largeNoiseScale = 0.005f;
+    [SerializeField] private float mediumNoiseScale = 0.015f;
+    [SerializeField] private float smallNoiseScale = 0.05f;
+    [SerializeField] private float microNoiseScale = 0.15f;
     
     [Header("Variation Settings")]
-    [SerializeField] private float dirtPatchFrequency = 0.15f;
-    [SerializeField] private float grassVariation = 0.25f;
+    [SerializeField] private float dirtPatchFrequency = 0.08f;
+    [SerializeField] private float grassVariation = 0.12f;
     
     private TerrainData terrainData;
     private int width;
@@ -228,44 +228,33 @@ public class TerrainTextureGenerator : MonoBehaviour
     
     Color GetGrassColor(float noise, float normalizedX, float normalizedY)
     {
-        // Multiple grass types for variety
-        float grassTypeNoise = Mathf.PerlinNoise(normalizedX * 8, normalizedY * 8);
-        float grassDetailNoise = Mathf.PerlinNoise(normalizedX * 40, normalizedY * 40);
+        // Smooth grass variation for professional battlefield look
+        float grassTypeNoise = Mathf.PerlinNoise(normalizedX * 5, normalizedY * 5);
+        float grassDetailNoise = Mathf.PerlinNoise(normalizedX * 30, normalizedY * 30);
         
-        Color grassBase;
+        // Blend between grass colors smoothly - no harsh patches
+        Color grassBase = Color.Lerp(grassDark, grassMedium, grassTypeNoise);
         
-        if (grassTypeNoise < 0.3f)
+        // Add secondary blend for more natural variation
+        float secondaryBlend = Mathf.PerlinNoise(normalizedX * 10 + 100, normalizedY * 10 + 100);
+        if (secondaryBlend > 0.5f)
         {
-            // Dark lush grass
-            grassBase = grassDark;
-        }
-        else if (grassTypeNoise < 0.6f)
-        {
-            // Medium grass
-            grassBase = grassMedium;
-        }
-        else if (grassTypeNoise < 0.85f)
-        {
-            // Light grass
-            grassBase = grassLight;
-        }
-        else
-        {
-            // Dry/yellow grass patches
-            grassBase = grassDry;
+            grassBase = Color.Lerp(grassBase, grassLight, (secondaryBlend - 0.5f) * 0.6f);
         }
         
-        // Blend between grass types for smooth transitions
-        float blendNoise = Mathf.PerlinNoise(normalizedX * 15 + 400, normalizedY * 15 + 400);
-        Color blendTarget = blendNoise < 0.5f ? grassMedium : grassLight;
-        grassBase = Color.Lerp(grassBase, blendTarget, blendNoise * grassVariation);
+        // Occasional dry grass patches (very subtle)
+        float dryPatchNoise = Mathf.PerlinNoise(normalizedX * 3 + 200, normalizedY * 3 + 200);
+        if (dryPatchNoise > 0.75f)
+        {
+            grassBase = Color.Lerp(grassBase, grassDry, (dryPatchNoise - 0.75f) * 0.8f);
+        }
         
-        // Add fine detail variation
-        float detailVariation = (grassDetailNoise - 0.5f) * 0.15f;
+        // Add very subtle detail variation for texture
+        float detailVariation = (grassDetailNoise - 0.5f) * 0.06f;
         grassBase = new Color(
             Mathf.Clamp01(grassBase.r + detailVariation),
-            Mathf.Clamp01(grassBase.g + detailVariation * 1.2f),
-            Mathf.Clamp01(grassBase.b + detailVariation * 0.5f),
+            Mathf.Clamp01(grassBase.g + detailVariation * 1.1f),
+            Mathf.Clamp01(grassBase.b + detailVariation * 0.4f),
             1f
         );
         
@@ -274,8 +263,8 @@ public class TerrainTextureGenerator : MonoBehaviour
     
     Color AddMicroDetail(Color baseColor, float microNoise, float terrainHeight)
     {
-        // Add subtle brightness variation for texture
-        float brightnessVariation = (microNoise - 0.5f) * 0.08f;
+        // Add very subtle brightness variation for professional texture
+        float brightnessVariation = (microNoise - 0.5f) * 0.04f;
         
         // Less variation at higher elevations (rock/snow)
         if (terrainHeight > rockMaxHeight)
