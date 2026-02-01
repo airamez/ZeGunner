@@ -152,32 +152,51 @@ public class HelicopterSpawner : MonoBehaviour
         if (rb == null)
         {
             rb = helicopter.AddComponent<Rigidbody>();
-            rb.useGravity = false;
-            rb.isKinematic = false;
         }
+        // Ensure proper collision detection settings
+        rb.useGravity = false;
+        rb.isKinematic = false;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic; // Better collision detection
         
-        // Add Collider if missing
-        Collider helicopterCollider = helicopter.GetComponent<Collider>();
-        if (helicopterCollider == null)
-        {
-            BoxCollider boxCollider = helicopter.AddComponent<BoxCollider>();
-            boxCollider.size = Vector3.one * 5f;
-            boxCollider.isTrigger = false;
-        }
-        else
-        {
-            if (helicopterCollider.isTrigger)
-            {
-                helicopterCollider.isTrigger = false;
-            }
-        }
+        // Check existing collider setup
         
         // Add helicopter movement script if it exists
         Helicopter helicopterScript = helicopter.GetComponent<Helicopter>();
         if (helicopterScript == null)
         {
             helicopterScript = helicopter.AddComponent<Helicopter>();
+            Debug.Log("Added Helicopter component to helicopter");
         }
+        
+        // Debug log all components and settings
+        Debug.Log($"=== HELICOPTER SETUP ===");
+        Debug.Log($"Name: {helicopter.name}");
+        Debug.Log($"Tag: {helicopter.tag}");
+        Debug.Log($"Layer: {helicopter.layer}");
+        Debug.Log($"Active: {helicopter.activeInHierarchy}");
+        
+        Rigidbody rigidbody = helicopter.GetComponent<Rigidbody>();
+        Debug.Log($"Rigidbody: {rigidbody != null}, UseGravity: {rigidbody?.useGravity}, IsKinematic: {rigidbody?.isKinematic}");
+        
+        Collider[] colliders = helicopter.GetComponents<Collider>();
+        Debug.Log($"Colliders found: {colliders.Length}");
+        
+        // Also check children for colliders
+        Collider[] childColliders = helicopter.GetComponentsInChildren<Collider>();
+        Debug.Log($"Child colliders found: {childColliders.Length}");
+        
+        foreach (Collider col in colliders)
+        {
+            Debug.Log($"  - {col.GetType().Name} (on root): IsTrigger={col.isTrigger}, Enabled={col.enabled}, GameObject={col.gameObject.name}");
+        }
+        
+        foreach (Collider col in childColliders)
+        {
+            Debug.Log($"  - {col.GetType().Name} (child): IsTrigger={col.isTrigger}, Enabled={col.enabled}, GameObject={col.gameObject.name}");
+        }
+        
+        Debug.Log($"Helicopter component: {helicopterScript != null}");
+        Debug.Log($"========================");
         
         // Apply wave speed multiplier (only to max speed, min stays constant)
         float minSpeed = baseMinSpeed;

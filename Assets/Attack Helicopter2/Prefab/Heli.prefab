@@ -285,7 +285,7 @@ GameObject:
   - component: {fileID: -3293676159524177912}
   - component: {fileID: -6201818891867405107}
   m_Layer: 0
-  m_Name: Mi24
+  m_Name: Heli
   m_TagString: Enemy
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -411,8 +411,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 11.055219, y: 7.1938696, z: 27.556646}
-  m_Center: {x: 0, y: -0.4104749, z: -0.16519833}
+  m_Size: {x: 20, y: 10, z: 30}
+  m_Center: {x: 0, y: 1, z: 0}
 --- !u!54 &-6201818891867405107
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -435,11 +435,11 @@ Rigidbody:
     m_Bits: 0
   m_ImplicitCom: 1
   m_ImplicitTensor: 1
-  m_UseGravity: 1
+  m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
   m_Constraints: 0
-  m_CollisionDetection: 0
+  m_CollisionDetection: 2
 --- !u!1 &5465014838325053773
 GameObject:
   m_ObjectHideFlags: 0
