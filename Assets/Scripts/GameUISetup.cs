@@ -16,15 +16,21 @@ public class GameUISetup : MonoBehaviour
     [SerializeField] private Color panelColor = new Color(0.1f, 0.1f, 0.1f, 0.9f);
     [SerializeField] private Color buttonColor = new Color(0.2f, 0.6f, 0.2f, 1f);
     [SerializeField] private Color textColor = Color.white;
-    [SerializeField] private Color titleColor = new Color(1f, 0.8f, 0.2f);
-    [SerializeField] private Color instructionColor = new Color(0.9f, 0.9f, 0.9f);
+    [SerializeField] private Color titleColor = Color.yellow;
+    [SerializeField] private Color instructionColor = Color.white;
     
     [Header("Typography")]
     [SerializeField] private Font titleFont;
     [SerializeField] private Font bodyFont;
-    [SerializeField] private int titleFontSize = 72;
-    [SerializeField] private int instructionFontSize = 28;
-    [SerializeField] private int scoreFontSize = 24;
+    [SerializeField] private int titleFontSize = 84;
+    [SerializeField] private int instructionFontSize = 32;
+    [SerializeField] private int scoreFontSize = 48;
+    [SerializeField] private int buttonFontSize = 36;
+    
+    [Header("Military Styling")]
+    [SerializeField] private Color militaryGreen = new Color(1f, 1f, 1f, 1f);
+    [SerializeField] private Color militaryAmber = new Color(1f, 0.85f, 0.3f, 1f);
+    [SerializeField] private Color militaryRed = new Color(0.9f, 0.2f, 0.2f, 1f);
     
     private Canvas canvas;
     private GameObject menuPanel;
@@ -33,6 +39,11 @@ public class GameUISetup : MonoBehaviour
     
     void Start()
     {
+        // Apply military color scheme
+        textColor = militaryGreen;
+        titleColor = militaryAmber;
+        instructionColor = militaryGreen;
+        
         // Ensure WaveManager exists
         if (WaveManager.Instance == null)
         {
@@ -272,15 +283,15 @@ public class GameUISetup : MonoBehaviour
         scorePanelRect.sizeDelta = new Vector2(500, 450);
         scorePanelRect.anchoredPosition = new Vector2(20, -20);
         
-        // Score background with styling
+        // Score background - make transparent for better text visibility
         Image scoreBg = scorePanel.AddComponent<Image>();
-        scoreBg.color = new Color(0, 0, 0, 0.7f);
+        scoreBg.color = new Color(0, 0, 0, 0.2f); // Much more transparent
         scoreBg.raycastTarget = false;
         
         // No border needed - clean look with just the background
         
         // Create score text object for ScoreManager to use
-        GameObject scoreTextObj = CreateStyledTextObject("ScoreText", scorePanel.transform, "", scoreFontSize, FontStyles.Bold, Color.white, TextAlignmentOptions.TopLeft);
+        GameObject scoreTextObj = CreateStyledTextObject("ScoreText", scorePanel.transform, "", scoreFontSize, FontStyles.Bold, militaryGreen, TextAlignmentOptions.TopLeft);
         RectTransform scoreTextRect = scoreTextObj.GetComponent<RectTransform>();
         scoreTextRect.anchorMin = new Vector2(0, 0);
         scoreTextRect.anchorMax = new Vector2(1, 1);
@@ -289,9 +300,10 @@ public class GameUISetup : MonoBehaviour
         
         // Add styling to score text
         TextMeshProUGUI scoreText = scoreTextObj.GetComponent<TextMeshProUGUI>();
-        scoreText.lineSpacing = 1.3f;
+        scoreText.fontStyle = FontStyles.Bold; // Ensure bold
+        scoreText.lineSpacing = 1.4f;
         scoreText.outlineColor = Color.black;
-        scoreText.outlineWidth = 0.15f;
+        scoreText.outlineWidth = 0.4f; // Even thicker outline for maximum contrast
         
         // Find ScoreManager and assign the text object
         ScoreManager scoreManager = FindAnyObjectByType<ScoreManager>();
@@ -343,7 +355,43 @@ public class GameUISetup : MonoBehaviour
         tmp.alignment = alignment;
         tmp.raycastTarget = false;
         
+        // Apply military styling
+        ApplyMilitaryStyling(tmp, fontSize);
+        
         return textObj;
+    }
+    
+    void ApplyMilitaryStyling(TextMeshProUGUI textComponent, int fontSize)
+    {
+        // Enhanced contrast with stronger outline
+        textComponent.outlineColor = Color.black;
+        textComponent.outlineWidth = 0.3f;
+        
+        // Add shadow for depth
+        textComponent.fontMaterial.EnableKeyword("OUTLINE_ON");
+        
+        // Set monospace font for military/terminal look
+        // Try to get Liberation Mono from Resources, fallback to TMP default
+        TMP_FontAsset monospaceFont = Resources.Load<TMP_FontAsset>("Fonts & Materials/LiberationMono SDF");
+        
+        if (monospaceFont != null)
+        {
+            textComponent.font = monospaceFont;
+        }
+        // If no monospace font found, use default TMP font (safer fallback)
+        
+        // Adjust line spacing for better readability
+        if (fontSize >= 32)
+        {
+            textComponent.lineSpacing = 1.4f;
+        }
+        else
+        {
+            textComponent.lineSpacing = 1.3f;
+        }
+        
+        // Add subtle character spacing for military look
+        textComponent.characterSpacing = 0.05f;
     }
     
     GameObject CreateAnimatedTextObject(string name, Transform parent, string text, int fontSize, FontStyles style, Color color)
@@ -389,10 +437,13 @@ public class GameUISetup : MonoBehaviour
         
         TextMeshProUGUI tmp = textObj.AddComponent<TextMeshProUGUI>();
         tmp.text = text;
-        tmp.fontSize = 32;
+        tmp.fontSize = buttonFontSize;
         tmp.fontStyle = FontStyles.Bold;
-        tmp.color = Color.white;
+        tmp.color = militaryGreen;
         tmp.alignment = TextAlignmentOptions.Center;
+        
+        // Apply military styling to button text
+        ApplyMilitaryStyling(tmp, buttonFontSize);
         
         // Add click listener
         btn.onClick.AddListener(onClick);
@@ -439,6 +490,14 @@ public class GameUISetup : MonoBehaviour
         {
             GameObject sensitivityObj = new GameObject("MouseSensitivityManager");
             sensitivityObj.AddComponent<MouseSensitivityManager>();
+        }
+        
+        // Create BaseGround component
+        BaseGround baseGround = FindAnyObjectByType<BaseGround>();
+        if (baseGround == null)
+        {
+            GameObject baseGroundObj = new GameObject("BaseGround");
+            baseGround = baseGroundObj.AddComponent<BaseGround>();
         }
         
         // Create TerrainTextureGenerator component

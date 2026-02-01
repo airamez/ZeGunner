@@ -318,10 +318,14 @@ public class GameManager : MonoBehaviour
         
         TextMeshProUGUI titleText = titleObj.AddComponent<TextMeshProUGUI>();
         titleText.text = "PAUSED";
-        titleText.fontSize = 72;
+        titleText.fontSize = 84;
         titleText.fontStyle = FontStyles.Bold;
-        titleText.color = Color.white;
+        titleText.color = new Color(1f, 0.85f, 0.3f, 1f); // Military amber
         titleText.alignment = TextAlignmentOptions.Center;
+        titleText.outlineColor = Color.black;
+        titleText.outlineWidth = 0.2f;
+        titleText.lineSpacing = 1.4f;
+        titleText.characterSpacing = 0.05f;
         
         
         // Game instructions text (larger font)
@@ -337,13 +341,14 @@ public class GameManager : MonoBehaviour
         
         TextMeshProUGUI instrText = instructionsObj.AddComponent<TextMeshProUGUI>();
         instrText.text = instructions;
-        instrText.fontSize = 24; // Increased from 20
+        instrText.fontSize = 32;
         instrText.fontStyle = FontStyles.Normal;
-        instrText.color = new Color(0.9f, 0.9f, 0.9f);
+        instrText.color = new Color(0.7f, 0.85f, 0.7f, 1f); // Military green
         instrText.alignment = TextAlignmentOptions.TopLeft;
-        instrText.lineSpacing = 1.2f;
+        instrText.lineSpacing = 1.4f;
         instrText.outlineColor = Color.black;
-        instrText.outlineWidth = 0.1f;
+        instrText.outlineWidth = 0.2f;
+        instrText.characterSpacing = 0.05f;
         
         // Continue message (moved up a bit more)
         GameObject continueObj = new GameObject("ContinueMessage");
@@ -356,10 +361,14 @@ public class GameManager : MonoBehaviour
         
         TextMeshProUGUI continueText = continueObj.AddComponent<TextMeshProUGUI>();
         continueText.text = "Press SPACE to Continue\n\nPress ESC Again to Exit Game";
-        continueText.fontSize = 28;
+        continueText.fontSize = 36;
         continueText.fontStyle = FontStyles.Bold;
-        continueText.color = new Color(1f, 1f, 0.5f, 1f);
+        continueText.color = new Color(1f, 0.85f, 0.3f, 1f); // Military amber
         continueText.alignment = TextAlignmentOptions.Center;
+        continueText.outlineColor = Color.black;
+        continueText.outlineWidth = 0.2f;
+        continueText.lineSpacing = 1.4f;
+        continueText.characterSpacing = 0.05f;
     }
     
     public void SetGameState(GameState newState)

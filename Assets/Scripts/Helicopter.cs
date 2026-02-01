@@ -251,8 +251,7 @@ public class Helicopter : MonoBehaviour
         {
             AudioSource.PlayClipAtPoint(explosionSound, transform.position);
         }
-        
-        Debug.Log("Helicopter destroyed - calling Destroy(gameObject)");
+       
         Destroy(gameObject);
     }
     
