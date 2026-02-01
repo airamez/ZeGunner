@@ -41,6 +41,9 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Percentage increase in helicopter speed per wave (10 = 10%)")]
     [SerializeField] private float baseSpeedWaveIncrement = 10f;
     
+    [Tooltip("Percentage increase in spawn distance per wave (10 = 10%)")]
+    [SerializeField] private float spawnDistancePercentualIncrement = 10f;
+    
     public int BaseHelicopterCount => baseHelicopterCount;
     public float BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
@@ -78,15 +81,9 @@ public class HelicopterSpawner : MonoBehaviour
     
     private List<GameObject> activeHelicopters = new List<GameObject>();
     
-    // Current wave distances (modified by wave progression)
-    private float currentMinSpawnDistance;
-    private float currentMaxSpawnDistance;
-    
     void Start()
     {
-        // Initialize current distances
-        currentMinSpawnDistance = minSpawnDistance;
-        currentMaxSpawnDistance = maxSpawnDistance;
+        // No initialization needed - distances calculated per wave
     }
     
     void Update()
@@ -130,7 +127,14 @@ public class HelicopterSpawner : MonoBehaviour
         
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
-        float randomDistance = Random.Range(minSpawnDistance, maxSpawnDistance);
+        
+        // Calculate spawn distance based on current wave
+        int currentWave = WaveManager.Instance != null ? WaveManager.Instance.GetCurrentWave() : 1;
+        float waveDistanceIncrease = minSpawnDistance * (spawnDistancePercentualIncrement / 100f) * (currentWave - 1);
+        float currentSpawnDistance = Mathf.Min(minSpawnDistance + waveDistanceIncrease, maxSpawnDistance);
+        
+        // Spawn at the calculated distance (all enemies at same distance for this wave)
+        float randomDistance = currentSpawnDistance;
         
         Vector3 spawnOffset = new Vector3(
             Mathf.Cos(randomAngle) * randomDistance,

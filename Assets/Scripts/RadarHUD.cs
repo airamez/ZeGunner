@@ -265,15 +265,10 @@ public class RadarHUD : MonoBehaviour
     {
         if (cameraTransform == null || directionIndicator == null) return;
         
-        // Get camera's forward direction on the XZ plane
-        Vector3 cameraForward = cameraTransform.forward;
-        cameraForward.y = 0;
-        cameraForward.Normalize();
-        
-        // Calculate angle from forward (Z+)
-        float angle = Mathf.Atan2(cameraForward.x, cameraForward.z) * Mathf.Rad2Deg;
-        
-        directionIndicator.transform.localRotation = Quaternion.Euler(0, 0, -angle);
+        // The direction indicator should always point straight up (0 degrees)
+        // since the radar rotates enemy positions relative to camera direction
+        // The line represents "forward" direction from camera's perspective
+        directionIndicator.transform.localRotation = Quaternion.identity;
     }
     
     void UpdateEnemyPositions()
