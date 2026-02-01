@@ -27,6 +27,7 @@ public class Tank : MonoBehaviour
     private float projectileDamage;
     private float projectileSpeed;
     private float projectileScale;
+    private float projectileSpawnHeight;
     private bool isFiring = false;
     private float nextFireTime;
     private Transform barrelTransform;
@@ -35,7 +36,7 @@ public class Tank : MonoBehaviour
     private AudioClip firingSound;
     private bool isDestroyed = false;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, float projSpawnHeight)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -56,6 +57,7 @@ public class Tank : MonoBehaviour
         projectileDamage = damage;
         projectileSpeed = projSpeed;
         projectileScale = projScale;
+        projectileSpawnHeight = projSpawnHeight;
         
         isInitialized = true;
         
@@ -218,8 +220,8 @@ public class Tank : MonoBehaviour
             return;
         }
         
-        // Spawn projectile from in front of tank
-        Vector3 spawnPos = transform.position + transform.forward * 2f + Vector3.up * 0.5f;
+        // Spawn projectile from in front of tank at specified height
+        Vector3 spawnPos = transform.position + transform.forward * 2f + Vector3.up * projectileSpawnHeight;
         Vector3 direction = (targetPosition - spawnPos).normalized;
         
         // Create projectile - EnemyProjectile will handle rotation

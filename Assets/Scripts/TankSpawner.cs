@@ -34,6 +34,9 @@ public class TankSpawner : MonoBehaviour
     
     [Tooltip("Absolute maximum spawn distance (upper limit)")]
     [SerializeField] private float maxSpawnDistance = 100f;
+    
+    [Tooltip("Height at which tanks spawn")]
+    [SerializeField] private float spawnHeight = 0.5f;
 
     [Header("Tank Speed")]
     [Tooltip("Base minimum speed of spawned tanks (wave 1)")]
@@ -90,7 +93,8 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Scale of fired projectiles")]
     [SerializeField] private float projectileScale = 0.1f;
     
-    [SerializeField] private float spawnHeight = 0.5f;
+    [Tooltip("Height at which projectiles are fired from tanks")]
+    [SerializeField] private float projectileSpawnHeight = 1.5f;
     
     private List<GameObject> activeTanks = new List<GameObject>();
     
@@ -192,7 +196,7 @@ public class TankSpawner : MonoBehaviour
         float maxSpeed = baseMaxSpeed * speedMultiplier;
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, projectileSpawnHeight);
         
         activeTanks.Add(tank);
         

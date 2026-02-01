@@ -174,6 +174,7 @@ MonoBehaviour:
   minSpawnDistance: 300
   initialMaxSpawnDistance: 150
   maxSpawnDistance: 500
+  spawnHeight: 0.5
   baseMinSpeed: 1
   baseMaxSpeed: 5
   baseTankCount: 5
@@ -189,7 +190,7 @@ MonoBehaviour:
   hitPoints: 1
   projectileSpeed: 20
   projectileScale: 0.05
-  spawnHeight: 0.5
+  projectileSpawnHeight: 1.5
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
