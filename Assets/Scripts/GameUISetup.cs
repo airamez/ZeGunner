@@ -492,14 +492,6 @@ public class GameUISetup : MonoBehaviour
             sensitivityObj.AddComponent<MouseSensitivityManager>();
         }
         
-        // Create BaseGround component
-        BaseGround baseGround = FindAnyObjectByType<BaseGround>();
-        if (baseGround == null)
-        {
-            GameObject baseGroundObj = new GameObject("BaseGround");
-            baseGround = baseGroundObj.AddComponent<BaseGround>();
-        }
-        
         // Create TerrainTextureGenerator component
         TerrainTextureGenerator textureGenerator = FindAnyObjectByType<TerrainTextureGenerator>();
         if (textureGenerator == null)

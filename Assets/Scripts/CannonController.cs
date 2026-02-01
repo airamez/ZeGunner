@@ -16,7 +16,7 @@ public class CannonController : MonoBehaviour
     
     [Header("Camera Movement")]
     [SerializeField] private float verticalSpeed = 5f;
-    [SerializeField] private float minHeightAboveBase = 2f;
+    [SerializeField] private float minHeight = 2f;
     [SerializeField] private float maxElevation = 50f;
     
     private float nextFireTime = 0f;
@@ -134,13 +134,8 @@ public class CannonController : MonoBehaviour
             Vector3 currentPosition = transform.position;
             float newY = currentPosition.y + (verticalInput * verticalSpeed * Time.deltaTime);
             
-            // Calculate minimum height (base top + minimum height above base)
-            float baseTopY = 0f; // Base is at ground level (0,0,0)
-            if (baseTransform != null)
-            {
-                baseTopY = baseTransform.position.y;
-            }
-            float minY = baseTopY + minHeightAboveBase;
+            // Calculate minimum height from ground level (0,0,0)
+            float minY = minHeight; // Direct height from ground level
             
             // Clamp the new position to prevent going below minimum height or above maximum elevation
             newY = Mathf.Clamp(newY, minY, maxElevation);
