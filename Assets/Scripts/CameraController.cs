@@ -5,6 +5,7 @@ public class CameraController : MonoBehaviour
 {
     [Header("Mouse Sensitivity")]
     [SerializeField] private float mouseSensitivity = 0.05f;
+    [SerializeField] private bool useSensitivityManager = true;
     
     [Header("Vertical Rotation Limits")]
     [SerializeField] private float minVerticalAngle = -90f;
@@ -34,8 +35,17 @@ public class CameraController : MonoBehaviour
         if (mouse == null) return;
         
         Vector2 mouseDelta = mouse.delta.ReadValue();
-        float mouseX = mouseDelta.x * mouseSensitivity;
-        float mouseY = mouseDelta.y * mouseSensitivity;
+        
+        // Get sensitivity from manager or use local value
+        float currentSensitivity = mouseSensitivity;
+        if (useSensitivityManager && MouseSensitivityManager.Instance != null)
+        {
+            // Convert manager sensitivity (0.5-10) to camera sensitivity (0.01-0.2)
+            currentSensitivity = MouseSensitivityManager.Instance.GetSensitivity() * 0.02f;
+        }
+        
+        float mouseX = mouseDelta.x * currentSensitivity;
+        float mouseY = mouseDelta.y * currentSensitivity;
         
         rotationY += mouseX;
         rotationX -= mouseY;
