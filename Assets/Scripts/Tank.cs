@@ -297,10 +297,15 @@ public class Tank : MonoBehaviour
     
     void ChangeSpeed()
     {
-        // Generate random speed within min/max range
-        float newSpeed = Random.Range(minSpeed, maxSpeed);
-        moveSpeed = newSpeed;
+        // Get wave speed multiplier from WaveManager
+        float speedMultiplier = 1f;
+        if (WaveManager.Instance != null)
+        {
+            speedMultiplier = WaveManager.Instance.GetTankSpeedMultiplier();
+        }
         
+        // Apply wave increment to base speed
+        moveSpeed = moveSpeed * speedMultiplier;
     }
     
     void OnCollisionEnter(Collision collision)
