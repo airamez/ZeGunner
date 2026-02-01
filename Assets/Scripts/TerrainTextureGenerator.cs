@@ -80,8 +80,6 @@ public class TerrainTextureGenerator : MonoBehaviour
         
         // Apply to terrain
         ApplyTextureToTerrain(proceduralTexture);
-        
-        Debug.Log("Terrain textures generated successfully!");
     }
     
     float GetHeightAtPosition(float normalizedX, float normalizedY)
@@ -325,7 +323,6 @@ public class TerrainTextureGenerator : MonoBehaviour
         #if UNITY_EDITOR
         string path = "Assets/GeneratedTerrainTexture.png";
         System.IO.File.WriteAllBytes(path, texture.EncodeToPNG());
-        Debug.Log($"Terrain texture saved to: {path}");
         #endif
     }
     
@@ -340,6 +337,5 @@ public class TerrainTextureGenerator : MonoBehaviour
     [ContextMenu("Reset to Original")]
     public void ResetToOriginal()
     {
-        Debug.Log("Reset functionality would require saving original texture first");
     }
 }

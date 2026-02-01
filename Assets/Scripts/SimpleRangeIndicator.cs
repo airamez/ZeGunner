@@ -4,12 +4,8 @@ public class SimpleRangeIndicator : MonoBehaviour
 {
     void Start()
     {
-        Debug.Log("SimpleRangeIndicator: Creating test circles");
-        
         // Create a simple red circle for testing
         CreateTestCircle("TestCircle", Color.red, 20f, 5f);
-        
-        Debug.Log("SimpleRangeIndicator: Test circle created");
     }
     
     void CreateTestCircle(string name, Color color, float radius, float height)

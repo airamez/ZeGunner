@@ -134,8 +134,6 @@ public class WaveManager : MonoBehaviour
             // Round up to next multiple of 5
             tanksToSpawnThisWave = Mathf.CeilToInt(rawTankCount / 5f) * 5;
             helicoptersToSpawnThisWave = Mathf.CeilToInt(rawHeliCount / 5f) * 5;
-            
-            Debug.Log($"Wave {currentWave} - Previous: {previousTankCount}, {previousHeliCount} → Raw: {rawTankCount:F1}, {rawHeliCount:F1} → Final: {tanksToSpawnThisWave}, {helicoptersToSpawnThisWave}");
         }
         
         // Reset counters

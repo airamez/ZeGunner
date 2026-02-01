@@ -25,11 +25,8 @@ public class RangeIndicator : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("RangeIndicator: Starting initialization");
         CreateRangeCircles();
         UpdateRangeCircles();
-        Debug.Log($"RangeIndicator: Tank circle created: {tankRangeCircle != null}");
-        Debug.Log($"RangeIndicator: Helicopter circle created: {helicopterRangeCircle != null}");
     }
     
     void CreateRangeCircles()
@@ -70,20 +67,15 @@ public class RangeIndicator : MonoBehaviour
         TankSpawner tankSpawner = FindAnyObjectByType<TankSpawner>();
         HelicopterSpawner helicopterSpawner = FindAnyObjectByType<HelicopterSpawner>();
         
-        Debug.Log($"RangeIndicator: Tank spawner found: {tankSpawner != null}");
-        Debug.Log($"RangeIndicator: Helicopter spawner found: {helicopterSpawner != null}");
-        
         if (tankSpawner != null && tankLineRenderer != null)
         {
             float tankRange = tankSpawner.DistanceToFire - radiusReduction;
-            Debug.Log($"RangeIndicator: Drawing tank circle with range: {tankRange}");
             DrawCircle(tankLineRenderer, tankRange);
         }
         
         if (helicopterSpawner != null && helicopterLineRenderer != null)
         {
             float helicopterRange = helicopterSpawner.DistanceToFire - radiusReduction;
-            Debug.Log($"RangeIndicator: Drawing helicopter circle with range: {helicopterRange}");
             DrawCircle(helicopterLineRenderer, helicopterRange);
         }
     }
@@ -109,7 +101,6 @@ public class RangeIndicator : MonoBehaviour
         if (Keyboard.current != null && Keyboard.current.rKey.wasPressedThisFrame)
         {
             ToggleIndicators();
-            Debug.Log($"Range indicators {(showIndicators ? "enabled" : "disabled")}");
         }
         
         // Update circles if spawner values change
@@ -120,12 +111,10 @@ public class RangeIndicator : MonoBehaviour
             if (tankRangeCircle != null)
             {
                 tankRangeCircle.SetActive(true);
-                Debug.Log("RangeIndicator: Tank circle activated");
             }
             if (helicopterRangeCircle != null)
             {
                 helicopterRangeCircle.SetActive(true);
-                Debug.Log("RangeIndicator: Helicopter circle activated");
             }
         }
         else

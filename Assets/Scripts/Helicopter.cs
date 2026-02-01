@@ -224,12 +224,8 @@ public class Helicopter : MonoBehaviour
     
     public void DestroyHelicopter(bool byPlayer)
     {
-        Debug.Log($"DestroyHelicopter called - byPlayer: {byPlayer}, isDestroyed: {isDestroyed}");
-        
         if (isDestroyed) return;
         isDestroyed = true;
-        
-        Debug.Log("Helicopter destruction started - registering with managers");
         
         // Always register with WaveManager for wave completion tracking
         if (WaveManager.Instance != null)

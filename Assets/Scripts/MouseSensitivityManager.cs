@@ -69,8 +69,6 @@ public class MouseSensitivityManager : MonoBehaviour
         // Show message
         showSensitivityMessage = true;
         messageTimer = MESSAGE_DURATION;
-        
-        Debug.Log($"Mouse sensitivity changed to: {currentSensitivity:F1}");
     }
     
     void UpdateMessageDisplay()

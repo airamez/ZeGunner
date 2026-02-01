@@ -10,8 +10,6 @@ public class WaterRangeIndicator : MonoBehaviour
     [SerializeField] private int waterSegments = 64;
     [SerializeField] private float waveSpeed = 0.8f;
     [SerializeField] private float waveAmplitude = 0.05f;
-    [SerializeField] private float rippleSpeed = 2f;
-    [SerializeField] private float rippleScale = 0.3f;
     
     private GameObject waterPool;
     private MeshFilter meshFilter;
@@ -21,7 +19,6 @@ public class WaterRangeIndicator : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("WaterRangeIndicator: Starting initialization");
         CreateWaterPool();
         UpdateWaterRadius();
     }
@@ -54,8 +51,6 @@ public class WaterRangeIndicator : MonoBehaviour
         waterMaterial.color = waterColorDeep;
         
         meshRenderer.material = waterMaterial;
-        
-        Debug.Log("WaterRangeIndicator: Water pool created");
     }
     
     void UpdateWaterRadius()
@@ -64,39 +59,27 @@ public class WaterRangeIndicator : MonoBehaviour
         TankSpawner tankSpawner = FindAnyObjectByType<TankSpawner>();
         HelicopterSpawner helicopterSpawner = FindAnyObjectByType<HelicopterSpawner>();
         
-        Debug.Log($"WaterRangeIndicator: Tank spawner found: {tankSpawner != null}");
-        Debug.Log($"WaterRangeIndicator: Helicopter spawner found: {helicopterSpawner != null}");
-        
         float shortestDistance = float.MaxValue;
         
         if (tankSpawner != null)
         {
             shortestDistance = Mathf.Min(shortestDistance, tankSpawner.DistanceToFire);
-            Debug.Log($"WaterRangeIndicator: Tank distance to fire: {tankSpawner.DistanceToFire}");
         }
         
         if (helicopterSpawner != null)
         {
             shortestDistance = Mathf.Min(shortestDistance, helicopterSpawner.DistanceToFire);
-            Debug.Log($"WaterRangeIndicator: Helicopter distance to fire: {helicopterSpawner.DistanceToFire}");
         }
         
         if (shortestDistance != float.MaxValue)
         {
             currentRadius = shortestDistance - 2.5f; // Reduce by 3 units (increase by 2 units)
-            Debug.Log($"WaterRangeIndicator: Using radius: {currentRadius} (original: {shortestDistance})");
             GenerateWaterMesh();
-        }
-        else
-        {
-            Debug.LogWarning("WaterRangeIndicator: No spawners found!");
         }
     }
     
     void GenerateWaterMesh()
     {
-        Debug.Log($"WaterRangeIndicator: Generating mesh with radius {currentRadius} at height {waterHeight}");
-        
         waterMesh.Clear();
         
         // Simple single-ring mesh (working version)
@@ -151,8 +134,6 @@ public class WaterRangeIndicator : MonoBehaviour
         waterMesh.uv = uvs;
         
         waterMesh.RecalculateBounds();
-        
-        Debug.Log($"WaterRangeIndicator: Mesh generated with {vertices.Length} vertices");
     }
     
     void AnimateWater()
