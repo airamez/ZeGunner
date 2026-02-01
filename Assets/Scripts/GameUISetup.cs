@@ -430,18 +430,24 @@ public class GameUISetup : MonoBehaviour
             sensitivityObj.AddComponent<MouseSensitivityManager>();
         }
         
-        // Create RangeIndicator component
-        RangeIndicator rangeIndicator = FindAnyObjectByType<RangeIndicator>();
-        if (rangeIndicator == null)
+        // Create TerrainTextureGenerator component
+        TerrainTextureGenerator textureGenerator = FindAnyObjectByType<TerrainTextureGenerator>();
+        if (textureGenerator == null)
         {
-            GameObject rangeObj = new GameObject("RangeIndicator");
-            rangeIndicator = rangeObj.AddComponent<RangeIndicator>();
-        }
-        
-        // Set initial state to Menu
-        if (gm != null)
-        {
-            gm.SetGameState(GameManager.GameState.Menu);
+            GameObject textureObj = new GameObject("TerrainTextureGenerator");
+            textureGenerator = textureObj.AddComponent<TerrainTextureGenerator>();
+            
+            // Find the terrain and assign it
+            Terrain terrain = FindAnyObjectByType<Terrain>();
+            if (terrain != null)
+            {
+                var terrainField = textureGenerator.GetType().GetField("terrain", 
+                    System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+                if (terrainField != null)
+                {
+                    terrainField.SetValue(textureGenerator, terrain);
+                }
+            }
         }
         
         // Find the buttons and panels we created
