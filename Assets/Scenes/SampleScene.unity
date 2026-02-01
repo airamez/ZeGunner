@@ -165,16 +165,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tankPrefab: {fileID: 1788451793792189928, guid: 5f3d07d75c5cb02478bb3154bf64bc0d, type: 3}
   baseTransform: {fileID: 1595826105}
-  tankScale: 0.5
+  tankScale: 1
   closeStraightLineDistance: 30
   zigzagMinInterval: 10
   zigzagIntervalOffset: 15
   maxZigzagAngle: 25
-  minSpawnDistance: 75
-  initialMaxSpawnDistance: 100
-  maxSpawnDistance: 400
-  baseMinSpeed: 0.1
-  baseMaxSpeed: 0.5
+  initialMinSpawnDistance: 100
+  minSpawnDistance: 300
+  initialMaxSpawnDistance: 150
+  maxSpawnDistance: 500
+  baseMinSpeed: 1
+  baseMaxSpeed: 5
   baseTankCount: 5
   baseCountWaveIncrement: 20
   baseSpeedWaveIncrement: 5
@@ -185,10 +186,10 @@ MonoBehaviour:
   distanceToFire: 20
   firingSound: {fileID: 8300000, guid: 7f4f64b8d64766e489efc93a76c36473, type: 3}
   rateOfFire: 3
-  hitPoints: 2
+  hitPoints: 1
   projectileSpeed: 20
   projectileScale: 0.05
-  spawnHeight: 0.1
+  spawnHeight: 0.5
 --- !u!1 &330585543
 GameObject:
   m_ObjectHideFlags: 0
@@ -252,7 +253,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 70
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -279,7 +280,7 @@ Transform:
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 7.69, z: 0}
+  m_LocalPosition: {x: 0, y: 10, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -913,6 +914,96 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1934238607
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1934238611}
+  - component: {fileID: 1934238610}
+  - component: {fileID: 1934238609}
+  m_Layer: 0
+  m_Name: BaseGround
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!23 &1934238609
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934238607}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_MaskInteraction: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!33 &1934238610
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934238607}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &1934238611
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1934238607}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.045, z: 0}
+  m_LocalScale: {x: 27, y: 0.01, z: 27}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2074464211
 GameObject:
   m_ObjectHideFlags: 0
@@ -944,15 +1035,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HelicopterSpawner
   helicopterPrefab: {fileID: 4485264436599892038, guid: a1efafa8a3b3f78458ef7f9a033ed480, type: 3}
   baseTransform: {fileID: 1595826105}
-  helicopterScale: 0.2
-  minSpawnDistance: 50
-  initialMaxSpawnDistance: 75
-  maxSpawnDistance: 400
+  helicopterScale: 0.5
+  initialMinSpawnDistance: 150
+  minSpawnDistance: 350
+  initialMaxSpawnDistance: 150
+  maxSpawnDistance: 500
   minSpawnHeight: 5
   maxSpawnHeight: 50
-  baseMinSpeed: 0.5
-  baseMaxSpeed: 2
-  baseHelicopterCount: 3
+  baseMinSpeed: 3
+  baseMaxSpeed: 7
+  baseHelicopterCount: 5
   baseCountWaveIncrement: 10
   baseSpeedWaveIncrement: 5
   spawnDistanceIncrement: 10
@@ -1040,3 +1132,4 @@ SceneRoots:
   - {fileID: 2091168401}
   - {fileID: 2074464213}
   - {fileID: 1809158623}
+  - {fileID: 1934238611}

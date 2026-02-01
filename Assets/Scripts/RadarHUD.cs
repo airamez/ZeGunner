@@ -12,9 +12,9 @@ public class RadarHUD : MonoBehaviour
     [SerializeField] private float maxHeightLineLength = 30f;
     
     [Header("Colors")]
-    [SerializeField] private Color radarBackgroundColor = new Color(0f, 0.2f, 0f, 0.7f);
+    [SerializeField] private Color radarBackgroundColor = new Color(0.55f, 0.55f, 0.55f, 0.95f);
     [SerializeField] private Color radarBorderColor = new Color(0f, 1f, 0f, 0.8f);
-    [SerializeField] private Color tankColor = new Color(1f, 0.3f, 0.3f, 1f); // Red for tanks
+    [SerializeField] private Color tankColor = new Color(1f, 0f, 0f, 1f); // Bright pure red for tanks
     [SerializeField] private Color helicopterColor = new Color(1f, 1f, 0.3f, 1f); // Yellow for helicopters
     [SerializeField] private Color centerColor = new Color(0f, 1f, 0f, 1f); // Green for base/center
     [SerializeField] private Color rangeCircleColor = new Color(0f, 0.5f, 0f, 0.5f);
@@ -27,7 +27,7 @@ public class RadarHUD : MonoBehaviour
     private RectTransform radarRect;
     private List<GameObject> enemyDots = new List<GameObject>();
     private List<GameObject> heightLines = new List<GameObject>();
-    private GameObject centerDot;
+    private GameObject centerDot; // Base marker on radar
     private GameObject directionIndicator;
     
     void Start()
