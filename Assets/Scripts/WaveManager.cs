@@ -114,11 +114,29 @@ public class WaveManager : MonoBehaviour
         waitingForNextWave = false;
         waveInProgress = true;
         
-        // Calculate enemies for this wave with separate increment percentages
-        float tankCountMultiplier = 1f + (tankCountIncrement * (currentWave - 1));
-        float heliCountMultiplier = 1f + (heliCountIncrement * (currentWave - 1));
-        tanksToSpawnThisWave = Mathf.CeilToInt(baseTankCount * tankCountMultiplier / 5f) * 5;
-        helicoptersToSpawnThisWave = Mathf.CeilToInt(baseHelicopterCount * heliCountMultiplier / 5f) * 5;
+        // Calculate enemies for this wave
+        if (currentWave == 1)
+        {
+            // First wave uses base counts
+            tanksToSpawnThisWave = baseTankCount;
+            helicoptersToSpawnThisWave = baseHelicopterCount;
+        }
+        else
+        {
+            // For subsequent waves, use previous wave's count as the new base
+            float previousTankCount = tanksToSpawnThisWave;
+            float previousHeliCount = helicoptersToSpawnThisWave;
+            
+            // Apply increment to previous wave's count
+            float rawTankCount = previousTankCount * (1f + tankCountIncrement);
+            float rawHeliCount = previousHeliCount * (1f + heliCountIncrement);
+            
+            // Round up to next multiple of 5
+            tanksToSpawnThisWave = Mathf.CeilToInt(rawTankCount / 5f) * 5;
+            helicoptersToSpawnThisWave = Mathf.CeilToInt(rawHeliCount / 5f) * 5;
+            
+            Debug.Log($"Wave {currentWave} - Previous: {previousTankCount}, {previousHeliCount} → Raw: {rawTankCount:F1}, {rawHeliCount:F1} → Final: {tanksToSpawnThisWave}, {helicoptersToSpawnThisWave}");
+        }
         
         // Reset counters
         tanksSpawnedThisWave = 0;

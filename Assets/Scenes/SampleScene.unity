@@ -177,7 +177,7 @@ MonoBehaviour:
   baseTankCount: 10
   baseCountWaveIncrement: 20
   baseSpeedWaveIncrement: 5
-  explosionPrefab: {fileID: 100008, guid: fafeb973cad62304ba2abdc5dfafbf8f, type: 3}
+  explosionPrefab: {fileID: 100002, guid: d53702834d5814f47bc426b32c199c5e, type: 3}
   explosionSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
   projectilePrefab: {fileID: 5254963598224360212, guid: 41518750c49d5384eba5ff5f176ee847, type: 3}
   distanceToFire: 15
@@ -952,7 +952,7 @@ MonoBehaviour:
   baseHelicopterCount: 5
   baseCountWaveIncrement: 20
   baseSpeedWaveIncrement: 5
-  explosionPrefab: {fileID: 100006, guid: 2e7e92bc7175b744ea40878dedfa79e4, type: 3}
+  explosionPrefab: {fileID: 100008, guid: 2ae9e8f0dfbef424c839cad8118abc5f, type: 3}
   explosionSound: {fileID: 8300000, guid: bbbd451773f5e514d80c78e791d4692e, type: 3}
   projectilePrefab: {fileID: 5639003199960037019, guid: bc1101b41da57f84ba9cde8e9687a233, type: 3}
   distanceToFire: 15
