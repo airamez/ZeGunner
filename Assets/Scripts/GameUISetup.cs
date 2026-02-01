@@ -43,6 +43,7 @@ public class GameUISetup : MonoBehaviour
         if (autoSetupOnStart)
         {
             SetupGameUI();
+            SetupGameManager();
         }
     }
     
@@ -407,11 +408,32 @@ public class GameUISetup : MonoBehaviour
     
     void SetupGameManager()
     {
+        Debug.Log("GameUISetup: SetupGameManager called");
+        
         GameManager gm = FindAnyObjectByType<GameManager>();
         if (gm == null)
         {
+            Debug.Log("GameUISetup: Creating GameManager");
             GameObject gmObj = new GameObject("GameManager");
             gm = gmObj.AddComponent<GameManager>();
+        }
+        else
+        {
+            Debug.Log("GameUISetup: GameManager already exists");
+        }
+        
+        // Create WaterRangeIndicator component
+        WaterRangeIndicator waterIndicator = FindAnyObjectByType<WaterRangeIndicator>();
+        if (waterIndicator == null)
+        {
+            Debug.Log("GameUISetup: Creating WaterRangeIndicator component");
+            GameObject waterObj = new GameObject("WaterRangeIndicator");
+            waterIndicator = waterObj.AddComponent<WaterRangeIndicator>();
+            Debug.Log($"GameUISetup: WaterRangeIndicator created: {waterIndicator != null}");
+        }
+        else
+        {
+            Debug.Log("GameUISetup: WaterRangeIndicator already exists");
         }
         
         // Create GameTimer component

@@ -5,12 +5,12 @@ public class RangeIndicator : MonoBehaviour
 {
     [Header("Range Indicator Settings")]
     [SerializeField] private bool showIndicators = true;
-    [SerializeField] private Color tankRangeColor = new Color(1f, 0.3f, 0f, 0.4f); // Red-orange
-    [SerializeField] private Color helicopterRangeColor = new Color(1f, 0.7f, 0f, 0.3f); // Yellow-orange
+    [SerializeField] private Color tankRangeColor = new Color(1f, 0f, 0f, 0.8f); // Red
+    [SerializeField] private Color helicopterRangeColor = new Color(0f, 0f, 0f, 0.8f); // Black
     [SerializeField] private int circleSegments = 64;
     [SerializeField] private float tankLineWidth = 0.15f;
     [SerializeField] private float helicopterLineWidth = 0.1f;
-    [SerializeField] private float heightAboveGround = 0.1f;
+    [SerializeField] private float heightAboveGround = 5f;
     [SerializeField] private float radiusReduction = 2.5f; // Reduce diameter by 2.5 units
     
     private GameObject tankRangeCircle;
@@ -18,10 +18,18 @@ public class RangeIndicator : MonoBehaviour
     private LineRenderer tankLineRenderer;
     private LineRenderer helicopterLineRenderer;
     
+    void Awake()
+    {
+        Debug.Log("RangeIndicator: Awake called");
+    }
+    
     void Start()
     {
+        Debug.Log("RangeIndicator: Starting initialization");
         CreateRangeCircles();
         UpdateRangeCircles();
+        Debug.Log($"RangeIndicator: Tank circle created: {tankRangeCircle != null}");
+        Debug.Log($"RangeIndicator: Helicopter circle created: {helicopterRangeCircle != null}");
     }
     
     void CreateRangeCircles()
@@ -62,15 +70,20 @@ public class RangeIndicator : MonoBehaviour
         TankSpawner tankSpawner = FindAnyObjectByType<TankSpawner>();
         HelicopterSpawner helicopterSpawner = FindAnyObjectByType<HelicopterSpawner>();
         
+        Debug.Log($"RangeIndicator: Tank spawner found: {tankSpawner != null}");
+        Debug.Log($"RangeIndicator: Helicopter spawner found: {helicopterSpawner != null}");
+        
         if (tankSpawner != null && tankLineRenderer != null)
         {
             float tankRange = tankSpawner.DistanceToFire - radiusReduction;
+            Debug.Log($"RangeIndicator: Drawing tank circle with range: {tankRange}");
             DrawCircle(tankLineRenderer, tankRange);
         }
         
         if (helicopterSpawner != null && helicopterLineRenderer != null)
         {
             float helicopterRange = helicopterSpawner.DistanceToFire - radiusReduction;
+            Debug.Log($"RangeIndicator: Drawing helicopter circle with range: {helicopterRange}");
             DrawCircle(helicopterLineRenderer, helicopterRange);
         }
     }
@@ -105,9 +118,15 @@ public class RangeIndicator : MonoBehaviour
             UpdateRangeCircles();
             
             if (tankRangeCircle != null)
+            {
                 tankRangeCircle.SetActive(true);
+                Debug.Log("RangeIndicator: Tank circle activated");
+            }
             if (helicopterRangeCircle != null)
+            {
                 helicopterRangeCircle.SetActive(true);
+                Debug.Log("RangeIndicator: Helicopter circle activated");
+            }
         }
         else
         {
