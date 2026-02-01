@@ -4,11 +4,14 @@ public class WaterRangeIndicator : MonoBehaviour
 {
     [Header("Water Range Indicator Settings")]
     [SerializeField] private bool showIndicator = true;
-    [SerializeField] private Color waterColor = new Color(0.2f, 0.5f, 0.8f, 0.6f); // Blue water
+    [SerializeField] private Color waterColorDeep = new Color(0.3f, 0.6f, 0.8f, 0.85f); // Light blue water
+    [SerializeField] private Color waterColorShallow = new Color(0.4f, 0.7f, 0.9f, 0.6f); // Very light blue water
     [SerializeField] private float waterHeight = 0.1f; // Closer to ground
     [SerializeField] private int waterSegments = 64;
-    [SerializeField] private float waveSpeed = 1f;
-    [SerializeField] private float waveAmplitude = 0.1f;
+    [SerializeField] private float waveSpeed = 0.8f;
+    [SerializeField] private float waveAmplitude = 0.05f;
+    [SerializeField] private float rippleSpeed = 2f;
+    [SerializeField] private float rippleScale = 0.3f;
     
     private GameObject waterPool;
     private MeshFilter meshFilter;
@@ -48,7 +51,7 @@ public class WaterRangeIndicator : MonoBehaviour
         
         // Create material - use Sprites/Default for guaranteed visibility
         Material waterMaterial = new Material(Shader.Find("Sprites/Default"));
-        waterMaterial.color = new Color(0.2f, 0.5f, 0.8f, 0.6f); // Blue water
+        waterMaterial.color = waterColorDeep;
         
         meshRenderer.material = waterMaterial;
         
@@ -96,7 +99,7 @@ public class WaterRangeIndicator : MonoBehaviour
         
         waterMesh.Clear();
         
-        // Create vertices for circular mesh
+        // Simple single-ring mesh (working version)
         Vector3[] vertices = new Vector3[waterSegments + 1];
         int[] triangles = new int[waterSegments * 3];
         
@@ -149,8 +152,7 @@ public class WaterRangeIndicator : MonoBehaviour
         
         waterMesh.RecalculateBounds();
         
-        Debug.Log($"WaterRangeIndicator: Mesh generated with {vertices.Length} vertices and {triangles.Length/3} triangles");
-        Debug.Log($"WaterRangeIndicator: Mesh bounds: {waterMesh.bounds}");
+        Debug.Log($"WaterRangeIndicator: Mesh generated with {vertices.Length} vertices");
     }
     
     void AnimateWater()
@@ -160,11 +162,11 @@ public class WaterRangeIndicator : MonoBehaviour
         Vector3[] vertices = waterMesh.vertices;
         float time = Time.time * waveSpeed;
         
-        // Animate outer ring vertices with wave effect
+        // Animate outer ring vertices with simple wave effect
         for (int i = 1; i < vertices.Length; i++)
         {
             float angle = (float)(i - 1) / waterSegments * 2f * Mathf.PI;
-            float waveOffset = Mathf.Sin(time + angle * 2) * waveAmplitude;
+            float waveOffset = Mathf.Sin(time + angle * 3f) * waveAmplitude;
             vertices[i] = new Vector3(vertices[i].x, waterHeight + waveOffset, vertices[i].z);
         }
         
