@@ -46,6 +46,7 @@ public class TankSpawner : MonoBehaviour
     public int BaseTankCount => baseTankCount;
     public float BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
+    public float DistanceToFire => distanceToFire;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for tank destruction")]

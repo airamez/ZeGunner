@@ -44,6 +44,7 @@ public class HelicopterSpawner : MonoBehaviour
     public int BaseHelicopterCount => baseHelicopterCount;
     public float BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
+    public float DistanceToFire => distanceToFire;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for helicopter destruction")]

@@ -430,6 +430,14 @@ public class GameUISetup : MonoBehaviour
             sensitivityObj.AddComponent<MouseSensitivityManager>();
         }
         
+        // Create RangeIndicator component
+        RangeIndicator rangeIndicator = FindAnyObjectByType<RangeIndicator>();
+        if (rangeIndicator == null)
+        {
+            GameObject rangeObj = new GameObject("RangeIndicator");
+            rangeIndicator = rangeObj.AddComponent<RangeIndicator>();
+        }
+        
         // Set initial state to Menu
         if (gm != null)
         {
