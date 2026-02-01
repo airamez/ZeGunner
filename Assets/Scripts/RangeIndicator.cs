@@ -11,7 +11,7 @@ public class RangeIndicator : MonoBehaviour
     [SerializeField] private float tankLineWidth = 0.15f;
     [SerializeField] private float helicopterLineWidth = 0.1f;
     [SerializeField] private float heightAboveGround = 0.1f;
-    [SerializeField] private float radiusReduction = 5f; // Reduce diameter by 5 units
+    [SerializeField] private float radiusReduction = 2.5f; // Reduce diameter by 2.5 units
     
     private GameObject tankRangeCircle;
     private GameObject helicopterRangeCircle;
