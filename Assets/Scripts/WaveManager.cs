@@ -89,6 +89,29 @@ public class WaveManager : MonoBehaviour
         StartNextWave();
     }
     
+    // Debug method to force skip to next wave
+    public void ForceNextWave()
+    {
+        // Hide wave complete panel if showing
+        if (waveCompletePanel != null)
+        {
+            waveCompletePanel.SetActive(false);
+        }
+        
+        // Reset wave state
+        waveInProgress = false;
+        waitingForNextWave = false;
+        
+        // Reset spawn counters
+        tanksSpawnedThisWave = 0;
+        helicoptersSpawnedThisWave = 0;
+        tanksDestroyedThisWave = 0;
+        helicoptersDestroyedThisWave = 0;
+        
+        // Start next wave
+        StartNextWave();
+    }
+    
     public void StartNextWave()
     {
         // Resume time when starting next wave

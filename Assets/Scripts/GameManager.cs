@@ -13,6 +13,8 @@ public class GameManager : MonoBehaviour
     
     private GameObject gameOverScreen;
     private GameObject pauseScreen;
+    private GameObject godModeText;
+    private bool godModeActivated = false;
     
     void Awake()
     {
@@ -65,6 +67,83 @@ public class GameManager : MonoBehaviour
                 ResumeGame();
             }
         }
+        
+        // DEBUG: Ctrl+Delete to skip wave (destroy all enemies and start new wave)
+        if (CurrentState == GameState.Playing && Keyboard.current != null)
+        {
+            bool ctrlPressed = Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed;
+            bool deletePressed = Keyboard.current.deleteKey.wasPressedThisFrame;
+            
+            if (ctrlPressed && deletePressed)
+            {
+                SkipWaveForTesting();
+            }
+        }
+    }
+    
+    void SkipWaveForTesting()
+    {
+        // Show God Mode indicator if not already shown
+        if (!godModeActivated)
+        {
+            ShowGodModeText();
+            godModeActivated = true;
+        }
+        
+        // Destroy all tanks with explosions
+        Tank[] tanks = FindObjectsByType<Tank>(FindObjectsSortMode.None);
+        foreach (Tank tank in tanks)
+        {
+            if (tank != null && tank.gameObject != null)
+            {
+                tank.DestroyTank(true); // Call destroy method to trigger explosion
+            }
+        }
+        
+        // Destroy all helicopters with explosions
+        Helicopter[] helicopters = FindObjectsByType<Helicopter>(FindObjectsSortMode.None);
+        foreach (Helicopter heli in helicopters)
+        {
+            if (heli != null && heli.gameObject != null)
+            {
+                heli.DestroyHelicopter(true); // Call destroy method to trigger explosion
+            }
+        }
+        
+        // Force start next wave
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.ForceNextWave();
+        }
+        
+        Debug.Log("[DEBUG] Wave skipped - All enemies destroyed, starting next wave");
+    }
+    
+    void ShowGodModeText()
+    {
+        // Find existing canvas
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null) return;
+        
+        // Create God Mode text below score panel
+        godModeText = new GameObject("GodModeText");
+        godModeText.transform.SetParent(canvas.transform, false);
+        
+        RectTransform rect = godModeText.AddComponent<RectTransform>();
+        rect.anchorMin = new Vector2(0, 1);
+        rect.anchorMax = new Vector2(0, 1);
+        rect.pivot = new Vector2(0, 1);
+        rect.anchoredPosition = new Vector2(20, -480); // Below the score panel
+        rect.sizeDelta = new Vector2(300, 50);
+        
+        TextMeshProUGUI tmp = godModeText.AddComponent<TextMeshProUGUI>();
+        tmp.text = "GOD MODE";
+        tmp.fontSize = 36;
+        tmp.fontStyle = FontStyles.Bold;
+        tmp.color = new Color(1f, 0.2f, 0.2f, 1f); // Bright red
+        tmp.alignment = TextAlignmentOptions.TopLeft;
+        tmp.outlineColor = Color.black;
+        tmp.outlineWidth = 0.3f;
     }
     
     public void StartGame()
