@@ -242,57 +242,56 @@ public class Tank : MonoBehaviour
     
     void UpdateZigzagDirection()
     {
-        // Calculate the base direction towards the target
-        Vector3 baseDirection = (targetPosition - transform.position).normalized;
-        baseDirection.y = 0;
-        
-        // Generate boat-like zigzag that never moves away from base
+        // Calculate direction toward base (center line)
         Vector3 toBase = (targetPosition - transform.position).normalized;
         toBase.y = 0;
         
-        float zigzagAngle;
+        // SAILBOAT TACKING LOGIC:
+        // The tank must always cross the center line (direct path to base)
+        // If last zig was to the LEFT of center, next zag must be to the RIGHT of center
+        // This guarantees the tank always moves closer to the base
         
-        if (lastZigzagWasLeft)
+        // Determine which side of center line the tank is currently heading
+        // Use cross product to determine if current direction is left or right of toBase
+        Vector3 cross = Vector3.Cross(toBase, currentDirection);
+        bool currentlyGoingLeft = cross.y > 0;
+        
+        // Calculate the zigzag angle - must cross to the OTHER side of center line
+        float zigzagAngle;
+        float minAngle = 15f; // Minimum angle to ensure visible zigzag
+        
+        if (currentlyGoingLeft || lastZigzagWasLeft)
         {
-            // Last was left, so now go right
-            zigzagAngle = Random.Range(10f, maxZigzagAngle); // Positive angle = right turn
+            // Currently going left of center, so next direction must be RIGHT of center
+            zigzagAngle = Random.Range(minAngle, maxZigzagAngle); // Positive = right of center
             lastZigzagWasLeft = false;
         }
         else
         {
-            // Last was right (or first turn), so now go left
-            zigzagAngle = Random.Range(-maxZigzagAngle, -10f); // Negative angle = left turn
+            // Currently going right of center, so next direction must be LEFT of center
+            zigzagAngle = Random.Range(-maxZigzagAngle, -minAngle); // Negative = left of center
             lastZigzagWasLeft = true;
         }
         
-        // Change speed with each direction change
-        ChangeSpeed();
+        // Clamp angle to ensure tank always makes forward progress toward base
+        // Maximum 60 degrees from center line ensures good forward movement
+        float maxSafeAngle = 60f;
+        zigzagAngle = Mathf.Clamp(zigzagAngle, -maxSafeAngle, maxSafeAngle);
         
-        // CRITICAL: Calculate safe zigzag angle that never moves away from base
-        // Boat movement: can go sideways but never backward
-        float safeAngle = zigzagAngle;
-        
-        // Limit angle to ensure forward progress (never more than 75 degrees from base direction)
-        float maxSafeAngle = 75f; // Maximum deviation from base direction
-        safeAngle = Mathf.Clamp(safeAngle, -maxSafeAngle, maxSafeAngle);
-        
-        // Apply the safe angle to direction toward base
-        Quaternion rotation = Quaternion.Euler(0, safeAngle, 0);
+        // Apply angle to the direction toward base (not current direction)
+        // This ensures the new direction is relative to the base, not the current heading
+        Quaternion rotation = Quaternion.Euler(0, zigzagAngle, 0);
         currentDirection = rotation * toBase;
         
-        // FINAL VERIFICATION: Ensure dot product is always positive (moving toward base)
+        // Verify forward progress (dot product must be positive)
         float dotProduct = Vector3.Dot(currentDirection.normalized, toBase.normalized);
-        if (dotProduct <= 0.2588f) // cos(75°) = 0.2588 - minimum forward progress
+        if (dotProduct < 0.5f) // cos(60°) = 0.5 - minimum forward progress
         {
-            // Force a safer angle if still moving away
-            safeAngle = lastZigzagWasLeft ? 30f : -30f; // Conservative 30-degree turn
-            rotation = Quaternion.Euler(0, safeAngle, 0);
+            // Force a safer angle toward base
+            zigzagAngle = lastZigzagWasLeft ? -30f : 30f;
+            rotation = Quaternion.Euler(0, zigzagAngle, 0);
             currentDirection = rotation * toBase;
-            
         }
-        
-        // Log final direction for debugging
-        float finalDot = Vector3.Dot(currentDirection.normalized, toBase.normalized);
     }
     
     void ChangeSpeed()
