@@ -13,14 +13,11 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Distance from base where tanks switch from zigzag to straight-line movement")]
     [SerializeField] private float closeStraightLineDistance = 10f;
     
-    [Tooltip("Minimum time tank will maintain current direction before changing")]
-    [SerializeField] private float zigzagMinInterval = 2f;
+    [Tooltip("Seconds between zigzag direction changes")]
+    [SerializeField] private float zigzagDelay = 3f;
     
-    [Tooltip("Random additional time added to min interval before direction change")]
-    [SerializeField] private float zigzagIntervalOffset = 3f;
-    
-    [Tooltip("Maximum angle deviation for zigzag movement")]
-    [SerializeField] private float maxZigzagAngle = 30f;
+    [Tooltip("If tank goes this far from base, force straight movement toward base")]
+    [SerializeField] private float maxRoamDistance = 600f;
 
     [Header("Spawn Settings")]
     [Tooltip("Initial minimum distance for wave 1")]
@@ -213,7 +210,7 @@ public class TankSpawner : MonoBehaviour
         float maxSpeed = baseMaxSpeed * speedMultiplier;
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinInterval, zigzagIntervalOffset, maxZigzagAngle, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, projectileSpawnHeight);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagDelay, maxRoamDistance, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, projectileSpawnHeight);
         
         activeTanks.Add(tank);
         

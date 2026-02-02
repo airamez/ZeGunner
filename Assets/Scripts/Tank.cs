@@ -9,11 +9,10 @@ public class Tank : MonoBehaviour
     private bool isInitialized = false;
     
     [Header("Zigzag Movement")]
-    [SerializeField] private float zigzagMinInterval = 2f; // Minimum time before direction change
-    [SerializeField] private float zigzagIntervalOffset = 3f; // Random additional time
-    [SerializeField] private float maxZigzagAngle = 30f; // Maximum angle deviation in degrees
+    [SerializeField] private float zigzagDelay = 3f; // Seconds between zigzag direction changes
     [SerializeField] private float zigzagSmoothing = 0.5f; // How smooth the direction changes are
     [SerializeField] private float straightLineDistance = 10f; // Distance from base to move straight
+    [SerializeField] private float maxRoamDistance = 600f; // If tank goes this far from base, force straight movement
     
     private float nextZigzagTime;
     private Vector3 currentDirection;
@@ -36,16 +35,15 @@ public class Tank : MonoBehaviour
     private AudioClip firingSound;
     private bool isDestroyed = false;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minInterval, float intervalOffset, float maxAngle, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, float projSpawnHeight)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float delay, float roamDistance, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, float projSpawnHeight)
     {
         targetPosition = target;
         moveSpeed = speed;
         minSpeed = minSpd;
         maxSpeed = maxSpd;
         straightLineDistance = straightDistance;
-        zigzagMinInterval = minInterval;
-        zigzagIntervalOffset = intervalOffset;
-        maxZigzagAngle = maxAngle;
+        zigzagDelay = delay;
+        maxRoamDistance = roamDistance;
         explosionPrefab = explosion;
         explosionSound = sound;
         firingSound = fireSound;
@@ -110,9 +108,10 @@ public class Tank : MonoBehaviour
     
     void CalculateNextZigzagTime()
     {
-        // Calculate next direction change time: min + random offset
-        float randomOffset = Random.Range(0f, zigzagIntervalOffset);
-        nextZigzagTime = Time.time + zigzagMinInterval + randomOffset;
+        // Random delay between zigzag changes (0 to zigzagDelay)
+        // This makes each tank move independently instead of synchronized
+        float randomDelay = Random.Range(0.5f, zigzagDelay);
+        nextZigzagTime = Time.time + randomDelay;
     }
     
     void Update()
@@ -157,12 +156,15 @@ public class Tank : MonoBehaviour
         
         bool shouldMoveStraight = distanceToBase <= straightLineDistance;
         
+        // Safety check: if tank roamed too far from base, force straight movement
+        bool tankRoamedTooFar = distanceToBase > maxRoamDistance;
+        
         Vector3 movementDirection;
         
-        if (shouldMoveStraight)
+        if (shouldMoveStraight || tankRoamedTooFar)
         {
-            // Move straight toward base center when close
-            Vector3 baseCenter = targetPosition; // targetPosition should be the base center
+            // Move straight toward base center when close OR when roamed too far
+            Vector3 baseCenter = targetPosition;
             movementDirection = (baseCenter - transform.position).normalized;
             movementDirection.y = 0;
             
@@ -246,49 +248,39 @@ public class Tank : MonoBehaviour
         Vector3 toBase = (targetPosition - transform.position).normalized;
         toBase.y = 0;
         
-        // SAILBOAT TACKING LOGIC:
-        // The tank must always cross the center line (direct path to base)
-        // If last zig was to the LEFT of center, next zag must be to the RIGHT of center
-        // This guarantees the tank always moves closer to the base
+        // LATERAL ZIGZAG LOGIC:
+        // Tank moves at high angles (60-80 degrees) for more lateral movement
+        // Alternates between left and right of center line
+        // This creates a wide zigzag pattern while still approaching the base
         
-        // Determine which side of center line the tank is currently heading
-        // Use cross product to determine if current direction is left or right of toBase
-        Vector3 cross = Vector3.Cross(toBase, currentDirection);
-        bool currentlyGoingLeft = cross.y > 0;
-        
-        // Calculate the zigzag angle - must cross to the OTHER side of center line
+        // Calculate the zigzag angle - high angles for lateral movement
         float zigzagAngle;
-        float minAngle = 15f; // Minimum angle to ensure visible zigzag
+        float minLateralAngle = 60f; // Minimum angle for lateral movement
+        float maxLateralAngle = 80f; // Maximum angle (not quite perpendicular)
         
-        if (currentlyGoingLeft || lastZigzagWasLeft)
+        if (lastZigzagWasLeft)
         {
-            // Currently going left of center, so next direction must be RIGHT of center
-            zigzagAngle = Random.Range(minAngle, maxZigzagAngle); // Positive = right of center
+            // Last was left, so now go right
+            zigzagAngle = Random.Range(minLateralAngle, maxLateralAngle); // Positive = right of center
             lastZigzagWasLeft = false;
         }
         else
         {
-            // Currently going right of center, so next direction must be LEFT of center
-            zigzagAngle = Random.Range(-maxZigzagAngle, -minAngle); // Negative = left of center
+            // Last was right (or first turn), so now go left
+            zigzagAngle = Random.Range(-maxLateralAngle, -minLateralAngle); // Negative = left of center
             lastZigzagWasLeft = true;
         }
         
-        // Clamp angle to ensure tank always makes forward progress toward base
-        // Maximum 60 degrees from center line ensures good forward movement
-        float maxSafeAngle = 60f;
-        zigzagAngle = Mathf.Clamp(zigzagAngle, -maxSafeAngle, maxSafeAngle);
-        
-        // Apply angle to the direction toward base (not current direction)
-        // This ensures the new direction is relative to the base, not the current heading
+        // Apply angle to the direction toward base
         Quaternion rotation = Quaternion.Euler(0, zigzagAngle, 0);
         currentDirection = rotation * toBase;
         
-        // Verify forward progress (dot product must be positive)
+        // Verify we're still making some forward progress (dot product must be positive)
         float dotProduct = Vector3.Dot(currentDirection.normalized, toBase.normalized);
-        if (dotProduct < 0.5f) // cos(60°) = 0.5 - minimum forward progress
+        if (dotProduct < 0.17f) // cos(80°) = 0.17 - minimum forward progress
         {
             // Force a safer angle toward base
-            zigzagAngle = lastZigzagWasLeft ? -30f : 30f;
+            zigzagAngle = lastZigzagWasLeft ? -60f : 60f;
             rotation = Quaternion.Euler(0, zigzagAngle, 0);
             currentDirection = rotation * toBase;
         }

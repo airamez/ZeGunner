@@ -90,33 +90,41 @@ public class GameManager : MonoBehaviour
             godModeActivated = true;
         }
         
-        // Destroy all tanks with explosions
+        // Destroy all tanks except one (with explosions)
         Tank[] tanks = FindObjectsByType<Tank>(FindObjectsSortMode.None);
+        bool keptOneTank = false;
         foreach (Tank tank in tanks)
         {
             if (tank != null && tank.gameObject != null)
             {
+                if (!keptOneTank)
+                {
+                    keptOneTank = true; // Keep this one alive
+                    continue;
+                }
                 tank.DestroyTank(true); // Call destroy method to trigger explosion
             }
         }
         
-        // Destroy all helicopters with explosions
+        // Destroy all helicopters except one (with explosions)
         Helicopter[] helicopters = FindObjectsByType<Helicopter>(FindObjectsSortMode.None);
+        bool keptOneHeli = false;
         foreach (Helicopter heli in helicopters)
         {
             if (heli != null && heli.gameObject != null)
             {
+                if (!keptOneHeli)
+                {
+                    keptOneHeli = true; // Keep this one alive
+                    continue;
+                }
                 heli.DestroyHelicopter(true); // Call destroy method to trigger explosion
             }
         }
         
-        // Force start next wave
-        if (WaveManager.Instance != null)
-        {
-            WaveManager.Instance.ForceNextWave();
-        }
-        
-        Debug.Log("[DEBUG] Wave skipped - All enemies destroyed, starting next wave");
+        int tanksRemaining = keptOneTank ? 1 : 0;
+        int helisRemaining = keptOneHeli ? 1 : 0;
+        Debug.Log($"[DEBUG] God Mode - Destroyed all but {tanksRemaining} tank(s) and {helisRemaining} helicopter(s)");
     }
     
     void ShowGodModeText()
