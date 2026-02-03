@@ -15,9 +15,7 @@ public class Helicopter : MonoBehaviour
     private GameObject explosionPrefab;
     private AudioClip explosionSound;
     private AudioClip firingSound;
-    private AudioClip fireRangeReachedSound;
     private bool isDestroyed = false;
-    private bool hasPlayedFireRangeSound = false;
     private GameObject projectilePrefab;
     private float distanceToFire;
     private float rateOfFire;
@@ -36,14 +34,13 @@ public class Helicopter : MonoBehaviour
     private Vector3 baseDirection;
     private bool zigzagLeft = true;
     
-    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, AudioClip fireRangeSound, float zigzagDelay, float minLateralSpeed, float maxLateralSpeed, float distanceToStartZigzag)
+    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, float zigzagDelay, float minLateralSpeed, float maxLateralSpeed, float distanceToStartZigzag)
     {
         targetPosition = target;
         moveSpeed = speed;
         explosionPrefab = explosion;
         explosionSound = sound;
         firingSound = fireSound;
-        fireRangeReachedSound = fireRangeSound;
         
         // Firing parameters
         projectilePrefab = projectile;
@@ -123,20 +120,6 @@ public class Helicopter : MonoBehaviour
         {
             isFiring = true;
             nextFireTime = Time.time + rateOfFire; // Wait for rate of fire before first shot
-            
-            // Play fire range reached sound (only once)
-            if (!hasPlayedFireRangeSound && fireRangeReachedSound != null)
-            {
-                // Create temporary AudioSource for volume control
-                GameObject tempAudio = new GameObject("TempFireRangeSound");
-                tempAudio.transform.position = transform.position;
-                AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
-                audioSource.clip = fireRangeReachedSound;
-                audioSource.volume = 1.5f; // 150% volume - adjust as needed
-                audioSource.Play();
-                Destroy(tempAudio, fireRangeReachedSound.length + 0.1f); // Clean up after sound
-                hasPlayedFireRangeSound = true;
-            }
             
             // Face the base
             Vector3 toBase = (targetPosition - transform.position).normalized;
