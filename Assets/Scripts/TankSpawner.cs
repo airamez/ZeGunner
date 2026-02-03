@@ -56,10 +56,10 @@ public class TankSpawner : MonoBehaviour
     [SerializeField] private float baseSpeedWaveIncrement = 0.5f;
     
     [Tooltip("Absolute increase in minimum spawn distance per wave (5 = +5 units per wave)")]
-    [SerializeField] private float minSpawnIncrement = 5f;
+    [SerializeField] private float minSpawnDistanceIncrement = 5f;
     
     [Tooltip("Absolute increase in maximum spawn distance per wave (10 = +10 units per wave)")]
-    [SerializeField] private float maxSpawnIncrement = 10f;
+    [SerializeField] private float maxSpawnDistanceIncrement = 10f;
     
     public int BaseTankCount => baseTankCount;
     public int BaseCountWaveIncrement => baseCountWaveIncrement;
@@ -70,8 +70,8 @@ public class TankSpawner : MonoBehaviour
     public float MinSpeedLimit => minSpeedLimit;
     public float BaseMinSpeed => baseMinSpeed;
     public float BaseMaxSpeed => baseMaxSpeed;
-    public float MinSpawnIncrement => minSpawnIncrement;
-    public float MaxSpawnIncrement => maxSpawnIncrement;
+    public float MinSpawnDistanceIncrement => minSpawnDistanceIncrement;
+    public float MaxSpawnDistanceIncrement => maxSpawnDistanceIncrement;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for tank destruction")]
@@ -157,11 +157,11 @@ public class TankSpawner : MonoBehaviour
         int currentWave = WaveManager.Instance != null ? WaveManager.Instance.GetCurrentWave() : 1;
         
         // Calculate max spawn distance: initial + (wave-1) * increment
-        float currentMaxSpawnDistance = initialMaxSpawnDistance + ((currentWave - 1) * maxSpawnIncrement);
+        float currentMaxSpawnDistance = initialMaxSpawnDistance + ((currentWave - 1) * maxSpawnDistanceIncrement);
         currentMaxSpawnDistance = Mathf.Min(currentMaxSpawnDistance, maxSpawnDistance);
         
         // Calculate min spawn distance: initial + (wave-1) * increment
-        float currentMinSpawnDistance = initialMinSpawnDistance + ((currentWave - 1) * minSpawnIncrement);
+        float currentMinSpawnDistance = initialMinSpawnDistance + ((currentWave - 1) * minSpawnDistanceIncrement);
         currentMinSpawnDistance = Mathf.Min(currentMinSpawnDistance, minSpawnDistance);
 
         // Ensure min is strictly less than max to avoid invalid Range

@@ -4,14 +4,15 @@ public static class GameInstructions
 {
     public static string Get()
     {
-        return "- Aim the turret using the mouse\n" +
-               "- Fire with the left mouse button\n" +
-               "- Move the Turret up and down using W and S keys\n" +
-               "- Adjust mouse sensitivity with + / - keys\n" +
-               "- Control volume with , / . keys (or < / > keys)\n" +
-               "- Press ESC to pause game and allow to exit\n" +
-               "- If enemies get close to the base they will fire at it\n" +
-               "- If the Base HP reach zero you lose\n" +
+        return "- Aim turret with mouse\n" +
+               "- Left click to fire\n" +
+               "- W/S: Move turret up/down\n" +
+               "- + -: Adjust mouse sensitivity\n" +
+               "- , . or < >: Control volume\n" +
+               "- ESC: Pause/Exit\n" +
+               "- Enemies fire when close to base\n" +
+               "- Red flash = off-screen enemy in range\n" +
+               "- Base HP = 0 = Game Over\n" +
                "- Have fun!";
     }
 }

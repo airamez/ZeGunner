@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UI;
+using TMPro;
 
 public class MouseSensitivityManager : MonoBehaviour
 {
@@ -10,9 +12,10 @@ public class MouseSensitivityManager : MonoBehaviour
     [SerializeField] private float sensitivityStep = 0.5f;
     
     private float currentSensitivity;
-    private bool showSensitivityMessage = false;
-    private float messageTimer = 0f;
-    private const float MESSAGE_DURATION = 2f;
+    private GameObject sensitivityPanel;
+    private TextMeshProUGUI sensitivityText;
+    private float displayTimer = 0f;
+    private const float DISPLAY_DURATION = 2f;
     
     public static MouseSensitivityManager Instance { get; private set; }
     
@@ -32,12 +35,15 @@ public class MouseSensitivityManager : MonoBehaviour
         
         // Initialize sensitivity
         currentSensitivity = PlayerPrefs.GetFloat("MouseSensitivity", defaultSensitivity);
+        
+        // Create UI
+        CreateSensitivityUI();
     }
     
     void Update()
     {
         HandleSensitivityInput();
-        UpdateMessageDisplay();
+        UpdateDisplay();
     }
     
     void HandleSensitivityInput()
@@ -66,38 +72,75 @@ public class MouseSensitivityManager : MonoBehaviour
         PlayerPrefs.SetFloat("MouseSensitivity", currentSensitivity);
         PlayerPrefs.Save();
         
-        // Show message
-        showSensitivityMessage = true;
-        messageTimer = MESSAGE_DURATION;
+        // Show UI
+        ShowSensitivityDisplay();
     }
     
-    void UpdateMessageDisplay()
+    void UpdateDisplay()
     {
-        if (showSensitivityMessage)
+        if (sensitivityPanel != null && sensitivityPanel.activeInHierarchy)
         {
-            messageTimer -= Time.deltaTime;
-            if (messageTimer <= 0f)
+            displayTimer -= Time.deltaTime;
+            if (displayTimer <= 0f)
             {
-                showSensitivityMessage = false;
+                sensitivityPanel.SetActive(false);
             }
         }
     }
     
-    void OnGUI()
+    void CreateSensitivityUI()
     {
-        if (showSensitivityMessage)
+        // Find or create canvas
+        Canvas canvas = FindAnyObjectByType<Canvas>();
+        if (canvas == null)
         {
-            // Create style for the message
-            GUIStyle style = new GUIStyle(GUI.skin.box);
-            style.fontSize = 20;
-            style.fontStyle = FontStyle.Bold;
-            style.alignment = TextAnchor.MiddleCenter;
-            style.normal.textColor = Color.yellow;
-            
-            // Display message at top center of screen
-            string message = $"Mouse Sensitivity: {currentSensitivity:F1}\n(+ / - to adjust)";
-            Rect messageRect = new Rect(Screen.width / 2 - 150, 50, 300, 60);
-            GUI.Box(messageRect, message, style);
+            GameObject canvasObj = new GameObject("SensitivityCanvas");
+            canvas = canvasObj.AddComponent<Canvas>();
+            canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+            canvasObj.AddComponent<CanvasScaler>();
+            canvasObj.AddComponent<GraphicRaycaster>();
+        }
+        
+        // Create sensitivity panel
+        sensitivityPanel = new GameObject("SensitivityPanel");
+        sensitivityPanel.transform.SetParent(canvas.transform, false);
+        RectTransform panelRect = sensitivityPanel.AddComponent<RectTransform>();
+        panelRect.anchorMin = new Vector2(0.5f, 0.5f);
+        panelRect.anchorMax = new Vector2(0.5f, 0.5f);
+        panelRect.sizeDelta = new Vector2(300, 80);
+        panelRect.anchoredPosition = new Vector2(0, -100); // Below center (opposite of volume)
+        
+        // Add background
+        Image bgImage = sensitivityPanel.AddComponent<Image>();
+        bgImage.color = new Color(0, 0, 0, 0.8f);
+        
+        // Create sensitivity text
+        GameObject textObj = new GameObject("SensitivityText");
+        textObj.transform.SetParent(sensitivityPanel.transform, false);
+        sensitivityText = textObj.AddComponent<TextMeshProUGUI>();
+        
+        RectTransform textRect = sensitivityText.GetComponent<RectTransform>();
+        textRect.anchorMin = Vector2.zero;
+        textRect.anchorMax = Vector2.one;
+        textRect.offsetMin = new Vector2(10, 10);
+        textRect.offsetMax = new Vector2(-10, -10);
+        
+        sensitivityText.fontSize = 24;
+        sensitivityText.color = Color.white;
+        sensitivityText.alignment = TextAlignmentOptions.Center;
+        sensitivityText.text = $"Mouse Sensitivity: {currentSensitivity:F1}";
+        
+        // Hide initially
+        sensitivityPanel.SetActive(false);
+    }
+    
+    void ShowSensitivityDisplay()
+    {
+        if (sensitivityPanel != null && sensitivityText != null)
+        {
+            sensitivityText.text = $"Mouse Sensitivity: {currentSensitivity:F1}";
+            sensitivityPanel.SetActive(true);
+            displayTimer = DISPLAY_DURATION;
         }
     }
     

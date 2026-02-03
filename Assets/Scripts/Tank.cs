@@ -137,6 +137,12 @@ public class Tank : MonoBehaviour
             isFiring = true;
             nextFireTime = Time.time + rateOfFire; // Wait for rate of fire before first shot
             
+            // Flash screen if tank is not in player's field of view
+            if (!IsInPlayerFieldOfView())
+            {
+                ScreenFlash.Instance?.FlashScreen();
+            }
+            
             // Face the base
             Vector3 toBase = (targetPosition - transform.position).normalized;
             toBase.y = 0;
@@ -202,6 +208,19 @@ public class Tank : MonoBehaviour
         {
             transform.rotation = Quaternion.LookRotation(movementDirection);
         }
+    }
+    
+    bool IsInPlayerFieldOfView()
+    {
+        // Find the player's camera (assuming main camera)
+        Camera playerCamera = Camera.main;
+        if (playerCamera == null) return false;
+        
+        // Check if tank is within camera's view frustum
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(playerCamera);
+        Bounds tankBounds = GetComponent<Collider>().bounds;
+        
+        return GeometryUtility.TestPlanesAABB(planes, tankBounds);
     }
     
     void FireAtBase()

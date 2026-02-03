@@ -93,7 +93,7 @@ public class VolumeManager : MonoBehaviour
     
     void DecreaseVolume()
     {
-        masterVolume = Mathf.Max(0f, masterVolume - 0.1f);
+        masterVolume = Mathf.Max(0f, masterVolume - 0.05f);
         ApplyVolume();
         ShowVolumeDisplay();
         SaveVolume();
@@ -101,7 +101,7 @@ public class VolumeManager : MonoBehaviour
     
     void IncreaseVolume()
     {
-        masterVolume = Mathf.Min(2f, masterVolume + 0.1f);
+        masterVolume = Mathf.Min(2f, masterVolume + 0.05f);
         ApplyVolume();
         ShowVolumeDisplay();
         SaveVolume();

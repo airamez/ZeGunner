@@ -58,6 +58,20 @@ public class GameUISetup : MonoBehaviour
             vmObj.AddComponent<VolumeManager>();
         }
         
+        // Ensure ScreenFlash exists
+        if (ScreenFlash.Instance == null)
+        {
+            GameObject sfObj = new GameObject("ScreenFlash");
+            sfObj.AddComponent<ScreenFlash>();
+        }
+        
+        // Ensure MouseSensitivityManager exists
+        if (MouseSensitivityManager.Instance == null)
+        {
+            GameObject msmObj = new GameObject("MouseSensitivityManager");
+            msmObj.AddComponent<MouseSensitivityManager>();
+        }
+        
         if (autoSetupOnStart)
         {
             SetupGameUI();

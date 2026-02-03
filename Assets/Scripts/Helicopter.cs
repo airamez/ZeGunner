@@ -121,6 +121,12 @@ public class Helicopter : MonoBehaviour
             isFiring = true;
             nextFireTime = Time.time + rateOfFire; // Wait for rate of fire before first shot
             
+            // Flash screen if helicopter is not in player's field of view
+            if (!IsInPlayerFieldOfView())
+            {
+                ScreenFlash.Instance?.FlashScreen();
+            }
+            
             // Face the base
             Vector3 toBase = (targetPosition - transform.position).normalized;
             toBase.y = 0;
@@ -353,5 +359,18 @@ public class Helicopter : MonoBehaviour
         // Simply toggle between left and right zigzag direction
         // The actual lateral speed is randomized each frame in movement
         zigzagLeft = !zigzagLeft;
+    }
+    
+    bool IsInPlayerFieldOfView()
+    {
+        // Find the player's camera (assuming main camera)
+        Camera playerCamera = Camera.main;
+        if (playerCamera == null) return false;
+        
+        // Check if helicopter is within camera's view frustum
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes(playerCamera);
+        Bounds helicopterBounds = GetComponent<Collider>().bounds;
+        
+        return GeometryUtility.TestPlanesAABB(planes, helicopterBounds);
     }
 }
