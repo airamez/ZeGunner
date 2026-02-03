@@ -27,7 +27,16 @@ public class Helicopter : MonoBehaviour
     private bool isFiring = false;
     private float nextFireTime;
     
-    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, AudioClip fireRangeSound)
+    // Zigzag movement variables
+    private float zigzagDelay;
+    private float minLateralSpeed;
+    private float maxLateralSpeed;
+    private float distanceToStartZigzag;
+    private float nextZigzagTime;
+    private Vector3 baseDirection;
+    private bool zigzagLeft = true;
+    
+    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, AudioClip fireRangeSound, float zigzagDelay, float minLateralSpeed, float maxLateralSpeed, float distanceToStartZigzag)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -43,6 +52,15 @@ public class Helicopter : MonoBehaviour
         projectileDamage = damage;
         projectileSpeed = projSpeed;
         projectileScale = projScale;
+        
+        // Zigzag parameters
+        this.zigzagDelay = zigzagDelay;
+        this.minLateralSpeed = minLateralSpeed;
+        this.maxLateralSpeed = maxLateralSpeed;
+        this.distanceToStartZigzag = distanceToStartZigzag;
+        
+        // Initialize zigzag timing
+        CalculateNextZigzagTime();
         
         isInitialized = true;
         
@@ -80,17 +98,24 @@ public class Helicopter : MonoBehaviour
     {
         if (!isInitialized) return;
         
-        // Animate rotors (always spin)
+        // Animate rotors
         AnimateRotors();
         
         // Check distance to base
         float distanceToBase = Vector3.Distance(transform.position, targetPosition);
         
-        // Destroy helicopter if it reaches the base
+        // Check if helicopter reached the base
         if (distanceToBase < 5f)
         {
             ReachBase();
             return;
+        }
+        
+        // Update zigzag timing (only when within zigzag range)
+        if (distanceToBase <= distanceToStartZigzag && Time.time >= nextZigzagTime)
+        {
+            UpdateZigzagDirection();
+            CalculateNextZigzagTime();
         }
         
         // Check if helicopter should stop and fire at base
@@ -140,15 +165,42 @@ public class Helicopter : MonoBehaviour
             return; // Don't move while firing
         }
         
-        // Move toward the base
+        // Move toward the base with lateral zigzag movement (only when close enough)
         Vector3 directionToBase = (targetPosition - transform.position).normalized;
         
         if (directionToBase != Vector3.zero)
         {
-            // Move helicopter
-            transform.position += directionToBase * moveSpeed * Time.deltaTime;
+            // Store base direction for zigzag calculations
+            baseDirection = directionToBase;
             
-            // Rotate helicopter to face movement direction
+            // Check if helicopter should zigzag (within start distance)
+            bool shouldZigzag = distanceToBase <= distanceToStartZigzag;
+            
+            Vector3 totalMovement;
+            
+            if (shouldZigzag)
+            {
+                // Calculate perpendicular direction for lateral movement
+                Vector3 perpendicular = Vector3.Cross(baseDirection, Vector3.up).normalized;
+                
+                // Apply lateral movement based on current zigzag direction
+                float lateralSpeed = Random.Range(minLateralSpeed, maxLateralSpeed);
+                Vector3 lateralMovement = perpendicular * (zigzagLeft ? lateralSpeed : -lateralSpeed) * Time.deltaTime;
+                
+                // Combine forward movement with lateral movement
+                Vector3 forwardMovement = directionToBase * moveSpeed * Time.deltaTime;
+                totalMovement = forwardMovement + lateralMovement;
+            }
+            else
+            {
+                // Move straight toward base (no zigzag)
+                totalMovement = directionToBase * moveSpeed * Time.deltaTime;
+            }
+            
+            // Move helicopter
+            transform.position += totalMovement;
+            
+            // Always face the base (not movement direction)
             transform.rotation = Quaternion.LookRotation(directionToBase);
         }
     }
@@ -304,5 +356,19 @@ public class Helicopter : MonoBehaviour
         }
         
         DestroyHelicopter(false);
+    }
+    
+    void CalculateNextZigzagTime()
+    {
+        // Random delay between zigzag changes (50% to 150% of base delay)
+        float randomFactor = Random.Range(0.5f, 1.5f);
+        nextZigzagTime = Time.time + (zigzagDelay * randomFactor);
+    }
+    
+    void UpdateZigzagDirection()
+    {
+        // Simply toggle between left and right zigzag direction
+        // The actual lateral speed is randomized each frame in movement
+        zigzagLeft = !zigzagLeft;
     }
 }

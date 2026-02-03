@@ -30,6 +30,12 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Maximum height for helicopter spawn")]
     [SerializeField] private float maxSpawnHeight = 40f;
     
+    [Tooltip("Absolute increase in minimum spawn distance per wave (5 = +5 units per wave)")]
+    [SerializeField] private float minSpawnIncrement = 5f;
+    
+    [Tooltip("Absolute increase in maximum spawn distance per wave (15 = +15 units per wave)")]
+    [SerializeField] private float maxSpawnIncrement = 15f;
+    
     [Header("Helicopter Speed")]
     [Tooltip("Base minimum speed of spawned helicopters (wave 1)")]
     [SerializeField] private float baseMinSpeed = 8f;
@@ -47,11 +53,18 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Absolute increase in helicopter speed per wave (1.0 = +1.0 speed per wave)")]
     [SerializeField] private float baseSpeedWaveIncrement = 1.0f;
     
-    [Tooltip("Absolute increase in minimum spawn distance per wave (5 = +5 units per wave)")]
-    [SerializeField] private float minSpawnIncrement = 5f;
+    [Header("Helicopter Zigzag Movement")]
+    [Tooltip("Base delay between zigzag direction changes (seconds)")]
+    [SerializeField] private float zigzagDelay = 4f;
     
-    [Tooltip("Absolute increase in maximum spawn distance per wave (15 = +15 units per wave)")]
-    [SerializeField] private float maxSpawnIncrement = 15f;
+    [Tooltip("Minimum lateral (sideways) speed for zigzag movement")]
+    [SerializeField] private float minLateralSpeed = 2f;
+    
+    [Tooltip("Maximum lateral (sideways) speed for zigzag movement")]
+    [SerializeField] private float maxLateralSpeed = 5f;
+    
+    [Tooltip("Distance from base where helicopter starts zigzag movement")]
+    [SerializeField] private float distanceToStartZigzag = 100f;
     
     public int BaseHelicopterCount => baseHelicopterCount;
     public int BaseCountWaveIncrement => baseCountWaveIncrement;
@@ -59,6 +72,10 @@ public class HelicopterSpawner : MonoBehaviour
     public float DistanceToFire => distanceToFire;
     public AudioClip FiringSound => firingSound;
     public AudioClip FireRangeReachedSound => fireRangeReachedSound;
+    public float ZigzagDelay => zigzagDelay;
+    public float MinLateralSpeed => minLateralSpeed;
+    public float MaxLateralSpeed => maxLateralSpeed;
+    public float DistanceToStartZigzag => distanceToStartZigzag;
     public float MinSpawnIncrement => minSpawnIncrement;
     public float MaxSpawnIncrement => maxSpawnIncrement;
     public float BaseMinSpeed => baseMinSpeed;
@@ -215,7 +232,7 @@ public class HelicopterSpawner : MonoBehaviour
         float maxSpeed = WaveManager.Instance.GetCurrentHelicopterMaxSpeed();
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, fireRangeReachedSound);
+        helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, fireRangeReachedSound, zigzagDelay, minLateralSpeed, maxLateralSpeed, distanceToStartZigzag);
         
         activeHelicopters.Add(helicopter);
         
