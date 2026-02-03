@@ -4,7 +4,7 @@ public static class GameInstructions
 {
     public static string Get()
     {
-        return "- Move the turret (Aiming) using the mouse\n" +
+        return "- Aim the turret using the mouse\n" +
                "- Fire with the left mouse button\n" +
                "- Move the Turret up and down using W and S keys\n" +
                "- Adjust mouse sensitivity with + / - keys\n" +
