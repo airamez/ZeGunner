@@ -15,9 +15,6 @@ public class TankSpawner : MonoBehaviour
     
     [Tooltip("Seconds between zigzag direction changes")]
     [SerializeField] private float zigzagDelay = 3f;
-    
-    [Tooltip("If tank goes this far from base, force straight movement toward base")]
-    [SerializeField] private float maxRoamDistance = 600f;
 
     [Header("Spawn Settings")]
     [Tooltip("Initial minimum distance for wave 1")]
@@ -52,17 +49,20 @@ public class TankSpawner : MonoBehaviour
     [Tooltip("Number of tanks for wave 1")]
     [SerializeField] private int baseTankCount = 5;
     
-    [Tooltip("Percentage increase in tank count per wave (20 = 20%)")]
-    [SerializeField] private float baseCountWaveIncrement = 20f;
+    [Tooltip("Absolute increase in tank count per wave (2 = +2 tanks per wave)")]
+    [SerializeField] private int baseCountWaveIncrement = 2;
     
-    [Tooltip("Percentage increase in tank speed per wave (10 = 10%)")]
-    [SerializeField] private float baseSpeedWaveIncrement = 10f;
+    [Tooltip("Absolute increase in tank speed per wave (0.5 = +0.5 speed per wave)")]
+    [SerializeField] private float baseSpeedWaveIncrement = 0.5f;
     
-    [Tooltip("Percentage increase in max spawn distance per wave (10 = 10%)")]
-    [SerializeField] private float spawnDistanceIncrement = 10f;
+    [Tooltip("Absolute increase in minimum spawn distance per wave (5 = +5 units per wave)")]
+    [SerializeField] private float minSpawnIncrement = 5f;
+    
+    [Tooltip("Absolute increase in maximum spawn distance per wave (10 = +10 units per wave)")]
+    [SerializeField] private float maxSpawnIncrement = 10f;
     
     public int BaseTankCount => baseTankCount;
-    public float BaseCountWaveIncrement => baseCountWaveIncrement;
+    public int BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     public float DistanceToFire => distanceToFire;
     public AudioClip FiringSound => firingSound;
@@ -70,6 +70,8 @@ public class TankSpawner : MonoBehaviour
     public float MinSpeedLimit => minSpeedLimit;
     public float BaseMinSpeed => baseMinSpeed;
     public float BaseMaxSpeed => baseMaxSpeed;
+    public float MinSpawnIncrement => minSpawnIncrement;
+    public float MaxSpawnIncrement => maxSpawnIncrement;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for tank destruction")]
@@ -151,31 +153,16 @@ public class TankSpawner : MonoBehaviour
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         
-        // Calculate current max spawn distance using compound growth
+        // Calculate current spawn distances using absolute increments
         int currentWave = WaveManager.Instance != null ? WaveManager.Instance.GetCurrentWave() : 1;
-        float currentMaxSpawnDistance = initialMaxSpawnDistance;
         
-        // Apply compound growth: each wave uses previous wave's distance as base
-        for (int wave = 2; wave <= currentWave; wave++)
-        {
-            float increase = currentMaxSpawnDistance * (spawnDistanceIncrement / 100f);
-            currentMaxSpawnDistance = Mathf.Min(currentMaxSpawnDistance + increase, maxSpawnDistance);
-            
-            // Stop if we've reached the maximum
-            if (currentMaxSpawnDistance >= maxSpawnDistance) break;
-        }
-
-        // Calculate current min spawn distance using compound growth (same logic as max)
-        float currentMinSpawnDistance = initialMinSpawnDistance;
+        // Calculate max spawn distance: initial + (wave-1) * increment
+        float currentMaxSpawnDistance = initialMaxSpawnDistance + ((currentWave - 1) * maxSpawnIncrement);
+        currentMaxSpawnDistance = Mathf.Min(currentMaxSpawnDistance, maxSpawnDistance);
         
-        for (int wave = 2; wave <= currentWave; wave++)
-        {
-            float increase = currentMinSpawnDistance * (spawnDistanceIncrement / 100f);
-            currentMinSpawnDistance = Mathf.Min(currentMinSpawnDistance + increase, minSpawnDistance);
-            
-            // Stop if we've reached the maximum
-            if (currentMinSpawnDistance >= minSpawnDistance) break;
-        }
+        // Calculate min spawn distance: initial + (wave-1) * increment
+        float currentMinSpawnDistance = initialMinSpawnDistance + ((currentWave - 1) * minSpawnIncrement);
+        currentMinSpawnDistance = Mathf.Min(currentMinSpawnDistance, minSpawnDistance);
 
         // Ensure min is strictly less than max to avoid invalid Range
         if (currentMinSpawnDistance >= currentMaxSpawnDistance)
@@ -219,7 +206,7 @@ public class TankSpawner : MonoBehaviour
         float maxSpeed = WaveManager.Instance.GetCurrentTankMaxSpeed();
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagDelay, maxRoamDistance, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, projectileSpawnHeight);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagDelay, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, projectileSpawnHeight);
         
         activeTanks.Add(tank);
         

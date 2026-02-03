@@ -166,22 +166,23 @@ MonoBehaviour:
   tankPrefab: {fileID: 1788451793792189928, guid: 5f3d07d75c5cb02478bb3154bf64bc0d, type: 3}
   baseTransform: {fileID: 1595826105}
   tankScale: 1
-  closeStraightLineDistance: 50
-  zigzagDelay: 20
+  closeStraightLineDistance: 30
+  zigzagDelay: 5
   maxRoamDistance: 600
   initialMinSpawnDistance: 100
   minSpawnDistance: 150
   initialMaxSpawnDistance: 150
-  maxSpawnDistance: 800
+  maxSpawnDistance: 1000
   spawnHeight: 0.5
-  baseMinSpeed: 1
-  baseMaxSpeed: 5
-  maxSpeedLimit: 20
-  minSpeedLimit: 8
+  baseMinSpeed: 3
+  baseMaxSpeed: 10
+  maxSpeedLimit: 50
+  minSpeedLimit: 30
   baseTankCount: 5
-  baseCountWaveIncrement: 20
-  baseSpeedWaveIncrement: 10
-  spawnDistanceIncrement: 10
+  baseCountWaveIncrement: 5
+  baseSpeedWaveIncrement: 5
+  minSpawnIncrement: 10
+  maxSpawnIncrement: 20
   explosionPrefab: {fileID: 100002, guid: d53702834d5814f47bc426b32c199c5e, type: 3}
   explosionSound: {fileID: 8300000, guid: 8524588a69a4f3e40bb597b6221138f1, type: 3}
   projectilePrefab: {fileID: 5254963598224360212, guid: 41518750c49d5384eba5ff5f176ee847, type: 3}
@@ -402,7 +403,7 @@ MonoBehaviour:
   projectileSpeed: 150
   fireRate: 0.25
   rocketScale: 0.1
-  maxProjectileDistance: 500
+  maxProjectileDistance: 1000
   baseTransform: {fileID: 1595826105}
   spawnOffset: 1
   verticalSpeed: 5
@@ -1601,12 +1602,13 @@ MonoBehaviour:
   maxSpawnDistance: 600
   minSpawnHeight: 5
   maxSpawnHeight: 50
-  baseMinSpeed: 3
-  baseMaxSpeed: 7
+  baseMinSpeed: 2
+  baseMaxSpeed: 5
   baseHelicopterCount: 5
-  baseCountWaveIncrement: 10
+  baseCountWaveIncrement: 3
   baseSpeedWaveIncrement: 5
-  spawnDistanceIncrement: 30
+  minSpawnIncrement: 5
+  maxSpawnIncrement: 15
   explosionPrefab: {fileID: 100008, guid: 2ae9e8f0dfbef424c839cad8118abc5f, type: 3}
   explosionSound: {fileID: 8300000, guid: bbbd451773f5e514d80c78e791d4692e, type: 3}
   projectilePrefab: {fileID: 5639003199960037019, guid: bc1101b41da57f84ba9cde8e9687a233, type: 3}

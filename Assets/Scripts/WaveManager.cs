@@ -8,8 +8,8 @@ public class WaveManager : MonoBehaviour
     public static WaveManager Instance { get; private set; }
     
     [Header("Wave Settings")]
-    // Wave increment percentages are now configured per-spawner
-    // TankSpawner and HelicopterSpawner each have their own baseCountWaveIncrement and baseSpeedWaveIncrement
+    // Wave increments are now configured per-spawner
+    // TankSpawner and HelicopterSpawner each have their own baseCountWaveIncrement (absolute), baseSpeedWaveIncrement (absolute), and spawn increments (absolute)
     
     // References to spawners to get base counts
     private TankSpawner tankSpawner;
@@ -129,11 +129,11 @@ public class WaveManager : MonoBehaviour
         if (helicopterSpawner == null)
             helicopterSpawner = FindAnyObjectByType<HelicopterSpawner>();
         
-        // Get base counts and increment values from spawners
+        // Get base counts and absolute increment values from spawners
         int baseTankCount = tankSpawner != null ? tankSpawner.BaseTankCount : 5;
         int baseHelicopterCount = helicopterSpawner != null ? helicopterSpawner.BaseHelicopterCount : 2;
-        float tankCountIncrement = tankSpawner != null ? tankSpawner.BaseCountWaveIncrement / 100f : 0.2f;
-        float heliCountIncrement = helicopterSpawner != null ? helicopterSpawner.BaseCountWaveIncrement / 100f : 0.2f;
+        int tankCountIncrement = tankSpawner != null ? tankSpawner.BaseCountWaveIncrement : 2;
+        int heliCountIncrement = helicopterSpawner != null ? helicopterSpawner.BaseCountWaveIncrement : 1;
         
         // Distance progression removed - now using fixed min/max distances from spawners
         
@@ -155,17 +155,9 @@ public class WaveManager : MonoBehaviour
         }
         else
         {
-            // For subsequent waves, use previous wave's count as the new base
-            float previousTankCount = tanksToSpawnThisWave;
-            float previousHeliCount = helicoptersToSpawnThisWave;
-            
-            // Apply increment to previous wave's count
-            float rawTankCount = previousTankCount * (1f + tankCountIncrement);
-            float rawHeliCount = previousHeliCount * (1f + heliCountIncrement);
-            
-            // Round up to next multiple of 5
-            tanksToSpawnThisWave = Mathf.CeilToInt(rawTankCount / 5f) * 5;
-            helicoptersToSpawnThisWave = Mathf.CeilToInt(rawHeliCount / 5f) * 5;
+            // For subsequent waves, add absolute increment to previous wave's count
+            tanksToSpawnThisWave = tanksToSpawnThisWave + tankCountIncrement;
+            helicoptersToSpawnThisWave = helicoptersToSpawnThisWave + heliCountIncrement;
         }
         
         // Reset counters
@@ -320,59 +312,65 @@ public class WaveManager : MonoBehaviour
         UpdateScoreDisplay();
     }
     
-    // Get compound speed multiplier for tanks
-    public float GetTankSpeedMultiplier()
-    {
-        if (tankSpawner == null) return 1f;
-        
-        float speedIncrement = tankSpawner.BaseSpeedWaveIncrement / 100f;
-        // Compound calculation: (1 + increment) ^ (wave - 1)
-        return Mathf.Pow(1f + speedIncrement, currentWave - 1);
-    }
-    
-    // Get current min speed with compound increment and limits
+    // Get current min speed with absolute increment and limits
     public float GetCurrentTankMinSpeed()
     {
         if (tankSpawner == null) return 2f;
         
-        float compoundMultiplier = GetTankSpeedMultiplier();
-        float currentMinSpeed = tankSpawner.BaseMinSpeed * compoundMultiplier;
+        // Calculate: base + (wave-1) * absoluteIncrement
+        float currentMinSpeed = tankSpawner.BaseMinSpeed + ((currentWave - 1) * tankSpawner.BaseSpeedWaveIncrement);
         
         // Respect min speed limit
         float finalMinSpeed = Mathf.Min(currentMinSpeed, tankSpawner.MinSpeedLimit);
         
-        Debug.Log($"[WaveManager] Wave {currentWave}: Base Min Speed {tankSpawner.BaseMinSpeed}, Compound Multiplier {compoundMultiplier:F2}, Final Min Speed {finalMinSpeed:F2}, Limit {tankSpawner.MinSpeedLimit}");
+        Debug.Log($"[WaveManager] Wave {currentWave}: Base Min Speed {tankSpawner.BaseMinSpeed}, Increment {tankSpawner.BaseSpeedWaveIncrement}, Final Min Speed {finalMinSpeed:F2}, Limit {tankSpawner.MinSpeedLimit}");
         
         return finalMinSpeed;
     }
     
-    // Get current max speed with compound increment and limits
+    // Get current max speed with absolute increment and limits
     public float GetCurrentTankMaxSpeed()
     {
         if (tankSpawner == null) return 5f;
         
-        float compoundMultiplier = GetTankSpeedMultiplier();
-        float currentMaxSpeed = tankSpawner.BaseMaxSpeed * compoundMultiplier;
+        // Calculate: base + (wave-1) * absoluteIncrement
+        float currentMaxSpeed = tankSpawner.BaseMaxSpeed + ((currentWave - 1) * tankSpawner.BaseSpeedWaveIncrement);
         
         // Respect max speed limit
         float finalMaxSpeed = Mathf.Min(currentMaxSpeed, tankSpawner.MaxSpeedLimit);
         
-        Debug.Log($"[WaveManager] Wave {currentWave}: Base Max Speed {tankSpawner.BaseMaxSpeed}, Compound Multiplier {compoundMultiplier:F2}, Final Max Speed {finalMaxSpeed:F2}, Limit {tankSpawner.MaxSpeedLimit}");
+        Debug.Log($"[WaveManager] Wave {currentWave}: Base Max Speed {tankSpawner.BaseMaxSpeed}, Increment {tankSpawner.BaseSpeedWaveIncrement}, Final Max Speed {finalMaxSpeed:F2}, Limit {tankSpawner.MaxSpeedLimit}");
         
         return finalMaxSpeed;
     }
     
-    // Get wave speed multiplier for helicopters
-    public float GetHelicopterSpeedMultiplier()
+    // Get current min speed for helicopters with absolute increment
+    public float GetCurrentHelicopterMinSpeed()
     {
-        float speedIncrement = helicopterSpawner != null ? helicopterSpawner.BaseSpeedWaveIncrement / 100f : 0.1f;
-        return 1f + (speedIncrement * (currentWave - 1));
+        if (helicopterSpawner == null) return 8f;
+        
+        // Calculate: base + (wave-1) * absoluteIncrement
+        float currentMinSpeed = helicopterSpawner.BaseMinSpeed + ((currentWave - 1) * helicopterSpawner.BaseSpeedWaveIncrement);
+        
+        return currentMinSpeed;
+    }
+    
+    // Get current max speed for helicopters with absolute increment
+    public float GetCurrentHelicopterMaxSpeed()
+    {
+        if (helicopterSpawner == null) return 15f;
+        
+        // Calculate: base + (wave-1) * absoluteIncrement
+        float currentMaxSpeed = helicopterSpawner.BaseMaxSpeed + ((currentWave - 1) * helicopterSpawner.BaseSpeedWaveIncrement);
+        
+        return currentMaxSpeed;
     }
     
     // Legacy method - returns tank speed multiplier for backwards compatibility
     public float GetSpeedMultiplier()
     {
-        return GetTankSpeedMultiplier();
+        // Return a simple multiplier based on current wave for backwards compatibility
+        return 1f + (0.1f * (currentWave - 1)); // 10% increase per wave as fallback
     }
     
     // Getters for game over screen

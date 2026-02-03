@@ -41,20 +41,27 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Number of helicopters for wave 1")]
     [SerializeField] private int baseHelicopterCount = 2;
     
-    [Tooltip("Percentage increase in helicopter count per wave (20 = 20%)")]
-    [SerializeField] private float baseCountWaveIncrement = 20f;
+    [Tooltip("Absolute increase in helicopter count per wave (1 = +1 helicopter per wave)")]
+    [SerializeField] private int baseCountWaveIncrement = 1;
     
-    [Tooltip("Percentage increase in helicopter speed per wave (10 = 10%)")]
-    [SerializeField] private float baseSpeedWaveIncrement = 10f;
+    [Tooltip("Absolute increase in helicopter speed per wave (1.0 = +1.0 speed per wave)")]
+    [SerializeField] private float baseSpeedWaveIncrement = 1.0f;
     
-    [Tooltip("Percentage increase in max spawn distance per wave (10 = 10%)")]
-    [SerializeField] private float spawnDistanceIncrement = 10f;
+    [Tooltip("Absolute increase in minimum spawn distance per wave (5 = +5 units per wave)")]
+    [SerializeField] private float minSpawnIncrement = 5f;
+    
+    [Tooltip("Absolute increase in maximum spawn distance per wave (15 = +15 units per wave)")]
+    [SerializeField] private float maxSpawnIncrement = 15f;
     
     public int BaseHelicopterCount => baseHelicopterCount;
-    public float BaseCountWaveIncrement => baseCountWaveIncrement;
+    public int BaseCountWaveIncrement => baseCountWaveIncrement;
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     public float DistanceToFire => distanceToFire;
     public AudioClip FiringSound => firingSound;
+    public float MinSpawnIncrement => minSpawnIncrement;
+    public float MaxSpawnIncrement => maxSpawnIncrement;
+    public float BaseMinSpeed => baseMinSpeed;
+    public float BaseMaxSpeed => baseMaxSpeed;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for helicopter destruction")]
@@ -109,11 +116,10 @@ public class HelicopterSpawner : MonoBehaviour
         activeHelicopters.RemoveAll(helicopter => helicopter == null);
         
         // Spawn all helicopters at once at wave start
-        float speedMultiplier = WaveManager.Instance.GetHelicopterSpeedMultiplier();
         bool spawnedAny = false;
         while (WaveManager.Instance.CanSpawnHelicopter())
         {
-            SpawnHelicopter(speedMultiplier);
+            SpawnHelicopter();
             spawnedAny = true;
         }
         
@@ -124,7 +130,7 @@ public class HelicopterSpawner : MonoBehaviour
         }
     }
     
-    void SpawnHelicopter(float speedMultiplier)
+    void SpawnHelicopter()
     {
         if (helicopterPrefab == null)
         {
@@ -134,31 +140,16 @@ public class HelicopterSpawner : MonoBehaviour
         Vector3 basePosition = baseTransform != null ? baseTransform.position : Vector3.zero;
         float randomAngle = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         
-        // Calculate current max spawn distance using compound growth
+        // Calculate current spawn distances using absolute increments
         int currentWave = WaveManager.Instance != null ? WaveManager.Instance.GetCurrentWave() : 1;
-        float currentMaxSpawnDistance = initialMaxSpawnDistance;
         
-        // Apply compound growth: each wave uses previous wave's distance as base
-        for (int wave = 2; wave <= currentWave; wave++)
-        {
-            float increase = currentMaxSpawnDistance * (spawnDistanceIncrement / 100f);
-            currentMaxSpawnDistance = Mathf.Min(currentMaxSpawnDistance + increase, maxSpawnDistance);
-            
-            // Stop if we've reached the maximum
-            if (currentMaxSpawnDistance >= maxSpawnDistance) break;
-        }
-
-        // Calculate current min spawn distance using compound growth (same logic as max)
-        float currentMinSpawnDistance = initialMinSpawnDistance;
+        // Calculate max spawn distance: initial + (wave-1) * increment
+        float currentMaxSpawnDistance = initialMaxSpawnDistance + ((currentWave - 1) * maxSpawnIncrement);
+        currentMaxSpawnDistance = Mathf.Min(currentMaxSpawnDistance, maxSpawnDistance);
         
-        for (int wave = 2; wave <= currentWave; wave++)
-        {
-            float increase = currentMinSpawnDistance * (spawnDistanceIncrement / 100f);
-            currentMinSpawnDistance = Mathf.Min(currentMinSpawnDistance + increase, minSpawnDistance);
-            
-            // Stop if we've reached the maximum
-            if (currentMinSpawnDistance >= minSpawnDistance) break;
-        }
+        // Calculate min spawn distance: initial + (wave-1) * increment
+        float currentMinSpawnDistance = initialMinSpawnDistance + ((currentWave - 1) * minSpawnIncrement);
+        currentMinSpawnDistance = Mathf.Min(currentMinSpawnDistance, minSpawnDistance);
 
         // Ensure min is strictly less than max to avoid invalid Range
         if (currentMinSpawnDistance >= currentMaxSpawnDistance)
@@ -215,9 +206,9 @@ public class HelicopterSpawner : MonoBehaviour
         
         // Also check children for colliders
         Collider[] childColliders = helicopter.GetComponentsInChildren<Collider>();
-        // Apply wave speed multiplier (only to max speed, min stays constant)
-        float minSpeed = baseMinSpeed;
-        float maxSpeed = baseMaxSpeed * speedMultiplier;
+        // Apply absolute speed increments
+        float minSpeed = WaveManager.Instance.GetCurrentHelicopterMinSpeed();
+        float maxSpeed = WaveManager.Instance.GetCurrentHelicopterMaxSpeed();
         float speed = Random.Range(minSpeed, maxSpeed);
         
         helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound);
