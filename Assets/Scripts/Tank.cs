@@ -135,7 +135,12 @@ public class Tank : MonoBehaviour
         if (!isFiring && distanceToBase <= distanceToFire)
         {
             isFiring = true;
-            nextFireTime = Time.time + rateOfFire; // Wait for rate of fire before first shot
+            
+            // Fire immediately when reaching line of fire
+            FireAtBase();
+            
+            // Set next fire time for subsequent shots
+            nextFireTime = Time.time + rateOfFire;
             
             // Flash screen if tank is not in player's field of view
             if (!IsInPlayerFieldOfView())
@@ -225,10 +230,22 @@ public class Tank : MonoBehaviour
     
     void FireAtBase()
     {
-        // Play firing sound
+        // Play firing sound with volume control
         if (firingSound != null)
         {
-            AudioSource.PlayClipAtPoint(firingSound, transform.position);
+            // Create temporary AudioSource for volume control
+            GameObject tempAudio = new GameObject("TempFiringSound");
+            tempAudio.transform.position = transform.position;
+            AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+            
+            // Apply global volume from VolumeManager
+            if (VolumeManager.Instance != null)
+            {
+                audioSource.volume = VolumeManager.Instance.GetMasterVolume();
+            }
+            
+            audioSource.PlayOneShot(firingSound);
+            Destroy(tempAudio, firingSound.length + 0.1f); // Clean up after sound plays
         }
         
         if (projectilePrefab == null)
@@ -263,32 +280,40 @@ public class Tank : MonoBehaviour
     
     void UpdateZigzagDirection()
     {
-        // SAILBOAT TACKING ALGORITHM:
-        // Tank always moves closer to base but zigzags like a sailboat
-        // Alternates between left and right of the direct line to base
-        // Ensures forward progress while creating lateral movement
+        // SNAKE-LIKE MOVEMENT ALGORITHM:
+        // Tank moves in natural snake patterns toward base
+        // Each tank has unique zigzag characteristics for variety
+        // Alternates between left and right with randomized angles
+        // Ensures forward progress while creating organic movement
         
         Vector3 toBase = (targetPosition - transform.position).normalized;
         toBase.y = 0;
         
-        // Calculate safe zigzag angle that guarantees forward progress (always < 90°)
-        float maxSafeAngle = 85f; // Maximum deviation from base direction (less than 90°)
-        float minSafeAngle = 15f; // Minimum angle for visible zigzag
+        // SNAKE-LIKE MOVEMENT: Each tank has unique zigzag characteristics
+        // Create more natural, varied snake paths
+        
+        // Randomize angle ranges for each tank to create variety
+        float maxAngle = Random.Range(15f, 30f); // Each tank has different max angle
+        float minAngle = Random.Range(3f, 12f);  // Each tank has different min angle
         
         float zigzagAngle;
         
         if (lastZigzagWasLeft)
         {
             // Last was left, so now go right (positive angle)
-            zigzagAngle = Random.Range(minSafeAngle, maxSafeAngle);
+            zigzagAngle = Random.Range(minAngle, maxAngle);
             lastZigzagWasLeft = false;
         }
         else
         {
             // Last was right, so now go left (negative angle)
-            zigzagAngle = Random.Range(-maxSafeAngle, -minSafeAngle);
+            zigzagAngle = Random.Range(-maxAngle, -minAngle);
             lastZigzagWasLeft = true;
         }
+        
+        // Add slight randomness to make path more snake-like
+        float randomVariation = Random.Range(-2f, 2f);
+        zigzagAngle += randomVariation;
         
         // Apply the angle to direction toward base
         Quaternion rotation = Quaternion.Euler(0, zigzagAngle, 0);
@@ -296,38 +321,20 @@ public class Tank : MonoBehaviour
         
         // CRITICAL: Verify forward progress with dot product
         // Dot product > 0 means moving toward base (angle < 90°)
-        // cos(85°) = 0.087, so we want dot product > 0.087
-        float dotProduct = Vector3.Dot(tentativeDirection.normalized, toBase.normalized);
+        // cos(25°) = 0.906, so we want dot product > 0.9 for strong forward progress
+        float dotProduct = Vector3.Dot(toBase, tentativeDirection);
         
-        if (dotProduct <= 0f) // Angle >= 90°, moving away or perpendicular
+        if (dotProduct < 0.9f) // Must have at least 90% forward progress
         {
-            // Force a much safer angle
-            zigzagAngle = lastZigzagWasLeft ? -30f : 30f; // Conservative 30° turn
+            // Force a safer angle with some variety
+            float safeAngle = Random.Range(5f, 12f);
+            zigzagAngle = zigzagAngle > 0 ? safeAngle : -safeAngle;
             rotation = Quaternion.Euler(0, zigzagAngle, 0);
             tentativeDirection = rotation * toBase;
         }
         
-        // Final verification - ensure we're moving closer to base
-        Vector3 currentPos = transform.position;
-        Vector3 nextPos = currentPos + tentativeDirection * moveSpeed * Time.deltaTime;
-        float currentDistance = Vector3.Distance(currentPos, targetPosition);
-        float nextDistance = Vector3.Distance(nextPos, targetPosition);
-        
-        if (nextDistance >= currentDistance)
-        {
-            // This direction would move us away or parallel, force straight movement
-            currentDirection = toBase;
-        }
-        else
-        {
-            // This direction moves us closer, use it
-            currentDirection = tentativeDirection;
-        }
-        
-        // Debug logging for troubleshooting
-        Debug.Log($"[Tank] Zigzag: Angle={zigzagAngle:F1}°, Dot={dotProduct:F3}, CurrentDist={currentDistance:F1}, NextDist={nextDistance:F1}");
+        zigzagDirection = tentativeDirection;
     }
-    
     
     void OnCollisionEnter(Collision collision)
     {
@@ -390,7 +397,6 @@ public class Tank : MonoBehaviour
         // Play explosion sound
         if (explosionSound != null)
         {
-            Debug.Log($"[Tank] Playing explosion sound: {explosionSound.name}");
             try
             {
                 // Create temporary AudioSource for volume control

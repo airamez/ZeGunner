@@ -119,7 +119,12 @@ public class Helicopter : MonoBehaviour
         if (!isFiring && distanceToBase <= distanceToFire)
         {
             isFiring = true;
-            nextFireTime = Time.time + rateOfFire; // Wait for rate of fire before first shot
+            
+            // Fire immediately when reaching line of fire
+            FireAtBase();
+            
+            // Set next fire time for subsequent shots
+            nextFireTime = Time.time + rateOfFire;
             
             // Flash screen if helicopter is not in player's field of view
             if (!IsInPlayerFieldOfView())
@@ -196,10 +201,22 @@ public class Helicopter : MonoBehaviour
     
     void FireAtBase()
     {
-        // Play firing sound
+        // Play firing sound with volume control
         if (firingSound != null)
         {
-            AudioSource.PlayClipAtPoint(firingSound, transform.position);
+            // Create temporary AudioSource for volume control
+            GameObject tempAudio = new GameObject("TempFiringSound");
+            tempAudio.transform.position = transform.position;
+            AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+            
+            // Apply global volume from VolumeManager
+            if (VolumeManager.Instance != null)
+            {
+                audioSource.volume = VolumeManager.Instance.GetMasterVolume();
+            }
+            
+            audioSource.PlayOneShot(firingSound);
+            Destroy(tempAudio, firingSound.length + 0.1f); // Clean up after sound plays
         }
         
         if (projectilePrefab == null)

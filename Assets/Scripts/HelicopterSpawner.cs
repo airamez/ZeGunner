@@ -50,8 +50,14 @@ public class HelicopterSpawner : MonoBehaviour
     [Tooltip("Absolute increase in helicopter count per wave (1 = +1 helicopter per wave)")]
     [SerializeField] private int baseCountWaveIncrement = 1;
     
-    [Tooltip("Absolute increase in helicopter speed per wave (1.0 = +1.0 speed per wave)")]
-    [SerializeField] private float baseSpeedWaveIncrement = 1.0f;
+    [Tooltip("Absolute increase in helicopter speed per wave (10 = 10%)")]
+    [SerializeField] private float baseSpeedWaveIncrement = 10f;
+    
+    [Tooltip("Maximum speed limit for helicopters (absolute upper limit)")]
+    [SerializeField] private float maxSpeedLimit = 25f;
+    
+    [Tooltip("Minimum speed limit for helicopters (absolute lower limit)")]
+    [SerializeField] private float minSpeedLimit = 5f;
     
     [Header("Helicopter Zigzag Movement")]
     [Tooltip("Base delay between zigzag direction changes (seconds)")]
@@ -79,6 +85,8 @@ public class HelicopterSpawner : MonoBehaviour
     public float MaxSpawnDistanceIncrement => maxSpawnDistanceIncrement;
     public float BaseMinSpeed => baseMinSpeed;
     public float BaseMaxSpeed => baseMaxSpeed;
+    public float MaxSpeedLimit => maxSpeedLimit;
+    public float MinSpeedLimit => minSpeedLimit;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for helicopter destruction")]

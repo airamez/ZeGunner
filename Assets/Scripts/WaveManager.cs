@@ -342,12 +342,10 @@ public class WaveManager : MonoBehaviour
         // Respect max speed limit
         float finalMaxSpeed = Mathf.Min(currentMaxSpeed, tankSpawner.MaxSpeedLimit);
         
-        Debug.Log($"[WaveManager] Wave {currentWave}: Base Max Speed {tankSpawner.BaseMaxSpeed}, Increment {tankSpawner.BaseSpeedWaveIncrement}, Final Max Speed {finalMaxSpeed:F2}, Limit {tankSpawner.MaxSpeedLimit}");
-        
         return finalMaxSpeed;
     }
     
-    // Get current min speed for helicopters with absolute increment
+    // Get current min speed for helicopters with absolute increment and limits
     public float GetCurrentHelicopterMinSpeed()
     {
         if (helicopterSpawner == null) return 8f;
@@ -355,10 +353,13 @@ public class WaveManager : MonoBehaviour
         // Calculate: base + (wave-1) * absoluteIncrement
         float currentMinSpeed = helicopterSpawner.BaseMinSpeed + ((currentWave - 1) * helicopterSpawner.BaseSpeedWaveIncrement);
         
-        return currentMinSpeed;
+        // Respect min speed limit
+        float finalMinSpeed = Mathf.Min(currentMinSpeed, helicopterSpawner.MinSpeedLimit);
+        
+        return finalMinSpeed;
     }
     
-    // Get current max speed for helicopters with absolute increment
+    // Get current max speed for helicopters with absolute increment and limits
     public float GetCurrentHelicopterMaxSpeed()
     {
         if (helicopterSpawner == null) return 15f;
@@ -366,7 +367,10 @@ public class WaveManager : MonoBehaviour
         // Calculate: base + (wave-1) * absoluteIncrement
         float currentMaxSpeed = helicopterSpawner.BaseMaxSpeed + ((currentWave - 1) * helicopterSpawner.BaseSpeedWaveIncrement);
         
-        return currentMaxSpeed;
+        // Respect max speed limit
+        float finalMaxSpeed = Mathf.Min(currentMaxSpeed, helicopterSpawner.MaxSpeedLimit);
+        
+        return finalMaxSpeed;
     }
     
     // Legacy method - returns tank speed multiplier for backwards compatibility
