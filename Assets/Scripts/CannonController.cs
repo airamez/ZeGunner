@@ -13,6 +13,7 @@ public class CannonController : MonoBehaviour
     [Header("Spawn Point")]
     [SerializeField] private Transform baseTransform;
     [SerializeField] private float spawnOffset = 1f;
+    [SerializeField] private float launcherHeight = 2f;
     
     [Header("Camera Movement")]
     [SerializeField] private float verticalSpeed = 5f;
@@ -64,9 +65,21 @@ public class CannonController : MonoBehaviour
             ScoreManager.Instance.RegisterShot();
         }
         
-        Vector3 spawnPosition = mainCamera.transform.position + mainCamera.transform.forward * spawnOffset;
+        // Calculate spawn position above the camera
+        Vector3 cameraPosition = mainCamera.transform.position;
+        Vector3 cameraForward = mainCamera.transform.forward;
+        Vector3 cameraUp = mainCamera.transform.up;
         
-        GameObject projectile = Instantiate(rocketProjectile, spawnPosition, Quaternion.LookRotation(mainCamera.transform.forward));
+        // Spawn position: forward offset + upward offset based on launcher height
+        Vector3 spawnPosition = cameraPosition + 
+                              (cameraForward * spawnOffset) + 
+                              (cameraUp * launcherHeight);
+        
+        // Calculate direction from spawn position to crosshair (center of screen)
+        Vector3 crosshairPosition = cameraPosition + cameraForward * 100f; // Point far in front of camera
+        Vector3 fireDirection = (crosshairPosition - spawnPosition).normalized;
+        
+        GameObject projectile = Instantiate(rocketProjectile, spawnPosition, Quaternion.LookRotation(fireDirection));
         
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb == null)
@@ -81,7 +94,7 @@ public class CannonController : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.useGravity = false; // Rockets don't use gravity
         
-        rb.linearVelocity = mainCamera.transform.forward * projectileSpeed;
+        rb.linearVelocity = fireDirection * projectileSpeed;
         
         // Set rocket scale and orientation
         projectile.transform.localScale = Vector3.one * rocketScale;

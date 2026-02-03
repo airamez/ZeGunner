@@ -399,12 +399,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rocketProjectile: {fileID: 1684384920599143690, guid: 7fbe895a437dbd74da119d62b80de28e, type: 3}
-  projectileSpeed: 200
-  fireRate: 0.2
-  rocketScale: 0.1
+  projectileSpeed: 150
+  fireRate: 0.25
+  rocketScale: 0.5
   maxProjectileDistance: 1000
   baseTransform: {fileID: 1595826105}
   spawnOffset: 1
+  launcherHeight: 5
   verticalSpeed: 5
   minHeight: 5
   maxElevation: 50
