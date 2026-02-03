@@ -37,7 +37,5 @@ public class SimpleRangeIndicator : MonoBehaviour
             Vector3 position = new Vector3(x, height, z);
             lineRenderer.SetPosition(i, position);
         }
-        
-        Debug.Log($"SimpleRangeIndicator: Created {name} at radius {radius}, height {height}");
     }
 }

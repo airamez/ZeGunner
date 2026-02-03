@@ -165,14 +165,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tankPrefab: {fileID: 1788451793792189928, guid: 5f3d07d75c5cb02478bb3154bf64bc0d, type: 3}
   baseTransform: {fileID: 1595826105}
-  tankScale: 1
+  tankScale: 2
   closeStraightLineDistance: 50
   zigzagDelay: 10
   initialMinSpawnDistance: 100
   minSpawnDistance: 200
   initialMaxSpawnDistance: 150
-  maxSpawnDistance: 400
-  spawnHeight: 0.5
+  maxSpawnDistance: 500
+  spawnHeight: 1
   baseMinSpeed: 1
   baseMaxSpeed: 2
   maxSpeedLimit: 5
@@ -293,7 +293,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 70
+  field of view: 60
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -399,8 +399,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   rocketProjectile: {fileID: 1684384920599143690, guid: 7fbe895a437dbd74da119d62b80de28e, type: 3}
-  projectileSpeed: 150
-  fireRate: 0.25
+  projectileSpeed: 200
+  fireRate: 0.2
   rocketScale: 0.1
   maxProjectileDistance: 1000
   baseTransform: {fileID: 1595826105}
@@ -1594,13 +1594,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::HelicopterSpawner
   helicopterPrefab: {fileID: 4485264436599892038, guid: a1efafa8a3b3f78458ef7f9a033ed480, type: 3}
   baseTransform: {fileID: 1595826105}
-  helicopterScale: 0.5
-  initialMinSpawnDistance: 150
-  minSpawnDistance: 200
+  helicopterScale: 1
+  initialMinSpawnDistance: 250
+  minSpawnDistance: 300
   initialMaxSpawnDistance: 200
-  maxSpawnDistance: 450
-  minSpawnHeight: 10
-  maxSpawnHeight: 100
+  maxSpawnDistance: 500
+  minSpawnHeight: 50
+  maxSpawnHeight: 200
   minSpawnDistanceIncrement: 20
   maxSpawnDistanceIncrement: 100
   baseMinSpeed: 2

@@ -124,7 +124,6 @@ public class GameManager : MonoBehaviour
         
         int tanksRemaining = keptOneTank ? 1 : 0;
         int helisRemaining = keptOneHeli ? 1 : 0;
-        Debug.Log($"[DEBUG] God Mode - Destroyed all but {tanksRemaining} tank(s) and {helisRemaining} helicopter(s)");
     }
     
     void ShowGodModeText()

@@ -113,8 +113,6 @@ public class Tank : MonoBehaviour
         
         float randomDelay = Random.Range(minDelay, maxDelay);
         nextZigzagTime = Time.time + randomDelay;
-        
-        Debug.Log($"[Tank] Next zigzag in {randomDelay:F1}s (base: {zigzagDelay:F1}s)");
     }
     
     void Update()

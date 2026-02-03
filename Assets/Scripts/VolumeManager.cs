@@ -37,17 +37,13 @@ public class VolumeManager : MonoBehaviour
     
     void Start()
     {
-        Debug.Log("[VolumeManager] VolumeManager started");
-        
         // Load saved volume or use default
         masterVolume = PlayerPrefs.GetFloat("MasterVolume", 1.0f);
-        Debug.Log($"[VolumeManager] Loaded volume: {masterVolume:P0}");
         ApplyVolume();
-        
+       
         // Create volume UI if not assigned
         if (volumePanel == null)
         {
-            Debug.Log("[VolumeManager] Creating volume UI");
             CreateVolumeUI();
         }
         else
@@ -70,14 +66,12 @@ public class VolumeManager : MonoBehaviour
             // Comma key (,) - Decrease volume
             if (Keyboard.current.commaKey.wasPressedThisFrame)
             {
-                Debug.Log("[VolumeManager] Comma key pressed - Decreasing volume");
                 DecreaseVolume();
             }
             
             // Period key (.) - Increase volume
             if (Keyboard.current.periodKey.wasPressedThisFrame)
             {
-                Debug.Log("[VolumeManager] Period key pressed - Increasing volume");
                 IncreaseVolume();
             }
             

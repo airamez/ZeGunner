@@ -325,7 +325,6 @@ public class Helicopter : MonoBehaviour
         // Play explosion sound
         if (explosionSound != null)
         {
-            Debug.Log($"[Helicopter] Playing explosion sound: {explosionSound.name}");
             try
             {
                 // Create temporary AudioSource for volume control

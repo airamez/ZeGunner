@@ -326,8 +326,6 @@ public class WaveManager : MonoBehaviour
         // Respect min speed limit
         float finalMinSpeed = Mathf.Min(currentMinSpeed, tankSpawner.MinSpeedLimit);
         
-        Debug.Log($"[WaveManager] Wave {currentWave}: Base Min Speed {tankSpawner.BaseMinSpeed}, Increment {tankSpawner.BaseSpeedWaveIncrement}, Final Min Speed {finalMinSpeed:F2}, Limit {tankSpawner.MinSpeedLimit}");
-        
         return finalMinSpeed;
     }
     
