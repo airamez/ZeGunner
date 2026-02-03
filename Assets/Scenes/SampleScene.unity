@@ -168,19 +168,18 @@ MonoBehaviour:
   tankScale: 1
   closeStraightLineDistance: 30
   zigzagDelay: 5
-  maxRoamDistance: 600
   initialMinSpawnDistance: 100
-  minSpawnDistance: 150
+  minSpawnDistance: 300
   initialMaxSpawnDistance: 150
   maxSpawnDistance: 1000
   spawnHeight: 0.5
-  baseMinSpeed: 3
-  baseMaxSpeed: 10
+  baseMinSpeed: 1
+  baseMaxSpeed: 5
   maxSpeedLimit: 50
   minSpeedLimit: 30
   baseTankCount: 5
-  baseCountWaveIncrement: 5
-  baseSpeedWaveIncrement: 5
+  baseCountWaveIncrement: 2
+  baseSpeedWaveIncrement: 1
   minSpawnIncrement: 10
   maxSpawnIncrement: 20
   explosionPrefab: {fileID: 100002, guid: d53702834d5814f47bc426b32c199c5e, type: 3}
@@ -1597,16 +1596,16 @@ MonoBehaviour:
   baseTransform: {fileID: 1595826105}
   helicopterScale: 0.5
   initialMinSpawnDistance: 150
-  minSpawnDistance: 200
-  initialMaxSpawnDistance: 150
+  minSpawnDistance: 400
+  initialMaxSpawnDistance: 200
   maxSpawnDistance: 600
   minSpawnHeight: 5
-  maxSpawnHeight: 50
+  maxSpawnHeight: 100
   baseMinSpeed: 2
   baseMaxSpeed: 5
   baseHelicopterCount: 5
-  baseCountWaveIncrement: 3
-  baseSpeedWaveIncrement: 5
+  baseCountWaveIncrement: 1
+  baseSpeedWaveIncrement: 0.5
   minSpawnIncrement: 5
   maxSpawnIncrement: 15
   explosionPrefab: {fileID: 100008, guid: 2ae9e8f0dfbef424c839cad8118abc5f, type: 3}

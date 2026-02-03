@@ -59,10 +59,13 @@ public class WaveManager : MonoBehaviour
     
     void Update()
     {
-        // Check for SPACE key to start next wave
+        // Check for SPACE key or mouse right click to start next wave
         if (waitingForNextWave)
         {
-            if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+            bool spacePressed = Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame;
+            bool rightMouseClicked = Mouse.current != null && Mouse.current.rightButton.wasPressedThisFrame;
+            
+            if (spacePressed || rightMouseClicked)
             {
                 StartNextWave();
             }
@@ -223,7 +226,7 @@ public class WaveManager : MonoBehaviour
                                         $"Time: {FormatTime(waveDuration)}\n\n" +
                                         $"Tanks Destroyed: {tanksDestroyedThisWave}\n" +
                                         $"Helicopters Destroyed: {helicoptersDestroyedThisWave}\n\n" +
-                                        "Press SPACE to Continue";
+                                        "Press SPACE or Right Click to Continue";
             }
         }
     }

@@ -58,6 +58,7 @@ public class HelicopterSpawner : MonoBehaviour
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     public float DistanceToFire => distanceToFire;
     public AudioClip FiringSound => firingSound;
+    public AudioClip FireRangeReachedSound => fireRangeReachedSound;
     public float MinSpawnIncrement => minSpawnIncrement;
     public float MaxSpawnIncrement => maxSpawnIncrement;
     public float BaseMinSpeed => baseMinSpeed;
@@ -79,6 +80,9 @@ public class HelicopterSpawner : MonoBehaviour
     
     [Tooltip("Sound played when helicopter fires at base")]
     [SerializeField] private AudioClip firingSound;
+    
+    [Tooltip("Sound played when helicopter reaches fire range distance")]
+    [SerializeField] private AudioClip fireRangeReachedSound;
     
     [Tooltip("Time between shots in seconds")]
     [SerializeField] private float rateOfFire = 1.5f;
@@ -211,7 +215,7 @@ public class HelicopterSpawner : MonoBehaviour
         float maxSpeed = WaveManager.Instance.GetCurrentHelicopterMaxSpeed();
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound);
+        helicopterScript.Initialize(basePosition, speed, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, fireRangeReachedSound);
         
         activeHelicopters.Add(helicopter);
         

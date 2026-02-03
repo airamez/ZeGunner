@@ -32,9 +32,11 @@ public class Tank : MonoBehaviour
     private GameObject explosionPrefab;
     private AudioClip explosionSound;
     private AudioClip firingSound;
+    private AudioClip fireRangeReachedSound;
     private bool isDestroyed = false;
+    private bool hasPlayedFireRangeSound = false;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float delay, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, float projSpawnHeight)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float delay, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, AudioClip fireRangeSound, float projSpawnHeight)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -45,6 +47,7 @@ public class Tank : MonoBehaviour
         explosionPrefab = explosion;
         explosionSound = sound;
         firingSound = fireSound;
+        fireRangeReachedSound = fireRangeSound;
         
         // Firing parameters
         projectilePrefab = projectile;
@@ -135,7 +138,21 @@ public class Tank : MonoBehaviour
         if (!isFiring && distanceToBase <= distanceToFire)
         {
             isFiring = true;
-            nextFireTime = Time.time; // Fire immediately when entering range
+            nextFireTime = Time.time + rateOfFire; // Wait for rate of fire before first shot
+            
+            // Play fire range reached sound (only once)
+            if (!hasPlayedFireRangeSound && fireRangeReachedSound != null)
+            {
+                // Create temporary AudioSource for volume control
+                GameObject tempAudio = new GameObject("TempFireRangeSound");
+                tempAudio.transform.position = transform.position;
+                AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+                audioSource.clip = fireRangeReachedSound;
+                audioSource.volume = 1.5f; // 150% volume - adjust as needed
+                audioSource.Play();
+                Destroy(tempAudio, fireRangeReachedSound.length + 0.1f); // Clean up after sound
+                hasPlayedFireRangeSound = true;
+            }
             
             // Face the base
             Vector3 toBase = (targetPosition - transform.position).normalized;
@@ -371,7 +388,28 @@ public class Tank : MonoBehaviour
         // Play explosion sound
         if (explosionSound != null)
         {
-            AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+            Debug.Log($"[Tank] Playing explosion sound: {explosionSound.name}");
+            try
+            {
+                // Create temporary AudioSource for volume control
+                GameObject tempAudio = new GameObject("TempExplosionSound");
+                tempAudio.transform.position = transform.position;
+                AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+                audioSource.clip = explosionSound;
+                audioSource.volume = 2.0f; // 200% volume for explosions
+                audioSource.Play();
+                Destroy(tempAudio, explosionSound.length + 0.1f); // Clean up after sound
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[Tank] Error playing explosion sound: {e.Message}");
+                // Fallback to original method
+                AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+            }
+        }
+        else
+        {
+            Debug.Log("[Tank] No explosion sound assigned");
         }
         
         Destroy(gameObject);

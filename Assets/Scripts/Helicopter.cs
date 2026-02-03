@@ -15,6 +15,9 @@ public class Helicopter : MonoBehaviour
     private GameObject explosionPrefab;
     private AudioClip explosionSound;
     private AudioClip firingSound;
+    private AudioClip fireRangeReachedSound;
+    private bool isDestroyed = false;
+    private bool hasPlayedFireRangeSound = false;
     private GameObject projectilePrefab;
     private float distanceToFire;
     private float rateOfFire;
@@ -23,15 +26,15 @@ public class Helicopter : MonoBehaviour
     private float projectileScale;
     private bool isFiring = false;
     private float nextFireTime;
-    private bool isDestroyed = false;
     
-    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound)
+    public void Initialize(Vector3 target, float speed, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, AudioClip fireRangeSound)
     {
         targetPosition = target;
         moveSpeed = speed;
         explosionPrefab = explosion;
         explosionSound = sound;
         firingSound = fireSound;
+        fireRangeReachedSound = fireRangeSound;
         
         // Firing parameters
         projectilePrefab = projectile;
@@ -94,10 +97,25 @@ public class Helicopter : MonoBehaviour
         if (!isFiring && distanceToBase <= distanceToFire)
         {
             isFiring = true;
-            nextFireTime = Time.time; // Fire immediately when entering range
+            nextFireTime = Time.time + rateOfFire; // Wait for rate of fire before first shot
+            
+            // Play fire range reached sound (only once)
+            if (!hasPlayedFireRangeSound && fireRangeReachedSound != null)
+            {
+                // Create temporary AudioSource for volume control
+                GameObject tempAudio = new GameObject("TempFireRangeSound");
+                tempAudio.transform.position = transform.position;
+                AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+                audioSource.clip = fireRangeReachedSound;
+                audioSource.volume = 1.5f; // 150% volume - adjust as needed
+                audioSource.Play();
+                Destroy(tempAudio, fireRangeReachedSound.length + 0.1f); // Clean up after sound
+                hasPlayedFireRangeSound = true;
+            }
             
             // Face the base
             Vector3 toBase = (targetPosition - transform.position).normalized;
+            toBase.y = 0;
             if (toBase != Vector3.zero)
             {
                 transform.rotation = Quaternion.LookRotation(toBase);
@@ -249,7 +267,28 @@ public class Helicopter : MonoBehaviour
         // Play explosion sound
         if (explosionSound != null)
         {
-            AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+            Debug.Log($"[Helicopter] Playing explosion sound: {explosionSound.name}");
+            try
+            {
+                // Create temporary AudioSource for volume control
+                GameObject tempAudio = new GameObject("TempExplosionSound");
+                tempAudio.transform.position = transform.position;
+                AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+                audioSource.clip = explosionSound;
+                audioSource.volume = 2.0f; // 200% volume for explosions
+                audioSource.Play();
+                Destroy(tempAudio, explosionSound.length + 0.1f); // Clean up after sound
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError($"[Helicopter] Error playing explosion sound: {e.Message}");
+                // Fallback to original method
+                AudioSource.PlayClipAtPoint(explosionSound, transform.position);
+            }
+        }
+        else
+        {
+            Debug.Log("[Helicopter] No explosion sound assigned");
         }
        
         Destroy(gameObject);
