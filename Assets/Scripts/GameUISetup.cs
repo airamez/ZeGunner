@@ -180,8 +180,35 @@ public class GameUISetup : MonoBehaviour
         return panel;
     }
     
+    void AddBackgroundImage(GameObject panel)
+    {
+        // Load ZeGunner background image
+        Texture2D backgroundImage = Resources.Load<Texture2D>("Images/ZeGunner");
+        
+        if (backgroundImage != null)
+        {
+            // Get or create the Image component
+            Image bgImage = panel.GetComponent<Image>();
+            if (bgImage == null)
+            {
+                bgImage = panel.AddComponent<Image>();
+            }
+            
+            // Set background image
+            bgImage.sprite = Sprite.Create(backgroundImage, 
+                new Rect(0, 0, backgroundImage.width, backgroundImage.height), 
+                Vector2.one * 0.5f);
+            bgImage.type = Image.Type.Simple;
+            bgImage.preserveAspect = true;
+            bgImage.color = new Color(1f, 1f, 1f, 0.9f); // Slight transparency
+        }
+    }
+    
     void CreateMenuContent(GameObject panel)
     {
+        // Add ZeGunner background image
+        AddBackgroundImage(panel);
+        
         // Title with professional styling
         GameObject titleObj = CreateStyledTextObject("Title", panel.transform, "ZE GUNNER", titleFontSize, FontStyles.Bold, titleColor, TextAlignmentOptions.Center);
         RectTransform titleRect = titleObj.GetComponent<RectTransform>();

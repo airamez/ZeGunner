@@ -1,4 +1,6 @@
-# ZeGunner - Unity 3D Tank Defense Game
+# ZeGunner - Unity 3D Base Defense Game
+
+![ZeGunner Banner](Assets/Images/ZeGunner.png)
 
 A Unity 3D Base defense game where players defend their base from incoming enemy tanks and helicopters using a turret-based rocket system.
 

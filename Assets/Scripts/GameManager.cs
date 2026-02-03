@@ -36,6 +36,19 @@ public class GameManager : MonoBehaviour
     
     void Update()
     {
+        // Check for SPACE key to start game from menu or restart from game over
+        if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
+        {
+            if (CurrentState == GameState.Menu)
+            {
+                StartGame();
+            }
+            else if (CurrentState == GameState.GameOver)
+            {
+                RestartGame();
+            }
+        }
+        
         // Check for ESC key to pause/unpause
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
         {
@@ -162,6 +175,26 @@ public class GameManager : MonoBehaviour
         {
             GameTimer.Instance.StartTimer();
             GameTimer.Instance.ShowTimer(true);
+        }
+        
+        // Hide menu panel with instructions
+        GameObject menuPanel = GameObject.Find("MenuPanel");
+        if (menuPanel != null)
+        {
+            menuPanel.SetActive(false);
+        }
+        
+        // Show game UI
+        GameObject gameUI = GameObject.Find("GameUI");
+        if (gameUI != null)
+        {
+            gameUI.SetActive(true);
+        }
+        
+        // Hide game over screen if visible
+        if (gameOverScreen != null)
+        {
+            gameOverScreen.SetActive(false);
         }
         
         // Start the first wave
@@ -377,9 +410,25 @@ public class GameManager : MonoBehaviour
         rect.offsetMin = Vector2.zero;
         rect.offsetMax = Vector2.zero;
         
-        // Semi-transparent background
+        // Load ZeGunner background image
+        Texture2D backgroundImage = Resources.Load<Texture2D>("Images/ZeGunner");
+        
+        // Background image
         Image bg = pauseScreen.AddComponent<Image>();
-        bg.color = new Color(0, 0, 0, 0.7f);
+        if (backgroundImage != null)
+        {
+            bg.sprite = Sprite.Create(backgroundImage, 
+                new Rect(0, 0, backgroundImage.width, backgroundImage.height), 
+                Vector2.one * 0.5f);
+            bg.type = Image.Type.Simple;
+            bg.preserveAspect = true;
+            bg.color = new Color(1f, 1f, 1f, 0.8f); // Slight transparency
+        }
+        else
+        {
+            // Fallback to solid color if image not found
+            bg.color = new Color(0, 0, 0, 0.7f);
+        }
         
         // Game instructions container (moved up to include title)
         GameObject instructionsContainer = new GameObject("PauseInstructions");
@@ -390,7 +439,7 @@ public class GameManager : MonoBehaviour
         instrContainerRect.sizeDelta = new Vector2(800, 400);
         instrContainerRect.anchoredPosition = Vector2.zero;
         
-        // Instructions background panel
+        // Instructions background panel (semi-transparent for readability)
         GameObject instructionsBg = new GameObject("PauseInstructionsBackground");
         instructionsBg.transform.SetParent(instructionsContainer.transform, false);
         RectTransform bgRect = instructionsBg.AddComponent<RectTransform>();
@@ -399,7 +448,7 @@ public class GameManager : MonoBehaviour
         bgRect.offsetMin = new Vector2(-10, -10);
         bgRect.offsetMax = new Vector2(10, 10);
         Image bgImage = instructionsBg.AddComponent<Image>();
-        bgImage.color = new Color(0, 0, 0, 0.3f);
+        bgImage.color = new Color(0, 0, 0, 0.6f); // Darker for better readability
         bgImage.raycastTarget = false;
         
         // Paused title (now at top of instructions panel)

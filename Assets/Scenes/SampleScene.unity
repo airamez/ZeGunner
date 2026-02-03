@@ -405,7 +405,7 @@ MonoBehaviour:
   maxProjectileDistance: 1000
   baseTransform: {fileID: 1595826105}
   spawnOffset: 1
-  launcherHeight: 5
+  launcherHeight: 1
   verticalSpeed: 5
   minHeight: 5
   maxElevation: 50
