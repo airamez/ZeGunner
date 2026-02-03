@@ -320,11 +320,46 @@ public class WaveManager : MonoBehaviour
         UpdateScoreDisplay();
     }
     
-    // Get wave speed multiplier for tanks
+    // Get compound speed multiplier for tanks
     public float GetTankSpeedMultiplier()
     {
-        float speedIncrement = tankSpawner != null ? tankSpawner.BaseSpeedWaveIncrement / 100f : 0.1f;
-        return 1f + (speedIncrement * (currentWave - 1));
+        if (tankSpawner == null) return 1f;
+        
+        float speedIncrement = tankSpawner.BaseSpeedWaveIncrement / 100f;
+        // Compound calculation: (1 + increment) ^ (wave - 1)
+        return Mathf.Pow(1f + speedIncrement, currentWave - 1);
+    }
+    
+    // Get current min speed with compound increment and limits
+    public float GetCurrentTankMinSpeed()
+    {
+        if (tankSpawner == null) return 2f;
+        
+        float compoundMultiplier = GetTankSpeedMultiplier();
+        float currentMinSpeed = tankSpawner.BaseMinSpeed * compoundMultiplier;
+        
+        // Respect min speed limit
+        float finalMinSpeed = Mathf.Min(currentMinSpeed, tankSpawner.MinSpeedLimit);
+        
+        Debug.Log($"[WaveManager] Wave {currentWave}: Base Min Speed {tankSpawner.BaseMinSpeed}, Compound Multiplier {compoundMultiplier:F2}, Final Min Speed {finalMinSpeed:F2}, Limit {tankSpawner.MinSpeedLimit}");
+        
+        return finalMinSpeed;
+    }
+    
+    // Get current max speed with compound increment and limits
+    public float GetCurrentTankMaxSpeed()
+    {
+        if (tankSpawner == null) return 5f;
+        
+        float compoundMultiplier = GetTankSpeedMultiplier();
+        float currentMaxSpeed = tankSpawner.BaseMaxSpeed * compoundMultiplier;
+        
+        // Respect max speed limit
+        float finalMaxSpeed = Mathf.Min(currentMaxSpeed, tankSpawner.MaxSpeedLimit);
+        
+        Debug.Log($"[WaveManager] Wave {currentWave}: Base Max Speed {tankSpawner.BaseMaxSpeed}, Compound Multiplier {compoundMultiplier:F2}, Final Max Speed {finalMaxSpeed:F2}, Limit {tankSpawner.MaxSpeedLimit}");
+        
+        return finalMaxSpeed;
     }
     
     // Get wave speed multiplier for helicopters

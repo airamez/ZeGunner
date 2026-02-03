@@ -41,6 +41,12 @@ public class TankSpawner : MonoBehaviour
     
     [Tooltip("Base maximum speed of spawned tanks (wave 1)")]
     [SerializeField] private float baseMaxSpeed = 5f;
+    
+    [Tooltip("Maximum speed limit for tanks (cannot exceed this)")]
+    [SerializeField] private float maxSpeedLimit = 20f;
+    
+    [Tooltip("Minimum speed limit for tanks (cannot exceed this)")]
+    [SerializeField] private float minSpeedLimit = 8f;
    
     [Header("Wave Settings")]
     [Tooltip("Number of tanks for wave 1")]
@@ -60,6 +66,10 @@ public class TankSpawner : MonoBehaviour
     public float BaseSpeedWaveIncrement => baseSpeedWaveIncrement;
     public float DistanceToFire => distanceToFire;
     public AudioClip FiringSound => firingSound;
+    public float MaxSpeedLimit => maxSpeedLimit;
+    public float MinSpeedLimit => minSpeedLimit;
+    public float BaseMinSpeed => baseMinSpeed;
+    public float BaseMaxSpeed => baseMaxSpeed;
     
     [Header("Explosion Settings")]
     [Tooltip("Explosion prefab for tank destruction")]
@@ -117,11 +127,10 @@ public class TankSpawner : MonoBehaviour
         activeTanks.RemoveAll(tank => tank == null);
         
         // Spawn all tanks at once at wave start
-        float speedMultiplier = WaveManager.Instance.GetTankSpeedMultiplier();
         bool spawnedAny = false;
         while (WaveManager.Instance.CanSpawnTank())
         {
-            SpawnTank(speedMultiplier);
+            SpawnTank();
             spawnedAny = true;
         }
         
@@ -132,7 +141,7 @@ public class TankSpawner : MonoBehaviour
         }
     }
     
-    void SpawnTank(float speedMultiplier)
+    void SpawnTank()
     {
         if (tankPrefab == null)
         {
@@ -205,9 +214,9 @@ public class TankSpawner : MonoBehaviour
             tankScript = tank.AddComponent<Tank>();
         }
         
-        // Apply wave speed multiplier (only to max speed, min stays constant)
-        float minSpeed = baseMinSpeed;
-        float maxSpeed = baseMaxSpeed * speedMultiplier;
+        // Apply compound speed increments with limits
+        float minSpeed = WaveManager.Instance.GetCurrentTankMinSpeed();
+        float maxSpeed = WaveManager.Instance.GetCurrentTankMaxSpeed();
         float speed = Random.Range(minSpeed, maxSpeed);
         
         tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagDelay, maxRoamDistance, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound, projectileSpawnHeight);
