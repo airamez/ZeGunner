@@ -396,7 +396,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b322c1c310040b40aab479c98d4f083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  rocketProjectile: {fileID: 919132149155446097, guid: 4a1029142eefab644bbcbab3875e5aed, type: 3}
+  rocketProjectile: {fileID: 1684384920599143690, guid: 7fbe895a437dbd74da119d62b80de28e, type: 3}
   projectileSpeed: 150
   fireRate: 0.25
   rocketScale: 0.1

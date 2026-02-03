@@ -460,13 +460,6 @@ public class GameUISetup : MonoBehaviour
             gm = gmObj.AddComponent<GameManager>();
         }
         
-        // Create WaterRangeIndicator component
-        WaterRangeIndicator waterIndicator = FindAnyObjectByType<WaterRangeIndicator>();
-        if (waterIndicator == null)
-        {
-            GameObject waterObj = new GameObject("WaterRangeIndicator");
-            waterIndicator = waterObj.AddComponent<WaterRangeIndicator>();
-        }
         
         // Create GameTimer component
         GameTimer timer = FindAnyObjectByType<GameTimer>();

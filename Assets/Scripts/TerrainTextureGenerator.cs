@@ -39,7 +39,6 @@ public class TerrainTextureGenerator : MonoBehaviour
     
     [Header("Variation Settings")]
     [SerializeField] private float dirtPatchFrequency = 0.08f;
-    [SerializeField] private float grassVariation = 0.12f;
     
     private TerrainData terrainData;
     private int width;
