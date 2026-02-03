@@ -51,6 +51,13 @@ public class GameUISetup : MonoBehaviour
             wmObj.AddComponent<WaveManager>();
         }
         
+        // Ensure VolumeManager exists
+        if (VolumeManager.Instance == null)
+        {
+            GameObject vmObj = new GameObject("VolumeManager");
+            vmObj.AddComponent<VolumeManager>();
+        }
+        
         if (autoSetupOnStart)
         {
             SetupGameUI();
