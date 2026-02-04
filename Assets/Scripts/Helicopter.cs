@@ -28,6 +28,11 @@ public class Helicopter : MonoBehaviour
     // Zigzag movement variables
     private float zigzagDelay;
     private float minLateralSpeed;
+    
+    // Smooth rotation variables
+    private float rotationSpeed = 2f; // Speed of smooth rotation
+    private Quaternion targetRotation;
+    private bool isTurningToBase = false;
     private float maxLateralSpeed;
     private float distanceToStartZigzag;
     private float nextZigzagTime;
@@ -64,11 +69,14 @@ public class Helicopter : MonoBehaviour
         // Find rotor components
         FindRotorComponents();
         
-        // Point helicopter toward base initially
+        // Keep helicopter horizontal (parallel to horizon)
         Vector3 directionToBase = (targetPosition - transform.position).normalized;
         if (directionToBase != Vector3.zero)
         {
+            // Only use horizontal direction, ignore vertical component
+            directionToBase.y = 0;
             transform.rotation = Quaternion.LookRotation(directionToBase);
+            targetRotation = transform.rotation; // Initialize target rotation
         }
         
     }
@@ -108,6 +116,12 @@ public class Helicopter : MonoBehaviour
             return;
         }
         
+        // Reset turning state when not in firing range
+        if (distanceToBase > distanceToFire)
+        {
+            isTurningToBase = false;
+        }
+        
         // Update zigzag timing (only when within zigzag range)
         if (distanceToBase <= distanceToStartZigzag && Time.time >= nextZigzagTime)
         {
@@ -132,23 +146,24 @@ public class Helicopter : MonoBehaviour
                 ScreenFlash.Instance?.FlashScreen();
             }
             
-            // Face the base
+            // Start smooth turning toward base when entering firing lane
             Vector3 toBase = (targetPosition - transform.position).normalized;
-            toBase.y = 0;
             if (toBase != Vector3.zero)
             {
-                transform.rotation = Quaternion.LookRotation(toBase);
+                targetRotation = Quaternion.LookRotation(toBase);
+                isTurningToBase = true;
             }
         }
         
         // Fire at base when in range (hover in place)
         if (isFiring)
         {
-            // Keep facing the base
+            // Continue smooth turning toward base while firing
             Vector3 toBase = (targetPosition - transform.position).normalized;
             if (toBase != Vector3.zero)
             {
-                transform.rotation = Quaternion.LookRotation(toBase);
+                targetRotation = Quaternion.LookRotation(toBase);
+                isTurningToBase = true;
             }
             
             if (Time.time >= nextFireTime)
@@ -194,8 +209,20 @@ public class Helicopter : MonoBehaviour
             // Move helicopter
             transform.position += totalMovement;
             
-            // Always face the base (not movement direction)
-            transform.rotation = Quaternion.LookRotation(directionToBase);
+            // Handle rotation based on state
+            if (!isTurningToBase)
+            {
+                // Return to horizontal orientation when not firing
+                Vector3 horizontalDirection = directionToBase;
+                horizontalDirection.y = 0; // Force horizontal orientation
+                if (horizontalDirection != Vector3.zero)
+                {
+                    targetRotation = Quaternion.LookRotation(horizontalDirection);
+                }
+            }
+            
+            // Apply smooth rotation
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
         }
     }
     
