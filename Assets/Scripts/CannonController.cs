@@ -5,6 +5,7 @@ public class CannonController : MonoBehaviour
 {
     [Header("Projectile Settings")]
     [SerializeField] private GameObject rocketProjectile;
+    [SerializeField] private GameObject rocketExplosionOnGround;
     [SerializeField] private float projectileSpeed = 80f;
     [SerializeField] private float fireRate = 0.5f;
     [SerializeField] private float rocketScale = 0.05f;
@@ -123,6 +124,12 @@ public class CannonController : MonoBehaviour
         
         // Set max distance for rocket
         rocketScript.SetMaxDistance(maxProjectileDistance);
+        
+        // Set explosion prefab for ground hits
+        if (rocketExplosionOnGround != null)
+        {
+            rocketScript.SetExplosionPrefab(rocketExplosionOnGround);
+        }
     }
     
     void HandleVerticalMovement()

@@ -6,6 +6,7 @@ public class RocketCollision : MonoBehaviour
     private float maxDistance = 500f;
     private Vector3 spawnPosition;
     private bool hasMaxDistance = false;
+    private GameObject rocketExplosionOnGround;
     
     void Start()
     {
@@ -19,6 +20,22 @@ public class RocketCollision : MonoBehaviour
         hasMaxDistance = true;
     }
     
+    public void SetExplosionPrefab(GameObject explosionPrefab)
+    {
+        rocketExplosionOnGround = explosionPrefab;
+    }
+    
+    void CreateGroundExplosion(Vector3 position)
+    {
+        if (rocketExplosionOnGround != null)
+        {
+            GameObject explosion = Instantiate(rocketExplosionOnGround, position, Quaternion.identity);
+            
+            // Destroy the explosion after a reasonable time (adjust based on your explosion animation length)
+            Destroy(explosion, 3f);
+        }
+    }
+    
     void Update()
     {
         if (hasMaxDistance)
@@ -26,6 +43,7 @@ public class RocketCollision : MonoBehaviour
             float currentDistance = Vector3.Distance(transform.position, spawnPosition);
             if (currentDistance >= maxDistance)
             {
+                CreateGroundExplosion(transform.position);
                 Destroy(gameObject);
             }
         }
@@ -102,7 +120,8 @@ public class RocketCollision : MonoBehaviour
             parent = parent.parent;
         }
         
-        // If not part of a tank, just destroy the rocket
+        // If not part of a tank, create ground explosion and destroy the rocket
+        CreateGroundExplosion(transform.position);
         Destroy(gameObject);
     }
     
@@ -115,6 +134,12 @@ public class RocketCollision : MonoBehaviour
                 ScoreManager.Instance.RegisterTankDestroyed(other.gameObject.transform.position);
             }
             Destroy(other.gameObject);
+            Destroy(gameObject);
+        }
+        else
+        {
+            // Hit something that's not an enemy, create ground explosion
+            CreateGroundExplosion(transform.position);
             Destroy(gameObject);
         }
     }
