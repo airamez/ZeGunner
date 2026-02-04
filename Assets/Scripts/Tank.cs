@@ -28,16 +28,18 @@ public class Tank : MonoBehaviour
     private float projectileDamage;
     private float projectileSpeed;
     private float projectileScale;
-    private float projectileSpawnHeight;
     private bool isFiring = false;
     private float nextFireTime;
-    private Transform barrelTransform;
+    
+    [Header("Barrel Settings")]
+    public Transform barrelTransform; // Reference to the tank's barrel for projectile spawn
+    
     private GameObject explosionPrefab;
     private AudioClip explosionSound;
     private AudioClip firingSound;
     private bool isDestroyed = false;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float delay, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound, float projSpawnHeight)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float delay, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound)
     {
         targetPosition = target;
         moveSpeed = speed;
@@ -56,7 +58,6 @@ public class Tank : MonoBehaviour
         projectileDamage = damage;
         projectileSpeed = projSpeed;
         projectileScale = projScale;
-        projectileSpawnHeight = projSpawnHeight;
         
         isInitialized = true;
         
@@ -91,7 +92,38 @@ public class Tank : MonoBehaviour
         
         if (barrelTransform == null)
         {
+            // Try common barrel names
+            string[] commonNames = { "BarrelSpawn", "Barrel", "Cannon", "Gun", "TurretBarrel", "FirePoint", "Muzzle" };
+            foreach (string name in commonNames)
+            {
+                Transform found = transform.Find(name);
+                if (found != null)
+                {
+                    barrelTransform = found;
+                    Debug.Log($"[Tank] Auto-found barrel transform: {name}");
+                    break;
+                }
+            }
             
+            if (barrelTransform == null)
+            {
+                // Search all children recursively
+                barrelTransform = FindDeepChild(transform, "barrel");
+                if (barrelTransform != null)
+                {
+                    Debug.Log($"[Tank] Auto-found barrel transform by search: {barrelTransform.name}");
+                }
+            }
+        }
+        
+        // Log the result
+        if (barrelTransform != null)
+        {
+            Debug.Log($"[Tank] Using barrel transform: {barrelTransform.name} at position {barrelTransform.position}");
+        }
+        else
+        {
+            Debug.LogWarning("[Tank] No barrel transform assigned or found. Projectiles will spawn from tank center.");
         }
         
         // Initialize zigzag movement
@@ -257,8 +289,18 @@ public class Tank : MonoBehaviour
             return;
         }
         
-        // Spawn projectile from in front of tank at specified height
-        Vector3 spawnPos = transform.position + transform.forward * 2f + Vector3.up * projectileSpawnHeight;
+        // Spawn projectile from barrel position if available, otherwise use front of tank
+        Vector3 spawnPos;
+        if (barrelTransform != null)
+        {
+            spawnPos = barrelTransform.position;
+        }
+        else
+        {
+            // Fallback: spawn from in front of tank
+            spawnPos = transform.position + transform.forward * 2f + Vector3.up * 1.5f;
+        }
+        
         Vector3 direction = (targetPosition - spawnPos).normalized;
         
         // Create projectile - EnemyProjectile will handle rotation
@@ -419,6 +461,22 @@ public class Tank : MonoBehaviour
         }
         
         Destroy(gameObject);
+    }
+    
+    // Helper method to find child transform by name (recursive search)
+    Transform FindDeepChild(Transform parent, string name)
+    {
+        Transform result = parent.Find(name);
+        if (result != null)
+            return result;
+        
+        foreach (Transform child in parent)
+        {
+            result = FindDeepChild(child, name);
+            if (result != null)
+                return result;
+        }
+        return null;
     }
     
     // Called when tank reaches the base - destroy without player credit
