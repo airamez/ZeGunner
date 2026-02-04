@@ -6,6 +6,7 @@ public class CannonController : MonoBehaviour
     [Header("Projectile Settings")]
     [SerializeField] private GameObject rocketProjectile;
     [SerializeField] private GameObject rocketExplosionOnGround;
+    [SerializeField] private AudioClip rocketFiringSound;
     [SerializeField] private float projectileSpeed = 80f;
     [SerializeField] private float fireRate = 0.5f;
     [SerializeField] private float rocketScale = 0.05f;
@@ -65,6 +66,9 @@ public class CannonController : MonoBehaviour
         {
             ScoreManager.Instance.RegisterShot();
         }
+        
+        // Play rocket firing sound with volume control
+        PlayRocketFiringSound();
         
         // Calculate spawn position above the camera
         Vector3 cameraPosition = mainCamera.transform.position;
@@ -162,6 +166,32 @@ public class CannonController : MonoBehaviour
             
             // Apply the new position
             transform.position = new Vector3(currentPosition.x, newY, currentPosition.z);
+        }
+    }
+    
+    void PlayRocketFiringSound()
+    {
+        if (rocketFiringSound != null)
+        {
+            // Create temporary AudioSource for volume control
+            GameObject tempAudio = new GameObject("TempRocketFiringSound");
+            tempAudio.transform.position = transform.position;
+            AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
+            
+            // Apply global volume from VolumeManager with 50% base volume
+            if (VolumeManager.Instance != null)
+            {
+                // Start at 50% of Windows 100%, then apply global volume multiplier
+                audioSource.volume = 0.5f * VolumeManager.Instance.GetMasterVolume();
+            }
+            else
+            {
+                // Fallback to 50% if VolumeManager not available
+                audioSource.volume = 0.5f;
+            }
+            
+            audioSource.PlayOneShot(rocketFiringSound);
+            Destroy(tempAudio, rocketFiringSound.length + 0.1f); // Clean up after sound plays
         }
     }
 }
