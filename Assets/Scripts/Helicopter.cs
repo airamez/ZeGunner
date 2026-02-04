@@ -191,6 +191,9 @@ public class Helicopter : MonoBehaviour
                 isTurningToBase = true;
             }
             
+            // Apply rotation smoothing even while firing
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSpeed * Time.deltaTime);
+            
             if (Time.time >= nextFireTime)
             {
                 FireAtBase();
