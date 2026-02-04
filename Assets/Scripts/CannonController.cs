@@ -178,16 +178,15 @@ public class CannonController : MonoBehaviour
             tempAudio.transform.position = transform.position;
             AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
             
-            // Apply global volume from VolumeManager with 50% base volume
+            // Apply global volume from VolumeManager (same as other sounds)
             if (VolumeManager.Instance != null)
             {
-                // Start at 50% of Windows 100%, then apply global volume multiplier
-                audioSource.volume = 0.5f * VolumeManager.Instance.GetMasterVolume();
+                audioSource.volume = VolumeManager.Instance.GetMasterVolume();
             }
             else
             {
-                // Fallback to 50% if VolumeManager not available
-                audioSource.volume = 0.5f;
+                // Fallback to full volume if VolumeManager not available
+                audioSource.volume = 1f;
             }
             
             audioSource.PlayOneShot(rocketFiringSound);

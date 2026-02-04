@@ -359,7 +359,15 @@ public class Helicopter : MonoBehaviour
                 tempAudio.transform.position = transform.position;
                 AudioSource audioSource = tempAudio.AddComponent<AudioSource>();
                 audioSource.clip = explosionSound;
-                audioSource.volume = 2.0f; // 200% volume for explosions
+                // Apply global volume control
+                if (VolumeManager.Instance != null)
+                {
+                    audioSource.volume = VolumeManager.Instance.GetMasterVolume();
+                }
+                else
+                {
+                    audioSource.volume = 1f; // Fallback to full volume
+                }
                 audioSource.Play();
                 Destroy(tempAudio, explosionSound.length + 0.1f); // Clean up after sound
             }

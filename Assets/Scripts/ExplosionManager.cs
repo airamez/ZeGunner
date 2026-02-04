@@ -34,9 +34,24 @@ public class ExplosionManager : MonoBehaviour
             audioSource = gameObject.AddComponent<AudioSource>();
         }
         
+        // Apply global volume control
+        if (VolumeManager.Instance != null)
+        {
+            audioSource.volume = VolumeManager.Instance.GetMasterVolume();
+        }
+        
         // Load explosion prefabs and sounds
         LoadExplosionEffects();
         LoadExplosionSounds();
+    }
+    
+    void Update()
+    {
+        // Update volume when global volume changes
+        if (VolumeManager.Instance != null && audioSource != null)
+        {
+            audioSource.volume = VolumeManager.Instance.GetMasterVolume();
+        }
     }
     
     void LoadExplosionEffects()
