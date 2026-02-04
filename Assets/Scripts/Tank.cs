@@ -31,8 +31,8 @@ public class Tank : MonoBehaviour
     private bool isFiring = false;
     private float nextFireTime;
     
-    [Header("Barrel Settings")]
-    public Transform barrelTransform; // Reference to the tank's barrel for projectile spawn
+    // Barrel spawn point - auto-detected by name
+    private Transform barrelTransform;
     
     private GameObject explosionPrefab;
     private AudioClip explosionSound;

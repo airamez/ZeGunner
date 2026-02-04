@@ -25,6 +25,11 @@ public class Helicopter : MonoBehaviour
     private bool isFiring = false;
     private float nextFireTime;
     
+    // Barrel spawn points - auto-detected by name
+    private Transform barrelSpawn1;
+    private Transform barrelSpawn2;
+    private bool useBarrelSpawn1Next = true; // Track which barrel to use for alternating fire
+    
     // Zigzag movement variables
     private float zigzagDelay;
     private float minLateralSpeed;
@@ -69,6 +74,9 @@ public class Helicopter : MonoBehaviour
         // Find rotor components
         FindRotorComponents();
         
+        // Auto-detect barrel spawn points if not assigned
+        FindBarrelSpawnPoints();
+        
         // Keep helicopter horizontal (parallel to horizon)
         Vector3 directionToBase = (targetPosition - transform.position).normalized;
         if (directionToBase != Vector3.zero)
@@ -97,6 +105,23 @@ public class Helicopter : MonoBehaviour
             
         }
         
+    }
+    
+    void FindBarrelSpawnPoints()
+    {
+        // Auto-detect barrel spawn points by name
+        barrelSpawn1 = transform.Find("BarrelSpawn1");
+        barrelSpawn2 = transform.Find("BarrelSpawn2");
+        
+        // Log the result
+        if (barrelSpawn1 != null || barrelSpawn2 != null)
+        {
+            Debug.Log($"[Helicopter] Barrel spawns - Spawn1: {(barrelSpawn1 != null ? barrelSpawn1.name : "NOT FOUND")}, Spawn2: {(barrelSpawn2 != null ? barrelSpawn2.name : "NOT FOUND")}");
+        }
+        else
+        {
+            Debug.LogWarning("[Helicopter] No barrel spawn points (BarrelSpawn1/BarrelSpawn2) found. Projectiles will spawn from helicopter body.");
+        }
     }
     
     void Update()
@@ -256,8 +281,30 @@ public class Helicopter : MonoBehaviour
             return;
         }
         
-        // Spawn projectile below helicopter
-        Vector3 spawnPos = transform.position + Vector3.down * 1f;
+        // Spawn projectile from alternating barrel spawn point
+        Vector3 spawnPos;
+        if (barrelSpawn1 != null && barrelSpawn2 != null)
+        {
+            // Alternate between barrel 1 and barrel 2
+            spawnPos = useBarrelSpawn1Next ? barrelSpawn1.position : barrelSpawn2.position;
+            useBarrelSpawn1Next = !useBarrelSpawn1Next; // Toggle for next shot
+        }
+        else if (barrelSpawn1 != null)
+        {
+            // Only barrel 1 available
+            spawnPos = barrelSpawn1.position;
+        }
+        else if (barrelSpawn2 != null)
+        {
+            // Only barrel 2 available
+            spawnPos = barrelSpawn2.position;
+        }
+        else
+        {
+            // Fallback: spawn below helicopter
+            spawnPos = transform.position + Vector3.down * 1f;
+        }
+        
         Vector3 direction = (targetPosition - spawnPos).normalized;
         
         // Create projectile - EnemyProjectile will handle rotation
