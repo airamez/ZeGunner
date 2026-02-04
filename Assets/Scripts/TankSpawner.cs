@@ -206,7 +206,7 @@ public class TankSpawner : MonoBehaviour
         float maxSpeed = WaveManager.Instance.GetCurrentTankMaxSpeed();
         float speed = Random.Range(minSpeed, maxSpeed);
         
-        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMaxDelay, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound);
+        tankScript.Initialize(basePosition, speed, minSpeed, maxSpeed, closeStraightLineDistance, zigzagMinDelay, zigzagMaxDelay, explosionPrefab, explosionSound, projectilePrefab, distanceToFire, rateOfFire, hitPoints, projectileSpeed, projectileScale, firingSound);
         
         activeTanks.Add(tank);
         

@@ -39,14 +39,15 @@ public class Tank : MonoBehaviour
     private AudioClip firingSound;
     private bool isDestroyed = false;
     
-    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float delay, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound)
+    public void Initialize(Vector3 target, float speed, float minSpd, float maxSpd, float straightDistance, float minDelay, float maxDelay, GameObject explosion, AudioClip sound, GameObject projectile, float fireDist, float fireRate, float damage, float projSpeed, float projScale, AudioClip fireSound)
     {
         targetPosition = target;
         moveSpeed = speed;
         minSpeed = minSpd;
         maxSpeed = maxSpd;
         straightLineDistance = straightDistance;
-        zigzagMaxDelay = delay;
+        zigzagMinDelay = minDelay;
+        zigzagMaxDelay = maxDelay;
         explosionPrefab = explosion;
         explosionSound = sound;
         firingSound = fireSound;
@@ -100,7 +101,6 @@ public class Tank : MonoBehaviour
                 if (found != null)
                 {
                     barrelTransform = found;
-                    Debug.Log($"[Tank] Auto-found barrel transform: {name}");
                     break;
                 }
             }
@@ -114,16 +114,6 @@ public class Tank : MonoBehaviour
                     Debug.Log($"[Tank] Auto-found barrel transform by search: {barrelTransform.name}");
                 }
             }
-        }
-        
-        // Log the result
-        if (barrelTransform != null)
-        {
-            Debug.Log($"[Tank] Using barrel transform: {barrelTransform.name} at position {barrelTransform.position}");
-        }
-        else
-        {
-            Debug.LogWarning("[Tank] No barrel transform assigned or found. Projectiles will spawn from tank center.");
         }
         
         // Initialize zigzag movement

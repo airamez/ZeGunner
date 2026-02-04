@@ -112,16 +112,6 @@ public class Helicopter : MonoBehaviour
         // Auto-detect barrel spawn points by name
         barrelSpawn1 = transform.Find("BarrelSpawn1");
         barrelSpawn2 = transform.Find("BarrelSpawn2");
-        
-        // Log the result
-        if (barrelSpawn1 != null || barrelSpawn2 != null)
-        {
-            Debug.Log($"[Helicopter] Barrel spawns - Spawn1: {(barrelSpawn1 != null ? barrelSpawn1.name : "NOT FOUND")}, Spawn2: {(barrelSpawn2 != null ? barrelSpawn2.name : "NOT FOUND")}");
-        }
-        else
-        {
-            Debug.LogWarning("[Helicopter] No barrel spawn points (BarrelSpawn1/BarrelSpawn2) found. Projectiles will spawn from helicopter body.");
-        }
     }
     
     void Update()

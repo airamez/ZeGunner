@@ -171,9 +171,9 @@ public class ScoreManager : MonoBehaviour
         scoreText.text = $"Wave: {currentWave}\n" +
                          $"Tanks: {tanksDestroyedThisWave}/{totalTanksThisWave}\n" +
                          $"Helicopters: {helicoptersDestroyedThisWave}/{totalHelicoptersThisWave}\n" +
-                         $"Longest Kill: {longestDistance:F1}\n" +
+                         $"Longest Kill: {longestDistance:F1}m\n" +
                          $"Accuracy: {accuracy:F1}%\n" +
-                         $"Base Height: {turretElevation:F1}\n" +
+                         $"Base Height: {turretElevation:F1}m\n" +
                          $"Base HP: {baseHP:F0}";
     }
     

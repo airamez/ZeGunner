@@ -43,10 +43,6 @@ public class CannonProjectile : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-        else
-        {
-            Debug.Log($"CannonProjectile hit non-enemy: {hitObject.name} with tag: {hitObject.tag}");
-        }
         
         // Check if hit object is part of an enemy (has parent with Enemy tag)
         Transform parent = collision.gameObject.transform;
