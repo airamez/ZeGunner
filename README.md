@@ -10,9 +10,9 @@ ZeGunner is a 3D first-person tower defense game built in Unity. Players control
 
 ## 🎮 Demo Video
 
-[![ZeGunner Gameplay Demo](https://img.youtube.com/vi/NxEaAho-tQM/0.jpg)](https://www.youtube.com/watch?v=NxEaAho-tQM)
+[![ZeGunner Gameplay Demo](https://img.youtube.com/vi/NxEaAho-tQM/0.jpg)](https://youtu.be/aaY77fafaHQ)
 
-**Watch the full gameplay demonstration:** [https://youtu.be/NxEaAho-tQM](https://youtu.be/NxEaAho-tQM)
+**Watch the full gameplay demonstration:** [https://youtu.be/aaY77fafaHQ](https://youtu.be/aaY77fafaHQ)
 
 ## Free Components Used
 
