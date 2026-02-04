@@ -176,7 +176,7 @@ MonoBehaviour:
   spawnHeight: 1
   baseMinSpeed: 3
   baseMaxSpeed: 5
-  maxSpeedLimit: 20
+  maxSpeedLimit: 15
   minSpeedLimit: 7
   baseTankCount: 5
   baseCountWaveIncrement: 5
