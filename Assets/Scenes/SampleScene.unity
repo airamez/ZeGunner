@@ -167,21 +167,22 @@ MonoBehaviour:
   baseTransform: {fileID: 1595826105}
   tankScale: 2
   closeStraightLineDistance: 50
-  zigzagDelay: 10
-  initialMinSpawnDistance: 100
-  minSpawnDistance: 200
-  initialMaxSpawnDistance: 150
-  maxSpawnDistance: 500
+  zigzagMinDelay: 5
+  zigzagMaxDelay: 30
+  initialMinSpawnDistance: 250
+  minSpawnDistance: 350
+  initialMaxSpawnDistance: 300
+  maxSpawnDistance: 600
   spawnHeight: 1
-  baseMinSpeed: 1
-  baseMaxSpeed: 2
-  maxSpeedLimit: 5
-  minSpeedLimit: 2
+  baseMinSpeed: 3
+  baseMaxSpeed: 5
+  maxSpeedLimit: 15
+  minSpeedLimit: 7
   baseTankCount: 5
-  baseCountWaveIncrement: 10
+  baseCountWaveIncrement: 5
   baseSpeedWaveIncrement: 0.5
   minSpawnDistanceIncrement: 10
-  maxSpawnDistanceIncrement: 40
+  maxSpawnDistanceIncrement: 50
   explosionPrefab: {fileID: 100002, guid: d53702834d5814f47bc426b32c199c5e, type: 3}
   explosionSound: {fileID: 8300000, guid: b9d2441a04ad86742bec3847994de79c, type: 3}
   projectilePrefab: {fileID: 5254963598224360212, guid: 41518750c49d5384eba5ff5f176ee847, type: 3}
@@ -190,7 +191,7 @@ MonoBehaviour:
   rateOfFire: 3
   hitPoints: 1
   projectileSpeed: 20
-  projectileScale: 0.05
+  projectileScale: 0.1
   projectileSpawnHeight: 1.5
 --- !u!4 &207147544 stripped
 Transform:
@@ -1599,24 +1600,24 @@ MonoBehaviour:
   baseTransform: {fileID: 1595826105}
   helicopterScale: 1
   initialMinSpawnDistance: 250
-  minSpawnDistance: 300
+  minSpawnDistance: 350
   initialMaxSpawnDistance: 200
-  maxSpawnDistance: 500
+  maxSpawnDistance: 700
   minSpawnHeight: 50
   maxSpawnHeight: 200
-  minSpawnDistanceIncrement: 20
-  maxSpawnDistanceIncrement: 100
-  baseMinSpeed: 2
+  minSpawnDistanceIncrement: 10
+  maxSpawnDistanceIncrement: 50
+  baseMinSpeed: 3
   baseMaxSpeed: 5
   baseHelicopterCount: 5
-  baseCountWaveIncrement: 5
+  baseCountWaveIncrement: 3
   baseSpeedWaveIncrement: 0.5
-  maxSpeedLimit: 7
-  minSpeedLimit: 2
+  maxSpeedLimit: 20
+  minSpeedLimit: 10
   zigzagDelay: 15
-  minLateralSpeed: 1
-  maxLateralSpeed: 3
-  distanceToStartZigzag: 150
+  minLateralSpeed: 3
+  maxLateralSpeed: 7
+  distanceToStartZigzag: 200
   explosionPrefab: {fileID: 100008, guid: 2ae9e8f0dfbef424c839cad8118abc5f, type: 3}
   explosionSound: {fileID: 8300000, guid: 2b5975d490e56bb4c89f211958e804a9, type: 3}
   projectilePrefab: {fileID: 5639003199960037019, guid: bc1101b41da57f84ba9cde8e9687a233, type: 3}

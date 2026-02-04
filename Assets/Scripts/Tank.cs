@@ -9,9 +9,12 @@ public class Tank : MonoBehaviour
     private bool isInitialized = false;
     
     [Header("Zigzag Movement")]
-    [SerializeField] private float zigzagDelay = 3f; // Seconds between zigzag direction changes
-    [SerializeField] private float zigzagSmoothing = 0.5f; // How smooth the direction changes are
+    [SerializeField] private float zigzagMinDelay = 1f; // Minimum seconds before changing zigzag direction
+    [SerializeField] private float zigzagMaxDelay = 15f; // Maximum seconds before changing zigzag direction
+    [SerializeField] private float zigzagSmoothing = 0.3f; // Smooth turning transitions (higher = slower turn)
     [SerializeField] private float straightLineDistance = 10f; // Distance from base to move straight
+    [SerializeField] private float minLateralAngle = 3f; // Minimum lateral angle
+    [SerializeField] private float maxLateralAngle = 25f; // Maximum lateral angle
     
     private float nextZigzagTime;
     private Vector3 currentDirection;
@@ -41,7 +44,7 @@ public class Tank : MonoBehaviour
         minSpeed = minSpd;
         maxSpeed = maxSpd;
         straightLineDistance = straightDistance;
-        zigzagDelay = delay;
+        zigzagMaxDelay = delay;
         explosionPrefab = explosion;
         explosionSound = sound;
         firingSound = fireSound;
@@ -106,12 +109,9 @@ public class Tank : MonoBehaviour
     
     void CalculateNextZigzagTime()
     {
-        // Use zigzagDelay as the base for random timing (0.5x to 1.5x zigzagDelay)
-        // This ensures tanks change direction at different times but within reasonable bounds
-        float minDelay = zigzagDelay * 0.5f;  // Minimum: 50% of base delay
-        float maxDelay = zigzagDelay * 1.5f;  // Maximum: 150% of base delay
-        
-        float randomDelay = Random.Range(minDelay, maxDelay);
+        // Random delay between zigzagMinDelay and zigzagMaxDelay
+        // This ensures tanks maintain their zigzag direction for varying durations
+        float randomDelay = Random.Range(zigzagMinDelay, zigzagMaxDelay);
         nextZigzagTime = Time.time + randomDelay;
     }
     
@@ -198,7 +198,8 @@ public class Tank : MonoBehaviour
                 CalculateNextZigzagTime();
             }
             
-            // Smoothly interpolate to the zigzag direction
+            // Minimal smoothing for sharp direction changes (creating sharp edges)
+            // Very low smoothing value means almost instant direction changes
             zigzagDirection = Vector3.Slerp(zigzagDirection, currentDirection, zigzagSmoothing * Time.deltaTime);
             movementDirection = zigzagDirection;
         }
@@ -278,21 +279,16 @@ public class Tank : MonoBehaviour
     
     void UpdateZigzagDirection()
     {
-        // SNAKE-LIKE MOVEMENT ALGORITHM:
-        // Tank moves in natural snake patterns toward base
-        // Each tank has unique zigzag characteristics for variety
-        // Alternates between left and right with randomized angles
-        // Ensures forward progress while creating organic movement
+        // SMOOTH SNAKE-LIKE MOVEMENT:
+        // Tank moves with moderate lateral zigzag while smoothly transitioning between directions
+        // Tank slows/stops when turning to the new direction (via zigzagSmoothing interpolation)
         
         Vector3 toBase = (targetPosition - transform.position).normalized;
         toBase.y = 0;
         
-        // SNAKE-LIKE MOVEMENT: Each tank has unique zigzag characteristics
-        // Create more natural, varied snake paths
-        
-        // Randomize angle ranges for each tank to create variety
-        float maxAngle = Random.Range(15f, 30f); // Each tank has different max angle
-        float minAngle = Random.Range(3f, 12f);  // Each tank has different min angle
+        // Use moderate angles for natural zigzag
+        float maxAngle = Random.Range(maxLateralAngle - 3f, maxLateralAngle); // 22-25 degrees
+        float minAngle = Random.Range(minLateralAngle, minLateralAngle + 3f);  // 3-6 degrees
         
         float zigzagAngle;
         
@@ -309,29 +305,25 @@ public class Tank : MonoBehaviour
             lastZigzagWasLeft = true;
         }
         
-        // Add slight randomness to make path more snake-like
-        float randomVariation = Random.Range(-2f, 2f);
-        zigzagAngle += randomVariation;
-        
-        // Apply the angle to direction toward base
+        // Apply angle for zigzag movement
         Quaternion rotation = Quaternion.Euler(0, zigzagAngle, 0);
         Vector3 tentativeDirection = rotation * toBase;
         
         // CRITICAL: Verify forward progress with dot product
-        // Dot product > 0 means moving toward base (angle < 90°)
-        // cos(25°) = 0.906, so we want dot product > 0.9 for strong forward progress
         float dotProduct = Vector3.Dot(toBase, tentativeDirection);
         
-        if (dotProduct < 0.9f) // Must have at least 90% forward progress
+        if (dotProduct < 0.9f) // Must have strong forward progress
         {
-            // Force a safer angle with some variety
+            // Use a safer angle with some variety
             float safeAngle = Random.Range(5f, 12f);
             zigzagAngle = zigzagAngle > 0 ? safeAngle : -safeAngle;
             rotation = Quaternion.Euler(0, zigzagAngle, 0);
             tentativeDirection = rotation * toBase;
         }
         
+        // Smoothly transition to new direction for natural turning motion
         zigzagDirection = tentativeDirection;
+        currentDirection = tentativeDirection;
     }
     
     void OnCollisionEnter(Collision collision)
