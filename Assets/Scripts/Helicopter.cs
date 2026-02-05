@@ -118,6 +118,12 @@ public class Helicopter : MonoBehaviour
     {
         if (!isInitialized) return;
         
+        // Stop all activity when game is over
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying())
+        {
+            return;
+        }
+        
         // Animate rotors
         AnimateRotors();
         
@@ -149,10 +155,7 @@ public class Helicopter : MonoBehaviour
         {
             isFiring = true;
             
-            // Fire immediately when reaching line of fire
-            FireAtBase();
-            
-            // Set next fire time for subsequent shots
+            // Set next fire time for first shot (wait rateOfFire before shooting)
             nextFireTime = Time.time + rateOfFire;
             
             // Flash screen if helicopter is not in player's field of view

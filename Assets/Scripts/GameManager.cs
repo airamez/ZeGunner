@@ -36,14 +36,19 @@ public class GameManager : MonoBehaviour
     
     void Update()
     {
-        // Check for SPACE key to start game from menu or restart from game over
+        // Check for SPACE key to start game from menu
         if (Keyboard.current != null && Keyboard.current.spaceKey.wasPressedThisFrame)
         {
             if (CurrentState == GameState.Menu)
             {
                 StartGame();
             }
-            else if (CurrentState == GameState.GameOver)
+        }
+        
+        // Check for any key press to restart from game over
+        if (CurrentState == GameState.GameOver && Keyboard.current != null)
+        {
+            if (Keyboard.current.anyKey.wasPressedThisFrame)
             {
                 RestartGame();
             }
@@ -326,7 +331,64 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        
+        // Destroy game over screen
+        if (gameOverScreen != null)
+        {
+            Destroy(gameOverScreen);
+            gameOverScreen = null;
+        }
+        
+        // Destroy all existing enemies
+        Tank[] tanks = FindObjectsByType<Tank>(FindObjectsSortMode.None);
+        foreach (Tank tank in tanks)
+        {
+            if (tank != null && tank.gameObject != null)
+            {
+                Destroy(tank.gameObject);
+            }
+        }
+        
+        Helicopter[] helicopters = FindObjectsByType<Helicopter>(FindObjectsSortMode.None);
+        foreach (Helicopter heli in helicopters)
+        {
+            if (heli != null && heli.gameObject != null)
+            {
+                Destroy(heli.gameObject);
+            }
+        }
+        
+        // Destroy all enemy projectiles
+        EnemyProjectile[] projectiles = FindObjectsByType<EnemyProjectile>(FindObjectsSortMode.None);
+        foreach (EnemyProjectile proj in projectiles)
+        {
+            if (proj != null && proj.gameObject != null)
+            {
+                Destroy(proj.gameObject);
+            }
+        }
+        
+        // Reset score manager
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ResetStats();
+        }
+        
+        // Reset game timer
+        if (GameTimer.Instance != null)
+        {
+            GameTimer.Instance.ResetTimer();
+            GameTimer.Instance.StartTimer();
+            GameTimer.Instance.ShowTimer(true);
+        }
+        
+        // Set state to playing and start first wave
+        CurrentState = GameState.Playing;
+        
+        if (WaveManager.Instance != null)
+        {
+            WaveManager.Instance.StartFirstWave();
+        }
     }
     
     public bool IsPlaying()

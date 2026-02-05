@@ -116,6 +116,12 @@ public class GameTimer : MonoBehaviour
         return string.Format("{0:00}:{1:00}:{2:00}", hours, minutes, seconds);
     }
     
+    public void ResetTimer()
+    {
+        gameTime = 0f;
+        UpdateTimerDisplay();
+    }
+    
     public void StartTimer()
     {
         gameTime = 0f;

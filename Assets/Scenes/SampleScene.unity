@@ -186,9 +186,9 @@ MonoBehaviour:
   explosionPrefab: {fileID: 100002, guid: d53702834d5814f47bc426b32c199c5e, type: 3}
   explosionSound: {fileID: 8300000, guid: b9d2441a04ad86742bec3847994de79c, type: 3}
   projectilePrefab: {fileID: 5254963598224360212, guid: 41518750c49d5384eba5ff5f176ee847, type: 3}
-  distanceToFire: 30
+  distanceToFire: 50
   firingSound: {fileID: 8300000, guid: e5818ed3c3cf91c41a7d3bd34513a4bc, type: 3}
-  rateOfFire: 3
+  rateOfFire: 4
   hitPoints: 1
   projectileSpeed: 20
   projectileScale: 0.1
@@ -401,7 +401,7 @@ MonoBehaviour:
   rocketProjectile: {fileID: 1684384920599143690, guid: 7fbe895a437dbd74da119d62b80de28e, type: 3}
   rocketExplosionOnGround: {fileID: 100002, guid: 50f48c9567ed40649bea98926eff87a5, type: 3}
   rocketFiringSound: {fileID: 8300000, guid: 9e69ac3e655bfea4480958bb1d23bc81, type: 3}
-  projectileSpeed: 150
+  projectileSpeed: 250
   fireRate: 0.25
   rocketScale: 0.5
   maxProjectileDistance: 1000
@@ -858,7 +858,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.x
@@ -870,7 +870,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 2.49
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1020,11 +1020,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.9958115
+      value: 8.84
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1361,7 +1361,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 27, y: 0.01, z: 27}
+  m_LocalScale: {x: 40, y: 0.01, z: 40}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1384,7 +1384,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1396,7 +1396,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -14.57
+      value: -16.12
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1513,11 +1513,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalScale.z
-      value: 0.3
+      value: 0.4
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -6.4141884
+      value: -8.4
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: d2e223bb697d8be4bb8ade4cd8240c56, type: 3}
       propertyPath: m_LocalPosition.y
@@ -1623,9 +1623,9 @@ MonoBehaviour:
   explosionPrefab: {fileID: 100008, guid: 2ae9e8f0dfbef424c839cad8118abc5f, type: 3}
   explosionSound: {fileID: 8300000, guid: 2b5975d490e56bb4c89f211958e804a9, type: 3}
   projectilePrefab: {fileID: 5639003199960037019, guid: bc1101b41da57f84ba9cde8e9687a233, type: 3}
-  distanceToFire: 35
+  distanceToFire: 60
   firingSound: {fileID: 8300000, guid: e5818ed3c3cf91c41a7d3bd34513a4bc, type: 3}
-  rateOfFire: 2
+  rateOfFire: 3
   hitPoints: 1
   projectileSpeed: 30
   projectileScale: 0.1

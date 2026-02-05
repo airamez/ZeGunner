@@ -141,6 +141,12 @@ public class Tank : MonoBehaviour
     {
         if (!isInitialized) return;
         
+        // Stop all activity when game is over
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying())
+        {
+            return;
+        }
+        
         // Check distance to base
         float distanceToBase = Vector3.Distance(transform.position, targetPosition);
         
@@ -156,10 +162,7 @@ public class Tank : MonoBehaviour
         {
             isFiring = true;
             
-            // Fire immediately when reaching line of fire
-            FireAtBase();
-            
-            // Set next fire time for subsequent shots
+            // Set next fire time for first shot (wait rateOfFire before shooting)
             nextFireTime = Time.time + rateOfFire;
             
             // Flash screen if tank is not in player's field of view

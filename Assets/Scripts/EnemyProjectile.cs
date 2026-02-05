@@ -78,6 +78,13 @@ public class EnemyProjectile : MonoBehaviour
     
     void OnTriggerEnter(Collider other)
     {
+        // Don't damage base if game is not playing
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying())
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         // Check if hit the base
         if (other.gameObject.name.Contains("Base") || IsTaggedAs(other.gameObject, "Base"))
         {
@@ -101,6 +108,13 @@ public class EnemyProjectile : MonoBehaviour
     
     void OnCollisionEnter(Collision collision)
     {
+        // Don't damage base if game is not playing
+        if (GameManager.Instance != null && !GameManager.Instance.IsPlaying())
+        {
+            Destroy(gameObject);
+            return;
+        }
+        
         // Check if hit the base
         if (collision.gameObject.name.Contains("Base") || IsTaggedAs(collision.gameObject, "Base"))
         {

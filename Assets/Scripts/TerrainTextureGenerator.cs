@@ -18,6 +18,27 @@ public class TerrainTextureGenerator : MonoBehaviour
     [SerializeField] private Color dirtDark = new Color(0.25f, 0.18f, 0.10f, 1f);
     [SerializeField] private Color dirtLight = new Color(0.42f, 0.32f, 0.18f, 1f);
     [SerializeField] private Color mud = new Color(0.30f, 0.22f, 0.12f, 1f);
+    [SerializeField] private Color mudWet = new Color(0.22f, 0.16f, 0.08f, 1f);
+    
+    [Header("Water & Wet Areas")]
+    [SerializeField] private Color waterDeep = new Color(0.12f, 0.20f, 0.28f, 1f);
+    [SerializeField] private Color waterShallow = new Color(0.18f, 0.28f, 0.35f, 1f);
+    [SerializeField] private Color waterMuddy = new Color(0.25f, 0.22f, 0.15f, 1f);
+    
+    [Header("Burnt & Dead Areas")]
+    [SerializeField] private Color burntDark = new Color(0.15f, 0.12f, 0.08f, 1f);
+    [SerializeField] private Color burntMedium = new Color(0.22f, 0.18f, 0.12f, 1f);
+    [SerializeField] private Color ashGray = new Color(0.35f, 0.33f, 0.30f, 1f);
+    
+    [Header("Stones & Rocks")]
+    [SerializeField] private Color stoneGray = new Color(0.55f, 0.52f, 0.48f, 1f);
+    [SerializeField] private Color stoneBrown = new Color(0.48f, 0.40f, 0.28f, 1f);
+    [SerializeField] private Color stoneDark = new Color(0.35f, 0.32f, 0.28f, 1f);
+    
+    [Header("Bushes & Vegetation")]
+    [SerializeField] private Color bushDark = new Color(0.18f, 0.32f, 0.12f, 1f);
+    [SerializeField] private Color bushMedium = new Color(0.25f, 0.42f, 0.15f, 1f);
+    [SerializeField] private Color bushLight = new Color(0.32f, 0.48f, 0.18f, 1f);
     
     [Header("Mountain Colors")]
     [SerializeField] private Color rockGray = new Color(0.45f, 0.42f, 0.38f, 1f);
@@ -39,6 +60,24 @@ public class TerrainTextureGenerator : MonoBehaviour
     
     [Header("Variation Settings")]
     [SerializeField] private float dirtPatchFrequency = 0.08f;
+    
+    [Header("Feature Frequencies (0-1)")]
+    [Tooltip("Frequency of burnt grass patches in the battlefield")]
+    [SerializeField, Range(0f, 1f)] private float burntPatchFrequency = 0.35f;
+    [Tooltip("Frequency of stone/scattered rock patches")]
+    [SerializeField, Range(0f, 1f)] private float stoneFrequency = 0.25f;
+    [Tooltip("Frequency of small holes/depressions")]
+    [SerializeField, Range(0f, 1f)] private float holeFrequency = 0.20f;
+    [Tooltip("Frequency of bush clusters")]
+    [SerializeField, Range(0f, 1f)] private float bushFrequency = 0.40f;
+    [Tooltip("Frequency of water puddles in low areas")]
+    [SerializeField, Range(0f, 1f)] private float waterPuddleFrequency = 0.15f;
+    [Tooltip("Frequency of mud patches")]
+    [SerializeField, Range(0f, 1f)] private float mudPatchFrequency = 0.30f;
+    
+    [Header("Feature Settings")]
+    [SerializeField] private float puddleMaxHeight = 0.25f;
+    [SerializeField] private float holeDarkness = 0.5f;
     
     private TerrainData terrainData;
     private int width;
@@ -190,7 +229,7 @@ public class TerrainTextureGenerator : MonoBehaviour
         else if (terrainHeight >= grassMaxHeight)
         {
             float dirtBlend = Mathf.InverseLerp(grassMaxHeight, dirtMaxHeight, terrainHeight);
-            Color grassBase = GetGrassColor(noise, normalizedX, normalizedY);
+            Color grassBase = GetGrassColor(noise, normalizedX, normalizedY, terrainHeight);
             Color dirtBase = Color.Lerp(dirtDark, dirtLight, noise);
             baseColor = Color.Lerp(grassBase, dirtBase, dirtBlend);
             
@@ -204,7 +243,7 @@ public class TerrainTextureGenerator : MonoBehaviour
         // Grass areas (lowest elevation)
         else
         {
-            baseColor = GetGrassColor(noise, normalizedX, normalizedY);
+            baseColor = GetGrassColor(noise, normalizedX, normalizedY, terrainHeight);
             
             // Add random dirt patches
             float patchNoise = Mathf.PerlinNoise(normalizedX * 12 + 700, normalizedY * 12 + 700);
@@ -225,7 +264,7 @@ public class TerrainTextureGenerator : MonoBehaviour
         return baseColor;
     }
     
-    Color GetGrassColor(float noise, float normalizedX, float normalizedY)
+    Color GetGrassColor(float noise, float normalizedX, float normalizedY, float terrainHeight)
     {
         // Smooth grass variation for professional battlefield look
         float grassTypeNoise = Mathf.PerlinNoise(normalizedX * 5, normalizedY * 5);
@@ -257,7 +296,108 @@ public class TerrainTextureGenerator : MonoBehaviour
             1f
         );
         
+        // Apply terrain features in grass areas
+        grassBase = ApplyTerrainFeatures(grassBase, normalizedX, normalizedY, terrainHeight, grassTypeNoise);
+        
         return grassBase;
+    }
+    
+    Color ApplyTerrainFeatures(Color baseColor, float normalizedX, float normalizedY, float terrainHeight, float grassNoise)
+    {
+        Color result = baseColor;
+        
+        // Water puddles - only in low areas
+        if (terrainHeight < puddleMaxHeight)
+        {
+            float waterNoise = Mathf.PerlinNoise(normalizedX * 25 + 400, normalizedY * 25 + 400);
+            float waterDetail = Mathf.PerlinNoise(normalizedX * 60 + 500, normalizedY * 60 + 500);
+            
+            if (waterNoise > (1f - waterPuddleFrequency) && waterDetail > 0.4f)
+            {
+                float waterBlend = Mathf.InverseLerp(1f - waterPuddleFrequency, 1f, waterNoise);
+                waterBlend *= waterDetail;
+                // Mix shallow and muddy water
+                Color waterColor = Color.Lerp(waterShallow, waterMuddy, grassNoise * 0.5f);
+                result = Color.Lerp(result, waterColor, waterBlend * 0.85f);
+            }
+        }
+        
+        // Mud patches - create wet, dark areas
+        float mudNoise = Mathf.PerlinNoise(normalizedX * 18 + 600, normalizedY * 18 + 600);
+        float mudDetail = Mathf.PerlinNoise(normalizedX * 45 + 700, normalizedY * 45 + 700);
+        
+        if (mudNoise > (1f - mudPatchFrequency) && mudDetail > 0.35f)
+        {
+            float mudBlend = Mathf.InverseLerp(1f - mudPatchFrequency, 1f, mudNoise);
+            mudBlend *= mudDetail;
+            // Blend between wet and dry mud
+            Color mudColor = Color.Lerp(mudWet, mud, mudDetail);
+            result = Color.Lerp(result, mudColor, mudBlend * 0.75f);
+        }
+        
+        // Burnt grass patches - scorched battlefield areas
+        float burntNoise = Mathf.PerlinNoise(normalizedX * 12 + 800, normalizedY * 12 + 800);
+        float burntDetail = Mathf.PerlinNoise(normalizedX * 35 + 900, normalizedY * 35 + 900);
+        
+        if (burntNoise > (1f - burntPatchFrequency) && burntDetail > 0.3f)
+        {
+            float burntBlend = Mathf.InverseLerp(1f - burntPatchFrequency, 1f, burntNoise);
+            burntBlend *= burntDetail;
+            // Blend through burnt stages
+            Color burntColor = Color.Lerp(burntMedium, burntDark, burntDetail);
+            burntColor = Color.Lerp(burntColor, ashGray, (1f - burntDetail) * 0.3f);
+            result = Color.Lerp(result, burntColor, burntBlend * 0.8f);
+        }
+        
+        // Stone/rock patches - scattered rocks and stones
+        float stoneNoise = Mathf.PerlinNoise(normalizedX * 22 + 1000, normalizedY * 22 + 1000);
+        float stoneDetail = Mathf.PerlinNoise(normalizedX * 55 + 1100, normalizedY * 55 + 1100);
+        
+        if (stoneNoise > (1f - stoneFrequency) && stoneDetail > 0.5f)
+        {
+            float stoneBlend = Mathf.InverseLerp(1f - stoneFrequency, 1f, stoneNoise);
+            stoneBlend *= stoneDetail;
+            // Mix stone types
+            Color stoneColor = Color.Lerp(stoneBrown, stoneGray, grassNoise);
+            stoneColor = Color.Lerp(stoneColor, stoneDark, stoneDetail * 0.4f);
+            result = Color.Lerp(result, stoneColor, stoneBlend * 0.7f);
+        }
+        
+        // Holes/depressions - darker areas in the ground
+        float holeNoise = Mathf.PerlinNoise(normalizedX * 16 + 1200, normalizedY * 16 + 1200);
+        float holeDetail = Mathf.PerlinNoise(normalizedX * 40 + 1300, normalizedY * 40 + 1300);
+        
+        if (holeNoise > (1f - holeFrequency) && holeDetail > 0.45f)
+        {
+            float holeBlend = Mathf.InverseLerp(1f - holeFrequency, 1f, holeNoise);
+            holeBlend *= holeDetail;
+            // Darken the base color for hole effect
+            float darkenAmount = holeDarkness * holeBlend;
+            result = new Color(
+                Mathf.Clamp01(result.r * (1f - darkenAmount * 0.5f)),
+                Mathf.Clamp01(result.g * (1f - darkenAmount * 0.6f)),
+                Mathf.Clamp01(result.b * (1f - darkenAmount * 0.7f)),
+                1f
+            );
+            // Add dirt at bottom of holes
+            result = Color.Lerp(result, dirtDark, holeBlend * 0.4f);
+        }
+        
+        // Bush clusters - denser vegetation patches
+        float bushNoise = Mathf.PerlinNoise(normalizedX * 14 + 1400, normalizedY * 14 + 1400);
+        float bushDetail = Mathf.PerlinNoise(normalizedX * 50 + 1500, normalizedY * 50 + 1500);
+        
+        if (bushNoise > (1f - bushFrequency) && bushDetail > 0.4f)
+        {
+            float bushBlend = Mathf.InverseLerp(1f - bushFrequency, 1f, bushNoise);
+            bushBlend *= bushDetail;
+            // Blend bush colors
+            Color bushColor = Color.Lerp(bushDark, bushMedium, grassNoise);
+            bushColor = Color.Lerp(bushColor, bushLight, bushDetail * 0.5f);
+            result = Color.Lerp(result, bushColor, bushBlend * 0.65f);
+        }
+        
+        return result;
     }
     
     Color AddMicroDetail(Color baseColor, float microNoise, float terrainHeight)

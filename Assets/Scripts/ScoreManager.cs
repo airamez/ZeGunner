@@ -198,6 +198,17 @@ public class ScoreManager : MonoBehaviour
         return baseHP;
     }
     
+    public void ResetStats()
+    {
+        totalTanksDestroyed = 0;
+        totalHelicoptersDestroyed = 0;
+        shotsFired = 0;
+        shotsHit = 0;
+        longestDistance = 0f;
+        ResetBaseHP();
+        UpdateUI();
+    }
+    
     public void ResetBaseHP()
     {
         baseHP = 100f;

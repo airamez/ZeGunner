@@ -117,6 +117,12 @@ public class WaveManager : MonoBehaviour
     
     public void StartNextWave()
     {
+        // Reset base HP to 100 for new wave BEFORE resuming time
+        if (ScoreManager.Instance != null)
+        {
+            ScoreManager.Instance.ResetBaseHP();
+        }
+        
         // Resume time when starting next wave
         Time.timeScale = 1f;
         
@@ -169,13 +175,6 @@ public class WaveManager : MonoBehaviour
         tanksDestroyedThisWave = 0;
         helicoptersDestroyedThisWave = 0;
         waveStartTime = Time.time;
-        
-        // Reset base HP to 100 for new wave
-        if (ScoreManager.Instance != null)
-        {
-            ScoreManager.Instance.ResetBaseHP();
-        }
-        
         
         OnWaveStart?.Invoke();
         
