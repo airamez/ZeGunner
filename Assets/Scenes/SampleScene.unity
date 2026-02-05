@@ -920,6 +920,7 @@ GameObject:
   - component: {fileID: 1549903654}
   - component: {fileID: 1549903653}
   - component: {fileID: 1549903652}
+  - component: {fileID: 1549903655}
   m_Layer: 0
   m_Name: Terrain
   m_TagString: Terrain
@@ -996,12 +997,43 @@ Transform:
   m_GameObject: {fileID: 1549903651}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -2000, y: 0, z: -2000}
+  m_LocalPosition: {x: -1000, y: 0, z: -1000}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1549903655
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1549903651}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8757c81f3c03330489d24a4e8709a86a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TerrainTextureGenerator
+  terrain: {fileID: 1549903653}
+  generateOnStart: 1
+  textureResolution: 2048
+  grassDark: {r: 0.28, g: 0.42, b: 0.2, a: 1}
+  grassMedium: {r: 0.32, g: 0.48, b: 0.24, a: 1}
+  grassLight: {r: 0.38, g: 0.54, b: 0.28, a: 1}
+  grassDry: {r: 0.42, g: 0.48, b: 0.26, a: 1}
+  grassBurnt: {r: 0.18, g: 0.22, b: 0.12, a: 1}
+  pavementRadius: 100
+  pavementRoughness: 3
+  dirtColor: {r: 0.35, g: 0.28, b: 0.18, a: 1}
+  basePosition: {x: 0, y: 0, z: 0}
+  roadCount: 3
+  roadWidth: 8
+  roadLength: 150
+  roadWobble: 5
+  largePatchScale: 0.003
+  mediumPatchScale: 0.015
+  detailScale: 0.08
 --- !u!1001 &1558318992
 PrefabInstance:
   m_ObjectHideFlags: 0
